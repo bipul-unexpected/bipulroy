@@ -117,24 +117,6 @@
 
 <div align="center"><img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="100%" height="3" alt="animated rainbow divider"/></div>
 
-<div align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=700&size=25&duration=2000&pause=1500&color=00C9FF&center=true&vCenter=true&repeat=true&width=600&height=45&lines=%E2%9C%A6+GITHUB+ANALYTICS+%E2%9C%A6" alt="GitHub Analytics"/>
-</div>
-
-<table align="center" border="0">
-<tr>
-<td width="50%" align="center" valign="top">
-
-<img width="100%" src="https://github-profile-summary-cards.vercel.app/api/cards/stats?username=bipul-unexpected&theme=radical" alt="GitHub Stats"/>
-
-</td>
-<td width="50%" align="center" valign="top">
-
-<img width="100%" src="https://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username=bipul-unexpected&theme=radical" alt="Top Languages"/>
-
-</td>
-</tr>
-</table>
 
 <div align="center">
   <img src="https://streak-stats.demolab.com?user=bipul-unexpected&theme=radical&hide_border=true&background=0d1117&ring=8E2DE2&fire=00C9FF&currStreakLabel=00C9FF" alt="GitHub Streak"/>
