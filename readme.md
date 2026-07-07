@@ -34,6 +34,7 @@
 <br/>
 
 <!-- 🧬 ABOUT ME — two-column table layout, never collapses or overlaps -->
+
 ## 🧬 About Me <img src="https://raw.githubusercontent.com/MartinHeinz/MartinHeinz/master/wave.gif" width="30" alt="waving hand"/>
 
 <table border="0">
@@ -44,11 +45,11 @@
       name: "Bipul Roy",
       alias: "bipul-unexpected",
       role: ["Full-Stack Engineer", "UI/UX Designer", "DevOps Architect"],
-      location: "🌍 Dhaka, Bangladesh",
+      location: "🌍 Bangladesh",
       frontend: ["React", "Next.js 15", "Angular", "Three.js", "GSAP"],
       backend: ["Node.js", "Django", "Python", "GraphQL ,JavaScript"],
       devops: ["Docker", "Kubernetes", "GitHub Actions", "Terraform"],
-      design: ["Figma", "Design Systems", "Motion Design"],
+      design: ["Figma", "Design Systems", "Motion Design, Framer"],
       currentlyBuilding: "⚡ Futuristic web experiences with WebGL & AI",
       funFact: "I debug with console.log 😎"
     };
@@ -77,21 +78,25 @@
 </div>
 
 ### 💻 Frontend & UI/UX
+
 <div align="center">
   <img src="https://skillicons.dev/icons?i=react,nextjs,angular,ts,js,html,css,sass,tailwind,threejs,figma,xd&theme=dark&perline=12" alt="Frontend Skills"/>
 </div>
 
 ### ⚙️ Backend & Databases
+
 <div align="center">
   <img src="https://skillicons.dev/icons?i=nodejs,express,django,python,fastapi,graphql,postgres,mongodb,redis,mysql,prisma,firebase&theme=dark&perline=12" alt="Backend Skills"/>
 </div>
 
 ### 🚀 DevOps, CI/CD & Cloud
+
 <div align="center">
   <img src="https://skillicons.dev/icons?i=docker,kubernetes,aws,gcp,azure,jenkins,githubactions,terraform,ansible,nginx,linux,bash&theme=dark&perline=12" alt="DevOps Skills"/>
 </div>
 
 ### 🧰 Tools & Workflow
+
 <div align="center">
   <img src="https://skillicons.dev/icons?i=git,github,gitlab,vscode,vim,postman,vercel,netlify,cloudflare,grafana,prometheus,npm&theme=dark&perline=12" alt="Tools"/>
 </div>
@@ -104,10 +109,10 @@
 
 <div align="center">
 
-| 🧪 Build | 🔍 Test | 📦 Containerize | 🚢 Deploy | 📊 Observe |
-|:---:|:---:|:---:|:---:|:---:|
-| GitHub Actions / Jenkins | Jest / Pytest / Cypress | Docker Multi-stage | K8s + Helm + ArgoCD | Grafana + Prometheus |
-| Zero manual builds | 90%+ coverage gates | Distroless images | Blue-Green / Canary | Alerts before users notice |
+|         🧪 Build         |         🔍 Test         |  📦 Containerize   |      🚢 Deploy      |         📊 Observe         |
+| :----------------------: | :---------------------: | :----------------: | :-----------------: | :------------------------: |
+| GitHub Actions / Jenkins | Jest / Pytest / Cypress | Docker Multi-stage | K8s + Helm + ArgoCD |    Grafana + Prometheus    |
+|    Zero manual builds    |   90%+ coverage gates   | Distroless images  | Blue-Green / Canary | Alerts before users notice |
 
 </div>
 
@@ -116,7 +121,6 @@
 </div>
 
 <div align="center"><img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="100%" height="3" alt="animated rainbow divider"/></div>
-
 
 <div align="center">
   <img src="https://streak-stats.demolab.com?user=bipul-unexpected&theme=radical&hide_border=true&background=0d1117&ring=8E2DE2&fire=00C9FF&currStreakLabel=00C9FF" alt="GitHub Streak"/>
@@ -174,19 +178,16 @@
 
 <div align="center"><img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="100%" height="3" alt="animated rainbow divider"/></div>
 
-
-
-
-
 <div align="center">
   <img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=700&size=25&duration=2000&pause=1500&color=8E2DE2&center=true&vCenter=true&repeat=true&width=600&height=45&lines=%E2%9C%A6+CONNECT+WITH+ME+%E2%9C%A6" alt="Connect With Me"/>
 </div>
 <div align="center"><img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="100%" height="3" alt="animated rainbow divider"/></div>
 <div align="center">
 
-  <a href="mailto:bipulunexpected@gmail.com"><img src="https://img.shields.io/badge/Email-EA4335?style=for-the-badge&logo=gmail&logoColor=white" alt="Email"/></a>
-  <a href="https://linkedin.com/in/YOUR_LINKEDIN"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"/></a>
-  <a href="https://YOUR_PORTFOLIO.com"><img src="https://img.shields.io/badge/Portfolio-8E2DE2?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Portfolio"/></a>
+<a href="mailto:bipulunexpected@gmail.com"><img src="https://img.shields.io/badge/Email-EA4335?style=for-the-badge&logo=gmail&logoColor=white" alt="Email"/></a>
+<a href="https://linkedin.com/in/YOUR_LINKEDIN"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"/></a>
+<a href="https://YOUR_PORTFOLIO.com"><img src="https://img.shields.io/badge/Portfolio-8E2DE2?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Portfolio"/></a>
+
 </div>
 
 <br/>
