@@ -68,7 +68,7 @@
 - 🎨 Obsessed with **micro-interactions, 3D web & motion design**
 - ⚙️ Automating everything: **CI/CD pipelines, GitOps, Infrastructure as Code**
 - 🌱 Currently exploring **WebGPU, AI-powered DX & edge computing**
-- 💬 Ask me about **React, Next.js, Kubernetes, Nodejs , Django or shipping fast without breaking things**
+- 💬 Ask me about **React, Next.js, Kubernetes, Node.js, Django, and shipping fast without breaking things**
 
 <div align="center"><img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="100%" height="3" alt="animated rainbow divider"/></div>
 
@@ -151,7 +151,7 @@
 <div align="center"><img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="100%" height="3" alt="animated rainbow divider"/></div>
 
 <div align="center">
-  <img src="https://readme-typing-svg.demolab.com?SNAKEfont=Orbitron&weight=700&size=25&duration=2000&pause=1500&color=00C9FF&center=true&vCenter=true&repeat=true&width=600&height=45&lines=%E2%9C%A6+CONTRIBUTION++%E2%9C%A6" alt="Contribution Snake"/>
+  <img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=700&size=25&duration=2000&pause=1500&color=00C9FF&center=true&vCenter=true&repeat=true&width=600&height=45&lines=%E2%9C%A6+CONTRIBUTION+SNAKE+%E2%9C%A6" alt="Contribution Snake"/>
 </div>
 
 <div align="center">
