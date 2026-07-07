@@ -46,7 +46,7 @@
       role: ["Full-Stack Engineer", "UI/UX Designer", "DevOps Architect"],
       location: "🌍 Dhaka, Bangladesh",
       frontend: ["React", "Next.js 15", "Angular", "Three.js", "GSAP"],
-      backend: ["Node.js", "Django", "Python", "GraphQL"],
+      backend: ["Node.js", "Django", "Python", "GraphQL ,JavaScript"],
       devops: ["Docker", "Kubernetes", "GitHub Actions", "Terraform"],
       design: ["Figma", "Design Systems", "Motion Design"],
       currentlyBuilding: "⚡ Futuristic web experiences with WebGL & AI",
