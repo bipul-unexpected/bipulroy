@@ -43,7 +43,7 @@ export function InfiniteMarquee({
         {[...items, ...items].map((item, i) => (
           <span
             key={`${item}-${i}`}
-            className="inline-flex items-center rounded-full border border-border bg-card/80 px-4 py-2 text-[11px] sm:text-xs font-semibold tracking-wide text-foreground/80 shadow-sm backdrop-blur-md whitespace-nowrap">
+            className="inline-flex items-center rounded-full liquid-glass px-4 py-2 text-[11px] sm:text-xs font-semibold tracking-wide text-foreground/85 whitespace-nowrap">
             <span className="mr-2 h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_8px_var(--color-primary)]" />
             {item}
           </span>

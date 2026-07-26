@@ -36,10 +36,10 @@ module.exports = {
 
       fontFamily: {
         sans: ["var(--font-body)", "system-ui", "sans-serif"],
-        body: ["var(--font-body)", "system-ui", "sans-serif"],
-        heading: ["var(--font-heading)", "Georgia", "serif"],
+        body: ['"DM Sans"', "var(--font-body)", "system-ui", "sans-serif"],
+        heading: ['"Space Grotesk"', "var(--font-heading)", "system-ui", "sans-serif"],
         mono: ['"JetBrains Mono"', "var(--font-mono)", "monospace"],
-        serif: ['"Playfair Display"', "Georgia", "Times New Roman", "serif"],
+        serif: ['"Space Grotesk"', "system-ui", "sans-serif"],
       },
 
       fontSize: {
@@ -124,6 +124,19 @@ module.exports = {
           text: "var(--color-text)",
           highlight: "var(--color-primary)",
           DEFAULT: "var(--color-primary)",
+        },
+        creativity: {
+          50: "var(--color-creativity-50)",
+          100: "var(--color-creativity-100)",
+          200: "var(--color-creativity-200)",
+          300: "var(--color-creativity-300)",
+          400: "var(--color-creativity-400)",
+          500: "var(--color-creativity-500)",
+          600: "var(--color-creativity-600)",
+          700: "var(--color-creativity-700)",
+          800: "var(--color-creativity-800)",
+          900: "var(--color-creativity-900)",
+          950: "var(--color-creativity-950)",
         },
         royalty: {
           50: "var(--color-royalty-50)",

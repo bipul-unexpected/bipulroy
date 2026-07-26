@@ -38,7 +38,7 @@ export function TerminalCard({ className }: { className?: string }) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.9, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
-        "relative w-full max-w-md overflow-hidden rounded-2xl border border-border bg-card/90 shadow-royalty backdrop-blur-xl",
+        "relative w-full max-w-md overflow-hidden rounded-2xl liquid-glass-strong shadow-md",
         className,
       )}>
       <BorderBeam size={180} duration={9} />

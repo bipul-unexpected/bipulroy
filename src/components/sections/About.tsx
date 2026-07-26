@@ -91,9 +91,11 @@ export function About() {
                     <div className="relative inline-flex items-center justify-center">
                       <div className="absolute inset-0 rounded-[2rem] bg-[radial-gradient(circle_at_25%_20%,rgba(168, 85, 247,0.28),rgba(139,92,246,0.12),transparent_62%)] blur-xl scale-110" />
                       <img
-                        src="/profile.jpg"
-                        alt={`${profile.name} — Full-Stack Web Developer`}
-                        className="relative w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-[1.75rem] object-cover border border-border shadow-[0_30px_80px_-26px_color-mix(in_srgb,var(--color-primary)_45%,transparent)] ring-1 ring-primary/35"
+                        src="/github-avatar.jpg"
+                        alt={`${profile.name} — Full-Stack Web Developer (@bipul-unexpected)`}
+                        className="relative w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-[1.75rem] object-cover border border-primary/20 shadow-[0_30px_80px_-26px_color-mix(in_srgb,var(--color-primary)_40%,transparent)] ring-1 ring-primary/30"
+                        width={320}
+                        height={320}
                       />
                     </div>
                     <p className="mt-5 text-sm text-muted-foreground font-mono">

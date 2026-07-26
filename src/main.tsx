@@ -14,9 +14,9 @@ const posthogHost = import.meta.env.VITE_PUBLIC_POSTHOG_HOST as
   | string
   | undefined;
 
-/** Apply theme class before React paints — avoids BlinkUI / FOUC fight */
+/** Default: Creativity light mode (SeeUI). Persist user choice if set. */
 const stored = localStorage.getItem("bipul-theme");
-const startDark = stored !== "light";
+const startDark = stored === "dark";
 document.documentElement.classList.add("theme-midnight");
 document.documentElement.classList.remove(startDark ? "light" : "dark");
 document.documentElement.classList.add(startDark ? "dark" : "light");
@@ -24,6 +24,7 @@ document.documentElement.setAttribute(
   "data-theme",
   startDark ? "dark" : "light",
 );
+if (!stored) localStorage.setItem("bipul-theme", "light");
 
 async function bootstrap() {
   const root = document.getElementById("root");

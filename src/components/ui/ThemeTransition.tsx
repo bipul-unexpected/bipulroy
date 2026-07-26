@@ -32,8 +32,8 @@ export function ThemeTransition({
       ? Math.hypot(window.innerWidth, window.innerHeight) * 2.2
       : 3000;
 
-  const fill = ripple.toDark ? "#1A0B2E" : "#FAF5FF";
-  const glow = ripple.toDark ? "#A855F7" : "#7C3AED";
+  const fill = ripple.toDark ? "#1E0549" : "#FAF5FF";
+  const glow = "#7C3AED";
 
   return (
     <AnimatePresence>

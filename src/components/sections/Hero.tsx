@@ -241,7 +241,7 @@ export function Hero() {
             className="flex flex-col items-start text-left">
             <motion.div
               variants={itemUp}
-              className="mb-7 inline-flex flex-wrap items-center gap-2.5 rounded-full border border-border/80 bg-card/70 px-4 py-2 shadow-sm backdrop-blur-xl">
+              className="mb-7 inline-flex flex-wrap items-center gap-2.5 rounded-full liquid-glass px-4 py-2">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(52,211,153,0.7)]" />
@@ -358,7 +358,7 @@ export function Hero() {
                 data-tally-open={tallyFormId}
                 data-tally-layout="modal"
                 data-tally-width="600"
-                className="group inline-flex items-center justify-center gap-2 rounded-full border border-border bg-card/90 px-8 py-3.5 text-sm font-bold text-foreground shadow-sm backdrop-blur-sm transition-colors hover:border-primary/40 hover:bg-secondary cursor-pointer"
+                className="group liquid-glass inline-flex items-center justify-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-foreground transition-colors hover:border-primary/40 cursor-pointer"
                 style={{ fontFamily: "var(--font-heading)" }}>
                 <FiSend className="h-4 w-4 text-primary transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                 Let&apos;s build

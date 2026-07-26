@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Navbar } from "./components/layout/Navbar";
-import { CustomCursor } from "./components/ui/CustomCursor";
 import { SectionCinematicReveal } from "./components/ui/SectionCinematicReveal";
 import { ThemeTransition, type ThemeRipple } from "./components/ui/ThemeTransition";
+import SplashCursor from "./components/ui/SplashCursor";
+import { LightingCursor } from "./components/ui/LightingCursor";
 import { useMediaQuery } from "react-responsive";
 
 import { Hero } from "./components/sections/Hero";
@@ -35,8 +36,9 @@ function applyTheme(dark: boolean) {
 }
 
 function readStoredDark(): boolean {
-  if (typeof window === "undefined") return true;
-  return localStorage.getItem(THEME_KEY) !== "light";
+  if (typeof window === "undefined") return false;
+  // Creativity light is default; only dark if user explicitly chose it
+  return localStorage.getItem(THEME_KEY) === "dark";
 }
 
 function App() {
@@ -128,7 +130,20 @@ function App() {
 
   return (
     <div className="min-h-screen bg-background text-foreground relative overflow-x-hidden transition-colors duration-300">
-      {isDesktop && <CustomCursor />}
+      {/* Fluid mouse trail (from copy repo) + soft lighting glow */}
+      {isDesktop && (
+        <>
+          <SplashCursor
+            DENSITY_DISSIPATION={2.8}
+            VELOCITY_DISSIPATION={1.8}
+            SPLAT_RADIUS={0.18}
+            SPLAT_FORCE={5200}
+            COLOR_UPDATE_SPEED={8}
+            TRANSPARENT
+          />
+          <LightingCursor />
+        </>
+      )}
 
       <ThemeTransition
         ripple={ripple}
@@ -141,8 +156,8 @@ function App() {
         className="fixed inset-0 z-0 pointer-events-none transition-opacity duration-700"
         style={{
           background: isDark
-            ? "radial-gradient(120% 70% at 50% 0%, rgba(168,85,247,0.12) 0%, rgba(168,85,247,0.04) 28%, rgba(26,11,46,0) 72%)"
-            : "radial-gradient(120% 70% at 50% 0%, rgba(124,58,237,0.1) 0%, rgba(124,58,237,0.04) 32%, rgba(250,245,255,0) 72%)",
+            ? "radial-gradient(120% 70% at 50% 0%, rgba(124,58,237,0.14) 0%, rgba(124,58,237,0.04) 28%, transparent 72%)"
+            : "radial-gradient(120% 70% at 50% 0%, rgba(124,58,237,0.12) 0%, rgba(183,150,230,0.08) 35%, rgba(250,245,255,0) 72%)",
         }}
       />
       <div
@@ -150,8 +165,8 @@ function App() {
         className="fixed inset-0 z-0 pointer-events-none transition-opacity duration-700"
         style={{
           background: isDark
-            ? "linear-gradient(180deg, rgba(26,11,46,0.35) 0%, rgba(26,11,46,0) 30%, rgba(16,6,30,0.55) 100%)"
-            : "linear-gradient(180deg, rgba(250,245,255,0.2) 0%, rgba(250,245,255,0) 35%, rgba(228,220,240,0.45) 100%)",
+            ? "linear-gradient(180deg, rgba(30,5,73,0.4) 0%, transparent 40%, rgba(30,5,73,0.5) 100%)"
+            : "linear-gradient(180deg, rgba(250,245,255,0.5) 0%, transparent 40%, rgba(228,220,240,0.55) 100%)",
         }}
       />
       <Navbar

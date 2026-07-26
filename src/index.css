@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800;900&family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap");
 
 @import "@blinkdotnew/ui/styles";
 
@@ -7,10 +7,10 @@
 @tailwind utilities;
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   SeeUI · Royalty / Prestige design system
-   Emotion: royalty · Mode: dark
-   Palette: bg #1A0B2E · text #FAF5FF · accent #A855F7
-   Type: Playfair Display (heading) · Lato (body)
+   SeeUI · Creativity / Bold · LIGHT (default)
+   bg #FAF5FF · text #5B21B6 · accent #7C3AED
+   Type: Space Grotesk (heading) · DM Sans (body)
+   Surface language: liquid glass
    ═══════════════════════════════════════════════════════════════════════════ */
 
 @layer base {
@@ -31,7 +31,7 @@
   h6 {
     font-family: var(--font-heading);
     font-weight: 700;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.025em;
   }
   code,
   pre,
@@ -40,75 +40,81 @@
   }
 }
 
-/* HSL tokens + exact SeeUI CSS design tokens */
+/* Default = Creativity light */
 :root {
-  /* ── SeeUI exact tokens (paste-compatible) ── */
-  --color-bg: #1a0b2e;
-  --color-text: #faf5ff;
-  --color-primary: #a855f7;
-  --color-highlight: #a855f7;
+  --color-bg: #faf5ff;
+  --color-text: #5b21b6;
+  --color-primary: #7c3aed;
+  --color-highlight: #7c3aed;
 
-  --color-royalty-50: #f4eff8;
-  --color-royalty-100: #eae0f3;
-  --color-royalty-200: #dbc7ef;
-  --color-royalty-300: #caa4ed;
-  --color-royalty-400: #b87df0;
-  --color-royalty-500: #a855f7;
-  --color-royalty-600: #8f22f7;
-  --color-royalty-700: #7605e1;
-  --color-royalty-800: #5c02b1;
-  --color-royalty-900: #41017e;
-  --color-royalty-950: #2a0250;
+  --color-creativity-50: #f1eef7;
+  --color-creativity-100: #e4dcf0;
+  --color-creativity-200: #cfbfea;
+  --color-creativity-300: #b396e6;
+  --color-creativity-400: #9768e7;
+  --color-creativity-500: #7c3aed;
+  --color-creativity-600: #6112e8;
+  --color-creativity-700: #4f0dc1;
+  --color-creativity-800: #3e0899;
+  --color-creativity-900: #2d066f;
+  --color-creativity-950: #1e0549;
 
-  /* ── App HSL tokens (shadcn / Tailwind semantic) ── */
-  /* #1A0B2E */
-  --background: 268 61% 11%;
+  /* Keep royalty aliases mapped for existing classnames */
+  --color-royalty-50: var(--color-creativity-50);
+  --color-royalty-100: var(--color-creativity-100);
+  --color-royalty-200: var(--color-creativity-200);
+  --color-royalty-300: var(--color-creativity-300);
+  --color-royalty-400: var(--color-creativity-400);
+  --color-royalty-500: var(--color-creativity-500);
+  --color-royalty-600: var(--color-creativity-600);
+  --color-royalty-700: var(--color-creativity-700);
+  --color-royalty-800: var(--color-creativity-800);
+  --color-royalty-900: var(--color-creativity-900);
+  --color-royalty-950: var(--color-creativity-950);
+
   /* #FAF5FF */
-  --foreground: 270 100% 98%;
-  /* elevated purple surface */
-  --card: 268 48% 15%;
-  --card-foreground: 270 100% 98%;
-  --popover: 268 48% 14%;
-  --popover-foreground: 270 100% 98%;
-  /* #A855F7 */
-  --primary: 271 91% 65%;
-  /* Near-white for large CTAs; solid small buttons use .btn-primary (AA) */
-  --primary-foreground: 270 100% 98%;
-  --secondary: 268 40% 18%;
-  --secondary-foreground: 270 60% 96%;
-  --muted: 268 32% 16%;
-  --muted-foreground: 270 25% 78%;
-  /* highlight = accent */
-  --accent: 271 91% 65%;
-  --accent-foreground: 270 100% 98%;
+  --background: 270 100% 98%;
+  /* #5B21B6 */
+  --foreground: 263 70% 42%;
+  --card: 0 0% 100%;
+  --card-foreground: 263 70% 42%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 263 70% 42%;
+  /* #7C3AED */
+  --primary: 263 70% 58%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 270 45% 94%;
+  --secondary-foreground: 263 55% 35%;
+  --muted: 270 40% 95%;
+  --muted-foreground: 263 30% 42%;
+  --accent: 263 70% 58%;
+  --accent-foreground: 0 0% 100%;
   --destructive: 0 72% 51%;
   --destructive-foreground: 0 0% 100%;
-  --border: 270 28% 26%;
-  --input: 270 28% 26%;
-  --ring: 271 91% 65%;
+  --border: 270 30% 88%;
+  --input: 270 30% 88%;
+  --ring: 263 70% 58%;
 
-  --chart-1: 271 91% 65%;
-  --chart-2: 280 80% 58%;
-  --chart-3: 290 70% 70%;
-  --chart-4: 255 70% 68%;
-  --chart-5: 320 65% 62%;
+  --chart-1: 263 70% 58%;
+  --chart-2: 280 65% 55%;
+  --chart-3: 250 60% 55%;
+  --chart-4: 300 50% 55%;
+  --chart-5: 320 55% 50%;
 
-  --sidebar: 268 61% 9%;
-  --sidebar-foreground: 270 100% 98%;
-  --sidebar-primary: 271 91% 65%;
-  --sidebar-primary-foreground: 270 100% 98%;
-  --sidebar-accent: 268 40% 18%;
-  --sidebar-accent-foreground: 270 100% 98%;
-  --sidebar-border: 270 28% 24%;
-  --sidebar-ring: 271 91% 65%;
+  --sidebar: 270 60% 97%;
+  --sidebar-foreground: 263 70% 42%;
+  --sidebar-primary: 263 70% 58%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 270 45% 94%;
+  --sidebar-accent-foreground: 263 70% 42%;
+  --sidebar-border: 270 30% 88%;
+  --sidebar-ring: 263 70% 58%;
 
-  /* Typography — SeeUI emotion pairing */
-  --font-heading: "Playfair Display", Georgia, "Times New Roman", serif;
-  --font-body: "Lato", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-heading: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-sans: var(--font-body);
   --font-mono: "JetBrains Mono", monospace;
 
-  /* Hex aliases for components / canvas */
   --royalty-bg: var(--color-bg);
   --royalty-text: var(--color-text);
   --royalty-accent: var(--color-primary);
@@ -124,35 +130,31 @@
   --royalty-900: var(--color-royalty-900);
   --royalty-950: var(--color-royalty-950);
 
-  --shadow-2xs: 0px 4px 8px -1px hsl(270 80% 8% / 0.2);
-  --shadow-xs: 0px 4px 8px -1px hsl(270 80% 8% / 0.25);
   --shadow-sm:
-    0px 4px 12px -2px hsl(270 80% 6% / 0.35),
-    0px 0 20px -8px hsl(271 91% 65% / 0.12);
-  --shadow:
-    0px 8px 24px -6px hsl(270 80% 6% / 0.45),
-    0px 0 28px -10px hsl(271 91% 65% / 0.15);
+    0 4px 16px -4px hsl(263 70% 40% / 0.08),
+    0 0 0 1px hsl(263 70% 58% / 0.04);
   --shadow-md:
-    0px 12px 32px -8px hsl(270 80% 5% / 0.5),
-    0px 0 36px -12px hsl(271 91% 65% / 0.18);
+    0 12px 32px -8px hsl(263 70% 40% / 0.12),
+    0 0 24px -10px hsl(263 70% 58% / 0.1);
   --shadow-lg:
-    0px 16px 48px -10px hsl(270 80% 4% / 0.55),
-    0px 0 48px -14px hsl(271 91% 65% / 0.22);
+    0 20px 48px -12px hsl(263 70% 40% / 0.14),
+    0 0 32px -12px hsl(263 70% 58% / 0.12);
   --shadow-xl:
-    0px 24px 64px -14px hsl(270 80% 4% / 0.6),
-    0px 0 60px -16px hsl(271 91% 65% / 0.28);
-  --shadow-2xl: 0px 32px 80px -16px hsl(270 80% 3% / 0.7);
+    0 28px 64px -16px hsl(263 70% 40% / 0.16);
 
   --tracking-normal: -0.01em;
   --spacing: 0.25rem;
-  --radius: 0.85rem;
+  --radius: 1rem;
+
+  /* Liquid glass tokens */
+  --glass-bg: rgba(255, 255, 255, 0.45);
+  --glass-bg-strong: rgba(255, 255, 255, 0.62);
+  --glass-border: rgba(124, 58, 237, 0.14);
+  --glass-highlight: rgba(255, 255, 255, 0.72);
+  --glass-blur: 22px;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   LIGHT · Royalty / Prestige (SeeUI light export)
-   bg #FAF5FF · text #5B21B6 · accent #7C3AED
-   whiteOnAccent 5.7:1 AA pass
-   ═══════════════════════════════════════════════════════════════════════════ */
+/* Light creativity (explicit) — same as :root default */
 :root.light,
 html.light,
 .light,
@@ -161,7 +163,6 @@ html.light,
 .theme-midnight.light,
 .theme-minimal.light,
 [data-theme="light"] {
-  /* SeeUI exact light tokens */
   --color-bg: #faf5ff;
   --color-text: #5b21b6;
   --color-primary: #7c3aed;
@@ -178,6 +179,11 @@ html.light,
   --color-royalty-800: #3e0899;
   --color-royalty-900: #2d066f;
   --color-royalty-950: #1e0549;
+
+  --glass-bg: rgba(255, 255, 255, 0.45);
+  --glass-bg-strong: rgba(255, 255, 255, 0.62);
+  --glass-border: rgba(124, 58, 237, 0.14);
+  --glass-highlight: rgba(255, 255, 255, 0.72);
 
   /* #FAF5FF */
   --background: 270 100% 98%;
@@ -337,18 +343,46 @@ html.dark,
   font-family: var(--font-body);
 }
 
-.glass-panel {
-  background: hsl(var(--card) / 0.72);
-  backdrop-filter: blur(20px) saturate(160%);
-  border: 1px solid hsl(var(--border) / 0.7);
-  box-shadow: 0 0 40px -16px hsl(var(--primary) / 0.16);
+/* Liquid glass surfaces — premium translucent UI */
+.glass-panel,
+.liquid-glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    0 8px 32px -12px hsl(263 70% 40% / 0.12),
+    inset 0 1px 0 0 var(--glass-highlight),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
-.light .glass-panel,
-html.light .glass-panel {
-  background: hsl(0 0% 100% / 0.82);
-  border: 1px solid hsl(var(--border) / 0.95);
-  box-shadow: 0 8px 32px -12px hsl(263 70% 40% / 0.1);
+.liquid-glass-strong {
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    0 12px 40px -14px hsl(263 70% 40% / 0.14),
+    inset 0 1px 0 0 var(--glass-highlight);
+}
+
+.liquid-glass-nav {
+  background: color-mix(in srgb, var(--glass-bg-strong) 88%, transparent);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    0 8px 28px -10px hsl(263 70% 40% / 0.1),
+    inset 0 1px 0 0 var(--glass-highlight);
+}
+
+.dark .glass-panel,
+.dark .liquid-glass,
+html.dark .glass-panel {
+  --glass-bg: rgba(30, 5, 73, 0.45);
+  --glass-bg-strong: rgba(45, 6, 111, 0.55);
+  --glass-border: rgba(183, 150, 230, 0.18);
+  --glass-highlight: rgba(255, 255, 255, 0.08);
 }
 
 .text-gradient-primary {
@@ -437,9 +471,9 @@ body {
   color: var(--color-text);
 }
 
-/* Primary button — dark uses 700 (AA); light uses 500 (whiteOnAccent 5.7:1 AA) */
+/* Primary buttons — white on #7C3AED is 5.7:1 AA */
 .btn-primary {
-  background: var(--color-royalty-700);
+  background: var(--color-primary);
   color: #ffffff;
   font-family: var(--font-heading);
   font-weight: 700;
@@ -449,12 +483,8 @@ body {
     box-shadow 200ms ease,
     transform 200ms ease;
 }
-html.light .btn-primary,
-.light .btn-primary {
-  background: var(--color-primary);
-}
 .btn-primary:hover {
-  background: var(--color-royalty-600);
+  background: var(--color-creativity-600);
   box-shadow: 0 0 32px -6px color-mix(in srgb, var(--color-primary) 45%, transparent);
 }
 .btn-primary:active {
@@ -464,9 +494,9 @@ html.light .btn-primary,
 .btn-primary-glow {
   background: linear-gradient(
     135deg,
-    var(--color-royalty-400),
-    var(--color-royalty-500),
-    var(--color-royalty-700)
+    var(--color-creativity-400),
+    var(--color-primary),
+    var(--color-creativity-700)
   );
   color: #ffffff;
   font-weight: 700;

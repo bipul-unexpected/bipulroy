@@ -49,10 +49,8 @@ export function Navbar({ activeSection, isScrolled, isDark = true, onToggleTheme
           <nav
             onMouseEnter={() => setIsNavHovered(true)}
             onMouseLeave={() => setIsNavHovered(false)}
-            className={`relative flex items-center justify-between gap-2 w-[calc(100vw-2rem)] max-w-5xl px-3 md:px-5 py-2 md:py-2.5 rounded-2xl md:rounded-full border transition-[background,box-shadow,border-color] duration-300 ${
-              isScrolled || isNavHovered
-                ? 'bg-card/95 backdrop-blur-xl border-border shadow-[0_8px_32px_-8px_rgba(0,0,0,0.2)]'
-                : 'bg-card/70 backdrop-blur-md border-border/70'
+            className={`relative flex items-center justify-between gap-2 w-[calc(100vw-2rem)] max-w-5xl px-3 md:px-5 py-2 md:py-2.5 rounded-2xl md:rounded-full liquid-glass-nav transition-[background,box-shadow,border-color] duration-300 ${
+              isScrolled || isNavHovered ? 'shadow-md' : ''
             }`}
           >
           <div className={`absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent pointer-events-none transition-opacity duration-500 ${isNavHovered ? 'opacity-100' : 'opacity-0'}`} />
@@ -100,7 +98,7 @@ export function Navbar({ activeSection, isScrolled, isDark = true, onToggleTheme
 
           {/* Center: Links — always available on desktop (no hide-on-scroll) */}
           <div 
-            className="hidden lg:flex items-center justify-center gap-0.5 bg-secondary/50 border border-border rounded-full py-1 px-1 shadow-sm backdrop-blur-xl min-w-max shrink-0 mx-2"
+            className="hidden lg:flex items-center justify-center gap-0.5 liquid-glass rounded-full py-1 px-1 min-w-max shrink-0 mx-2"
           >
             {navLinks.map((link) => (
                 <a
@@ -185,9 +183,21 @@ export function Navbar({ activeSection, isScrolled, isDark = true, onToggleTheme
               HIRE ME
             </a>
 
-            <div className="w-10 h-10 rounded-full border border-border overflow-hidden ml-1 hidden md:block ring-1 ring-primary/20 shrink-0">
-              <img src="/profile.jpg" alt="Bipul Roy" className="w-full h-full object-cover" />
-            </div>
+            <a
+              href="https://github.com/bipul-unexpected"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 rounded-full border border-primary/25 overflow-hidden ml-1 hidden md:block ring-2 ring-primary/15 shrink-0 hover:ring-primary/40 transition-all"
+              aria-label="GitHub profile"
+            >
+              <img
+                src="/github-avatar.jpg"
+                alt="Bipul Roy — GitHub"
+                className="w-full h-full object-cover"
+                width={40}
+                height={40}
+              />
+            </a>
 
             <button
               type="button"
