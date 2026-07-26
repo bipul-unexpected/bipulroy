@@ -420,7 +420,7 @@ export function Hero() {
                       boxShadow:
                         "0 16px 40px -12px color-mix(in srgb, var(--color-primary) 35%, transparent)",
                     }}
-                    className="rounded-2xl border border-border bg-card/85 p-3.5 text-center backdrop-blur-md shadow-sm cursor-default">
+                    className="rounded-2xl liquid-glass p-3.5 text-center cursor-default">
                     <motion.div
                       animate={{ y: [0, -3, 0] }}
                       transition={{

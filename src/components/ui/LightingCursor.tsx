@@ -36,9 +36,8 @@ export function LightingCursor() {
         x: springX,
         y: springY,
         background:
-          "radial-gradient(circle, rgba(124, 58, 237, 0.22) 0%, rgba(183, 150, 230, 0.1) 40%, transparent 70%)",
-        filter: "blur(28px)",
-        mixBlendMode: "multiply",
+          "radial-gradient(circle, rgba(124, 58, 237, 0.18) 0%, rgba(183, 150, 230, 0.08) 42%, transparent 70%)",
+        filter: "blur(32px)",
       }}
     />
   );

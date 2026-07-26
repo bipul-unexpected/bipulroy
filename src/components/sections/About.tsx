@@ -44,7 +44,7 @@ export function About() {
               </div>
               <h2
                 className="section-title"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                style={{ fontFamily: "var(--font-heading)" }}>
                 <TextAnimate
                   animation="blurInUp"
                   by="word"

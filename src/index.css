@@ -246,42 +246,60 @@ html.dark,
 .theme-midnight.dark,
 .theme-minimal.dark,
 [data-theme="dark"] {
-  --color-bg: #1a0b2e;
+  --color-bg: #1e0549;
   --color-text: #faf5ff;
-  --color-primary: #a855f7;
-  --color-highlight: #a855f7;
+  --color-primary: #7c3aed;
+  --color-highlight: #9768e7;
 
-  --color-royalty-50: #f4eff8;
-  --color-royalty-100: #eae0f3;
-  --color-royalty-200: #dbc7ef;
-  --color-royalty-300: #caa4ed;
-  --color-royalty-400: #b87df0;
-  --color-royalty-500: #a855f7;
-  --color-royalty-600: #8f22f7;
-  --color-royalty-700: #7605e1;
-  --color-royalty-800: #5c02b1;
-  --color-royalty-900: #41017e;
-  --color-royalty-950: #2a0250;
+  --color-creativity-50: #f1eef7;
+  --color-creativity-100: #e4dcf0;
+  --color-creativity-200: #cfbfea;
+  --color-creativity-300: #b396e6;
+  --color-creativity-400: #9768e7;
+  --color-creativity-500: #7c3aed;
+  --color-creativity-600: #6112e8;
+  --color-creativity-700: #4f0dc1;
+  --color-creativity-800: #3e0899;
+  --color-creativity-900: #2d066f;
+  --color-creativity-950: #1e0549;
 
-  --background: 268 61% 11%;
+  --color-royalty-50: var(--color-creativity-50);
+  --color-royalty-100: var(--color-creativity-100);
+  --color-royalty-200: var(--color-creativity-200);
+  --color-royalty-300: var(--color-creativity-300);
+  --color-royalty-400: var(--color-creativity-400);
+  --color-royalty-500: var(--color-creativity-500);
+  --color-royalty-600: var(--color-creativity-600);
+  --color-royalty-700: var(--color-creativity-700);
+  --color-royalty-800: var(--color-creativity-800);
+  --color-royalty-900: var(--color-creativity-900);
+  --color-royalty-950: var(--color-creativity-950);
+
+  --background: 268 85% 16%;
   --foreground: 270 100% 98%;
-  --card: 268 48% 15%;
+  --card: 268 55% 18%;
   --card-foreground: 270 100% 98%;
-  --popover: 268 48% 14%;
+  --popover: 268 55% 16%;
   --popover-foreground: 270 100% 98%;
-  --primary: 271 91% 65%;
-  --primary-foreground: 270 100% 98%;
-  --secondary: 268 40% 18%;
+  --primary: 263 70% 58%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 268 40% 22%;
   --secondary-foreground: 270 60% 96%;
-  --muted: 268 32% 16%;
+  --muted: 268 35% 20%;
   --muted-foreground: 270 25% 78%;
-  --accent: 271 91% 65%;
-  --accent-foreground: 270 100% 98%;
+  --accent: 263 70% 58%;
+  --accent-foreground: 0 0% 100%;
   --destructive: 0 72% 51%;
   --destructive-foreground: 0 0% 100%;
-  --border: 270 28% 26%;
-  --input: 270 28% 26%;
-  --ring: 271 91% 65%;
+  --border: 270 28% 28%;
+  --input: 270 28% 28%;
+  --ring: 263 70% 58%;
+
+  --glass-bg: rgba(45, 6, 111, 0.42);
+  --glass-bg-strong: rgba(79, 13, 193, 0.38);
+  --glass-border: rgba(183, 150, 230, 0.2);
+  --glass-highlight: rgba(255, 255, 255, 0.1);
+  --glass-blur: 22px;
 }
 
 /* ── Custom Utilities ──────────────────────────────────────────────────────── */

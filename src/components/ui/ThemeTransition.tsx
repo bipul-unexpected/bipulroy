@@ -32,8 +32,9 @@ export function ThemeTransition({
       ? Math.hypot(window.innerWidth, window.innerHeight) * 2.2
       : 3000;
 
+  // Creativity / Bold palette
   const fill = ripple.toDark ? "#1E0549" : "#FAF5FF";
-  const glow = "#7C3AED";
+  const glow = ripple.toDark ? "#9768E7" : "#7C3AED";
 
   return (
     <AnimatePresence>

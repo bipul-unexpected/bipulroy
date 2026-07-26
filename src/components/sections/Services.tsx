@@ -61,7 +61,7 @@ export function Services() {
               </div>
               <h2
                 className="section-title"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                style={{ fontFamily: "var(--font-heading)" }}>
                 <TextAnimate
                   animation="blurInUp"
                   by="word"
@@ -100,7 +100,7 @@ export function Services() {
                     </div>
                     <h3
                       className="card-title"
-                      style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                      style={{ fontFamily: "var(--font-heading)" }}>
                       <TextAnimate
                         animation="blurInUp"
                         by="word"

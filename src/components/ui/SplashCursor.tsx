@@ -1555,11 +1555,13 @@ export default function Cursor({
   ]);
 
   return (
-    <div className="fixed top-0 left-0 z-[5] pointer-events-none w-full h-full opacity-90 mix-blend-multiply">
+    <div
+      className="fixed top-0 left-0 z-[4] pointer-events-none h-full w-full"
+      style={{ opacity: 0.55 }}>
       <canvas
         ref={canvasRef}
         id="fluid"
-        className="w-screen h-screen block"
+        className="block h-screen w-screen"
         aria-hidden
       />
     </div>

@@ -79,7 +79,7 @@ export function Stats() {
               <PremiumDraggable>
                 <div
                   className="text-4xl md:text-5xl font-bold text-foreground leading-none tracking-[0.01em]"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                  style={{ fontFamily: "var(--font-heading)" }}>
                   <AnimatedCounter value={stat.value} suffix={stat.suffix} />
                 </div>
                 <p className="mt-3 text-sm text-muted-foreground leading-relaxed tracking-[0.01em]">

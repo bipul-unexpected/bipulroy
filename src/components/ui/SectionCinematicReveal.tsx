@@ -1,3 +1,7 @@
+/**
+ * Section reveal — clean fade/scale only (no Y drift so nav stays accurate).
+ * Tuned for Creativity light liquid-glass portfolio.
+ */
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   motion,
@@ -23,18 +27,6 @@ interface SectionCinematicRevealProps {
   className?: string;
 }
 
-// No scroll-linked Y movement — it fights nav scrollIntoView (target keeps moving).
-// Reveal uses opacity + scale only for a stable layout box.
-const yDriftMap: Record<RevealTone, [number, number]> = {
-  lift: [0, 0],
-  "glide-left": [0, 0],
-  "glide-right": [0, 0],
-  curtain: [0, 0],
-  depth: [0, 0],
-  float: [0, 0],
-  vault: [0, 0],
-};
-
 export function SectionCinematicReveal({
   children,
   tone = "lift",
@@ -55,41 +47,55 @@ export function SectionCinematicReveal({
   const usePerformanceMode = prefersReducedMotion || isCoarsePointer;
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start 94%", "end 8%"],
+    offset: ["start 92%", "end 12%"],
   });
 
   const progress = useSpring(scrollYProgress, {
-    stiffness: 160,
-    damping: 34,
-    mass: 0.35,
+    stiffness: 140,
+    damping: 28,
+    mass: 0.4,
   });
 
-  const y = useTransform(progress, [0, 1], yDriftMap[tone]);
-  const opacity = useTransform(progress, [0, 0.2, 1], [0.52, 1, 1]);
-  const scale = useTransform(progress, [0, 0.25, 1], [0.98, 1, 1]);
-  
-  const glowOpacity = useTransform(progress, [0, 0.28, 1], usePerformanceMode ? [0, 0, 0] : [0, 0.45, 0.12]);
-  const lineOpacity = useTransform(progress, [0, 0.2, 1], usePerformanceMode ? [0, 0, 0] : [0, 0.6, 0.12]);
+  // Keep sections fully readable — start near opaque so light theme never looks broken
+  const opacity = useTransform(
+    progress,
+    [0, 0.15, 1],
+    usePerformanceMode ? [1, 1, 1] : [0.88, 1, 1],
+  );
+  const scale = useTransform(
+    progress,
+    [0, 0.2, 1],
+    usePerformanceMode ? [1, 1, 1] : [0.992, 1, 1],
+  );
+  const glowOpacity = useTransform(
+    progress,
+    [0, 0.25, 1],
+    usePerformanceMode ? [0, 0, 0] : [0, 0.35, 0.08],
+  );
+  const lineOpacity = useTransform(
+    progress,
+    [0, 0.2, 1],
+    usePerformanceMode ? [0, 0, 0] : [0, 0.55, 0.1],
+  );
 
-  const animatedPanelStyle = {
-    scale,
-    y,
-    opacity
-  };
+  // silence unused tone warning — reserved for future variants
+  void tone;
 
   return (
-    <motion.div
-      ref={ref}
-      className={cn("relative", className)}>
-      <motion.div style={animatedPanelStyle} className="relative">
+    <motion.div ref={ref} className={cn("relative", className)}>
+      <motion.div style={{ scale, opacity }} className="relative">
         <motion.div
           aria-hidden
-          className="pointer-events-none absolute inset-x-10 -top-8 h-20 rounded-full bg-[radial-gradient(circle,rgba(168, 85, 247,0.12)_0%,rgba(168, 85, 247,0)_72%)] blur-2xl"
-          style={{ opacity: glowOpacity }}
+          className="pointer-events-none absolute inset-x-10 -top-8 h-20 rounded-full blur-2xl"
+          style={{
+            opacity: glowOpacity,
+            background:
+              "radial-gradient(circle, color-mix(in srgb, var(--color-primary) 16%, transparent) 0%, transparent 72%)",
+          }}
         />
         <motion.div
           aria-hidden
-          className="pointer-events-none absolute inset-x-8 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/35 to-transparent"
+          className="pointer-events-none absolute inset-x-8 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"
           style={{ opacity: lineOpacity }}
         />
         {children}

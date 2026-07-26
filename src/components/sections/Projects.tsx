@@ -270,7 +270,7 @@ export function Projects() {
             <h2
               className="section-title-display"
               style={{
-                fontFamily: "'Playfair Display', Georgia, serif",
+                fontFamily: "var(--font-heading)",
                 letterSpacing: "0.01em",
               }}>
               <TextAnimate

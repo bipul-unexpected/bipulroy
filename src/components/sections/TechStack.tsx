@@ -52,7 +52,7 @@ export function TechStack() {
               </div>
               <h2
                 className="section-title"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                style={{ fontFamily: "var(--font-heading)" }}>
                 <TextAnimate
                   animation="blurInUp"
                   by="word"
@@ -81,7 +81,7 @@ export function TechStack() {
               <motion.div key={cat.label} variants={fadeUp}>
                 <h3
                   className="text-sm font-semibold text-foreground uppercase tracking-wider mb-4"
-                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+                  style={{ fontFamily: "var(--font-heading)" }}>
                   <TextAnimate
                     animation="blurInUp"
                     by="word"

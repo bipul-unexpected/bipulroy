@@ -239,10 +239,10 @@ export function Navbar({ activeSection, isScrolled, isDark = true, onToggleTheme
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className="fixed inset-0 z-[45] lg:hidden flex flex-col items-center justify-center pointer-events-auto"
           >
-            {/* Super premium frosted glass backdrop */}
+            {/* Liquid glass mobile backdrop */}
             <motion.div 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.6 }}
-              className="absolute inset-0 bg-background/90 backdrop-blur-3xl saturate-150"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}
+              className="absolute inset-0 bg-[#FAF5FF]/75 dark:bg-[#1E0549]/80 backdrop-blur-3xl saturate-150"
             />
             
             {/* Cinematic background light pools */}
