@@ -74,7 +74,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         }}
         whileHover={{
           y: -4,
-          boxShadow: "0 16px 48px -8px hsl(217 64% 49% / 0.18)",
+          boxShadow: "0 16px 48px -8px hsl(271 91% 65% / 0.18)",
         }}
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
         style={{ transformStyle: "preserve-3d" }}>
@@ -108,7 +108,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
             </TextAnimate>
           </h3>
           <p className="text-sm text-primary font-medium leading-relaxed tracking-[0.01em]">
-            <GlowingText color="blue" intensity="medium" animateGlow>
+            <GlowingText color="royalty" intensity="medium" animateGlow>
               <TextAnimate
                 animation="blurInUp"
                 by="word"
@@ -270,7 +270,7 @@ export function Projects() {
             <h2
               className="section-title-display"
               style={{
-                fontFamily: "'Space Grotesk', sans-serif",
+                fontFamily: "'Playfair Display', Georgia, serif",
                 letterSpacing: "0.01em",
               }}>
               <TextAnimate
@@ -278,16 +278,16 @@ export function Projects() {
                 by="word"
                 duration={1.2}
                 staggerDelay={0.08}>
-                Projects that make an
+                Systems that feel
               </TextAnimate>{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2e67ce] via-[#5f8fdf] to-[#a4bce8]">
+              <span className="text-gradient-theme">
                 <TextAnimate
                   animation="blurInUp"
                   by="word"
                   duration={1.2}
                   delay={0.1}
                   staggerDelay={0.08}>
-                  impact
+                  inevitable
                 </TextAnimate>
               </span>
             </h2>
@@ -298,8 +298,9 @@ export function Projects() {
                 duration={1.2}
                 delay={0.2}
                 staggerDelay={0.04}>
-                Each project represents a unique challenge solved with
-                thoughtful architecture and attention to detail.
+                Full-stack products spanning React, Next.js, Django, Node, and
+                Kubernetes — designed to convert, built to scale, automated to
+                ship.
               </TextAnimate>
             </p>
           </PremiumDraggable>

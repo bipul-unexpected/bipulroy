@@ -23,14 +23,16 @@ interface SectionCinematicRevealProps {
   className?: string;
 }
 
+// No scroll-linked Y movement — it fights nav scrollIntoView (target keeps moving).
+// Reveal uses opacity + scale only for a stable layout box.
 const yDriftMap: Record<RevealTone, [number, number]> = {
-  lift: [84, -14],
-  "glide-left": [74, -12],
-  "glide-right": [74, -12],
-  curtain: [64, -8],
-  depth: [90, -20],
-  float: [96, -24],
-  vault: [72, -18],
+  lift: [0, 0],
+  "glide-left": [0, 0],
+  "glide-right": [0, 0],
+  curtain: [0, 0],
+  depth: [0, 0],
+  float: [0, 0],
+  vault: [0, 0],
 };
 
 export function SectionCinematicReveal({
@@ -82,7 +84,7 @@ export function SectionCinematicReveal({
       <motion.div style={animatedPanelStyle} className="relative">
         <motion.div
           aria-hidden
-          className="pointer-events-none absolute inset-x-10 -top-8 h-20 rounded-full bg-[radial-gradient(circle,rgba(46,103,206,0.12)_0%,rgba(46,103,206,0)_72%)] blur-2xl"
+          className="pointer-events-none absolute inset-x-10 -top-8 h-20 rounded-full bg-[radial-gradient(circle,rgba(168, 85, 247,0.12)_0%,rgba(168, 85, 247,0)_72%)] blur-2xl"
           style={{ opacity: glowOpacity }}
         />
         <motion.div

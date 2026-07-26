@@ -79,7 +79,7 @@ export function Stats() {
               <PremiumDraggable>
                 <div
                   className="text-4xl md:text-5xl font-bold text-foreground leading-none tracking-[0.01em]"
-                  style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
                   <AnimatedCounter value={stat.value} suffix={stat.suffix} />
                 </div>
                 <p className="mt-3 text-sm text-muted-foreground leading-relaxed tracking-[0.01em]">
@@ -96,7 +96,7 @@ export function Stats() {
           ))}
         </motion.div>
 
-        <motion.p
+        <motion.div
           className="mt-14 text-center text-sm text-muted-foreground leading-relaxed tracking-[0.01em]"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
@@ -107,10 +107,10 @@ export function Stats() {
               by="word"
               duration={1.2}
               staggerDelay={0.06}>
-              Trusted by teams at companies across 4 continents
+              Full-Stack Engineer · UI/UX Designer · DevOps Architect
             </TextAnimate>
           </PremiumDraggable>
-        </motion.p>
+        </motion.div>
       </div>
     </section>
   );

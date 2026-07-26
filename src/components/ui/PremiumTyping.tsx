@@ -53,7 +53,7 @@ export function PremiumTyping({
       <AnimatePresence>
         {cursor && !isComplete && (
           <motion.span
-            className={`inline-block w-[2px] h-[1.2em] bg-[#2e67ce] ml-1 align-middle ${cursorClassName}`}
+            className={`inline-block w-[2px] h-[1.2em] bg-primary ml-1 align-middle ${cursorClassName}`}
             animate={{ opacity: [1, 0] }}
             transition={{ duration: 0.8, repeat: Infinity }}
           />

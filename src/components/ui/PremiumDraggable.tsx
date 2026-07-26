@@ -38,7 +38,7 @@ const presets = {
     jellyStretch: 0.04,
     jellySkew: 0.2,
     brighten: 1.04,
-    glowDrag: '0 6px 24px -2px rgba(46,103,206,0.2), 0 0 8px rgba(46,103,206,0.12)',
+    glowDrag: '0 6px 24px -2px rgba(168, 85, 247,0.2), 0 0 8px rgba(168, 85, 247,0.12)',
   },
   light: {
     elastic: 0.3,
@@ -50,7 +50,7 @@ const presets = {
     jellyStretch: 0.06,
     jellySkew: 0.3,
     brighten: 1.06,
-    glowDrag: '0 10px 36px -4px rgba(46,103,206,0.24), 0 0 14px rgba(46,103,206,0.14)',
+    glowDrag: '0 10px 36px -4px rgba(168, 85, 247,0.24), 0 0 14px rgba(168, 85, 247,0.14)',
   },
   normal: {
     elastic: 0.4,
@@ -62,7 +62,7 @@ const presets = {
     jellyStretch: 0.08,
     jellySkew: 0.45,
     brighten: 1.08,
-    glowDrag: '0 16px 48px -6px rgba(46,103,206,0.3), 0 0 20px rgba(46,103,206,0.18)',
+    glowDrag: '0 16px 48px -6px rgba(168, 85, 247,0.3), 0 0 20px rgba(168, 85, 247,0.18)',
   },
   heavy: {
     elastic: 0.55,
@@ -74,7 +74,7 @@ const presets = {
     jellyStretch: 0.1,
     jellySkew: 0.6,
     brighten: 1.10,
-    glowDrag: '0 22px 64px -8px rgba(46,103,206,0.38), 0 0 32px rgba(46,103,206,0.24)',
+    glowDrag: '0 22px 64px -8px rgba(168, 85, 247,0.38), 0 0 32px rgba(168, 85, 247,0.24)',
   },
 }
 
@@ -256,7 +256,7 @@ export function PremiumDraggable({
         style={{
           opacity: glowOpacity,
           boxShadow:
-            '0 0 24px 6px rgba(46,103,206,0.16), inset 0 0 16px 2px rgba(46,103,206,0.1)',
+            '0 0 24px 6px rgba(168, 85, 247,0.16), inset 0 0 16px 2px rgba(168, 85, 247,0.1)',
         }}
       />
       {children}

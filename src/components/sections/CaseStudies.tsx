@@ -35,7 +35,7 @@ export function CaseStudies() {
             <h2
               className="section-title-display"
               style={{
-                fontFamily: "'Space Grotesk', sans-serif",
+                fontFamily: "'Playfair Display', Georgia, serif",
                 letterSpacing: "0.01em",
               }}>
               <TextAnimate
@@ -43,16 +43,16 @@ export function CaseStudies() {
                 by="word"
                 duration={1.2}
                 staggerDelay={0.08}>
-                Case studies in
+                Results that
               </TextAnimate>{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2e67ce] via-[#5f8fdf] to-[#a4bce8]">
+              <span className="text-gradient-theme">
                 <TextAnimate
                   animation="blurInUp"
                   by="word"
                   duration={1.2}
                   delay={0.1}
                   staggerDelay={0.08}>
-                  architecture
+                  compound
                 </TextAnimate>
               </span>
             </h2>

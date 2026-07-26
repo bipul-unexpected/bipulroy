@@ -20,7 +20,7 @@ export function GradientText({
 }: GradientTextProps) {
   return (
     <motion.span
-      className={`inline-block bg-clip-text text-transparent bg-gradient-to-r ${gradientStart} via-[#5f8fdf] ${gradientEnd} ${className}`}
+      className={`inline-block bg-clip-text text-transparent bg-gradient-to-r ${gradientStart} via-primary ${gradientEnd} ${className}`}
       animate={
         animateGradient
           ? {

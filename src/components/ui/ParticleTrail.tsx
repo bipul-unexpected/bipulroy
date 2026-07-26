@@ -18,7 +18,7 @@ interface Particle {
 }
 
 export function ParticleTrail({
-  color = '#2e67ce',
+  color = '#a855f7',
   count = 50,
   life = 1000,
   speed = 2,

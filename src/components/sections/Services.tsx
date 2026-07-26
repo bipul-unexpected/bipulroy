@@ -5,7 +5,7 @@ import {
   Layers,
   Zap,
   LayoutDashboard,
-  Shield,
+  Sparkles,
   Container,
 } from "lucide-react";
 import { services } from "../../data/portfolio";
@@ -17,7 +17,7 @@ const iconMap: Record<string, React.ElementType> = {
   Layers,
   Zap,
   LayoutDashboard,
-  Shield,
+  Sparkles,
   Container,
 };
 
@@ -61,7 +61,7 @@ export function Services() {
               </div>
               <h2
                 className="section-title"
-                style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
                 <TextAnimate
                   animation="blurInUp"
                   by="word"
@@ -77,7 +77,8 @@ export function Services() {
                   duration={1.2}
                   delay={0.2}
                   staggerDelay={0.04}>
-                  From MVPs to enterprise platforms, I design and build software
+                  From MVPs to enterprise platforms — UI/UX, full-stack
+                  engineering, and DevOps automation under one roof
                   that delivers real business value.
                 </TextAnimate>
               </p>
@@ -99,7 +100,7 @@ export function Services() {
                     </div>
                     <h3
                       className="card-title"
-                      style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                      style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
                       <TextAnimate
                         animation="blurInUp"
                         by="word"

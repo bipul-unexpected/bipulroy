@@ -45,13 +45,13 @@ export function Experience() {
               </div>
               <h2
                 className="section-title"
-                style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
                 <TextAnimate
                   animation="blurInUp"
                   by="word"
                   duration={1.2}
                   staggerDelay={0.08}>
-                  Experience & growth
+                  Path of a full-stack builder
                 </TextAnimate>
               </h2>
             </PremiumDraggable>
@@ -86,7 +86,7 @@ export function Experience() {
                       </span>
                       <h3
                         className="card-title"
-                        style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                        style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
                         <TextAnimate
                           animation="blurInUp"
                           by="word"

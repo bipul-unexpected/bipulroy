@@ -9,7 +9,7 @@ interface BeamEffectProps {
 }
 
 export function BeamEffect({
-  colors = ['#2e67ce', '#5f8fdf', '#a4bce8'],
+  colors = ['#a855f7', '#b87df0', '#caa4ed'],
   intensity = 0.4,
   speed = 8,
   count = 5,

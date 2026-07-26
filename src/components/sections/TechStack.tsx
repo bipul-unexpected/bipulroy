@@ -52,13 +52,13 @@ export function TechStack() {
               </div>
               <h2
                 className="section-title"
-                style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
                 <TextAnimate
                   animation="blurInUp"
                   by="word"
                   duration={1.2}
                   staggerDelay={0.08}>
-                  Technologies I work with
+                  Tech arsenal
                 </TextAnimate>
               </h2>
               <p className="section-lead">
@@ -68,8 +68,8 @@ export function TechStack() {
                   duration={1.2}
                   delay={0.2}
                   staggerDelay={0.04}>
-                  A carefully chosen set of modern tools and frameworks for
-                  building reliable, scalable software.
+                  Frontend craft, backend systems, cloud infrastructure, and
+                  design tools — the arsenal behind every ship.
                 </TextAnimate>
               </p>
             </PremiumDraggable>
@@ -81,7 +81,7 @@ export function TechStack() {
               <motion.div key={cat.label} variants={fadeUp}>
                 <h3
                   className="text-sm font-semibold text-foreground uppercase tracking-wider mb-4"
-                  style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
                   <TextAnimate
                     animation="blurInUp"
                     by="word"

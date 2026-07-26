@@ -1,9 +1,9 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Download } from "lucide-react";
+import { Download, CheckCircle2 } from "lucide-react";
 import { PremiumDraggable } from "../ui/PremiumDraggable";
 import { TextAnimate } from "../ui/TextAnimate";
-import { GlowingText } from "../ui/GlowingText";
+import { aboutHighlights, profile, socialLinks } from "../../data/portfolio";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -28,7 +28,6 @@ export function About() {
             hidden: {},
             visible: { transition: { staggerChildren: 0.1 } },
           }}>
-          {/* Section header */}
           <motion.div variants={fadeUp} className="mb-14 md:mb-16">
             <PremiumDraggable intensity="light">
               <div className="section-kicker">
@@ -45,16 +44,16 @@ export function About() {
               </div>
               <h2
                 className="section-title"
-                style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
                 <TextAnimate
                   animation="blurInUp"
                   by="word"
                   duration={1.2}
                   staggerDelay={0.08}
                   className="inline">
-                  The story behind the
+                  Full-stack craft.
                 </TextAnimate>{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2e67ce] via-[#5f8fdf] to-[#a4bce8]">
+                <span className="text-gradient-theme">
                   <TextAnimate
                     animation="blurInUp"
                     by="word"
@@ -62,97 +61,114 @@ export function About() {
                     delay={0.1}
                     staggerDelay={0.08}
                     className="inline">
-                    code
+                    Human emotion.
                   </TextAnimate>
                 </span>
               </h2>
+              <p className="section-lead mt-4">
+                <TextAnimate
+                  animation="blurInUp"
+                  by="word"
+                  duration={1.2}
+                  delay={0.15}
+                  staggerDelay={0.04}>
+                  {`${profile.tagline} Design, engineering, and DevOps — one continuous system.`}
+                </TextAnimate>
+              </p>
             </PremiumDraggable>
           </motion.div>
 
           <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-start">
-            {/* Left: abstract profile visual */}
             <motion.div variants={fadeUp} className="relative">
               <PremiumDraggable>
                 <div className="aspect-square rounded-2xl glass-panel p-6 md:p-10 flex items-center justify-center overflow-hidden relative">
-                  {/* Decorative background elements */}
                   <div className="absolute top-6 right-6 w-20 h-20 rounded-full border border-primary/20" />
                   <div className="absolute bottom-8 left-8 w-16 h-16 rounded border border-accent/20 rotate-12" />
                   <div className="absolute top-1/3 right-1/4 w-3 h-3 rounded-full bg-primary/30" />
-                  <div className="absolute bottom-1/3 left-1/3 w-2 h-2 rounded-full bg-accent/30" />
+                  <div className="absolute bottom-1/3 left-1/3 w-2 h-2 rounded-full bg-violet-400/30" />
 
-                  {/* Main visual */}
                   <div className="text-center relative z-10">
                     <div className="relative inline-flex items-center justify-center">
-                      <div className="absolute inset-0 rounded-[2rem] bg-[radial-gradient(circle_at_25%_20%,rgba(46,103,206,0.25),transparent_62%)] blur-xl scale-110" />
+                      <div className="absolute inset-0 rounded-[2rem] bg-[radial-gradient(circle_at_25%_20%,rgba(168, 85, 247,0.28),rgba(139,92,246,0.12),transparent_62%)] blur-xl scale-110" />
                       <img
                         src="/profile.jpg"
-                        alt="Profile"
-                        className="relative w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-[1.75rem] object-cover border border-white/20 shadow-[0_30px_80px_-26px_rgba(46,103,206,0.75)] ring-1 ring-primary/35"
+                        alt={`${profile.name} — Full-Stack Web Developer`}
+                        className="relative w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-[1.75rem] object-cover border border-border shadow-[0_30px_80px_-26px_color-mix(in_srgb,var(--color-primary)_45%,transparent)] ring-1 ring-primary/35"
                       />
                     </div>
-                    <p className="mt-4 text-sm text-muted-foreground font-mono">
-                      full-stack developer
+                    <p className="mt-5 text-sm text-muted-foreground font-mono">
+                      {profile.roles.join(" · ")}
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground/70 font-mono">
+                      {profile.location} · @{profile.alias}
                     </p>
                   </div>
                 </div>
               </PremiumDraggable>
             </motion.div>
 
-            {/* Right: story text */}
-            <div className="space-y-7">
-              <motion.p variants={fadeUp} className="section-copy">
+            <div className="space-y-6">
+              <motion.div variants={fadeUp} className="section-copy">
                 <PremiumDraggable intensity="light">
                   <TextAnimate
                     animation="blurInUp"
                     by="word"
                     duration={1.4}
                     staggerDelay={0.04}>
-                    I&apos;m a senior full-stack developer based in Dinajpur,
-                    Bangladesh with 8+ years of experience building affordable
-                    websites and digital products that scale. My work sits at
-                    the intersection of clean engineering, thoughtful design,
-                    and real business outcomes.
+                    I&apos;m Bipul Roy — a Full-Stack Engineer, UI/UX Designer,
+                    and DevOps Architect based in Bangladesh. I build seamless
+                    digital ecosystems from the first Figma frame to
+                    zero-downtime Kubernetes releases.
                   </TextAnimate>
                 </PremiumDraggable>
-              </motion.p>
+              </motion.div>
 
-              <motion.p variants={fadeUp} className="section-copy">
+              <motion.div variants={fadeUp} className="section-copy">
                 <PremiumDraggable intensity="light">
                   <TextAnimate
                     animation="blurInUp"
                     by="word"
                     duration={1.4}
-                    delay={0.2}
+                    delay={0.15}
                     staggerDelay={0.04}>
-                    I specialize in the React and Django ecosystems, designing
-                    systems from database schemas to pixel-perfect interfaces.
-                    Every project starts with understanding the problem
-                    deeply—then architecting a solution that&apos;s
-                    maintainable, performant, and built to last. I deliver
-                    end-to-end web development for clients across Bangladesh
-                    with clear scope, pricing, and reliable delivery.
+                    My stack spans React, Next.js, Angular, Node.js, and Django
+                    on the product side — and Docker, Kubernetes, GitHub Actions,
+                    and Terraform on the delivery side. I care about
+                    micro-interactions, clean architecture, and boring
+                    deploys.
                   </TextAnimate>
                 </PremiumDraggable>
-              </motion.p>
+              </motion.div>
 
-              <motion.p variants={fadeUp} className="section-copy">
-                <PremiumDraggable intensity="light">
-                  <TextAnimate
-                    animation="blurInUp"
-                    by="word"
-                    duration={1.4}
-                    delay={0.4}
-                    staggerDelay={0.04}>
-                    When I&apos;m not coding, I&apos;m mentoring developers,
-                    contributing to open source, or exploring the latest in
-                    cloud-native infrastructure. I believe the best software is
-                    built by people who care about both the code and the people
-                    who use it.
-                  </TextAnimate>
+              <motion.ul variants={fadeUp} className="space-y-3 pt-1">
+                {aboutHighlights.map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-start gap-2.5 text-sm text-muted-foreground leading-relaxed">
+                    <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </motion.ul>
+
+              <motion.div
+                variants={fadeUp}
+                className="pt-4 flex flex-wrap items-center gap-3">
+                <PremiumDraggable intensity="light" className="w-auto">
+                  <a
+                    href={socialLinks.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-foreground transition-all duration-200 hover:border-primary hover:text-primary hover:scale-[1.02] active:scale-[0.98]">
+                    <TextAnimate
+                      animation="blurInUp"
+                      by="word"
+                      duration={0.6}
+                      staggerDelay={0.05}>
+                      View GitHub
+                    </TextAnimate>
+                  </a>
                 </PremiumDraggable>
-              </motion.p>
-
-              <motion.div variants={fadeUp} className="pt-6">
                 <PremiumDraggable intensity="light" className="w-auto">
                   <a
                     href="#"

@@ -52,7 +52,7 @@ export function Contact() {
               </div>
               <h2
                 className="section-title"
-                style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
                 <TextAnimate
                   animation="blurInUp"
                   by="word"
@@ -68,8 +68,9 @@ export function Contact() {
                   duration={1.2}
                   delay={0.2}
                   staggerDelay={0.04}>
-                  Have a project in mind? I&apos;d love to hear about it.
-                  Let&apos;s discuss how we can build something great.
+                  Building something ambitious? I&apos;m open to
+                  collaboration — full-stack products, UI/UX systems, and
+                  DevOps pipelines that ship.
                 </TextAnimate>
               </p>
             </PremiumDraggable>
@@ -121,7 +122,7 @@ export function Contact() {
                         by="word"
                         duration={0.8}
                         staggerDelay={0.05}>
-                        Available Worldwide
+                        Dhaka, Bangladesh · Worldwide
                       </TextAnimate>
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
@@ -131,7 +132,7 @@ export function Contact() {
                         duration={0.8}
                         delay={0.1}
                         staggerDelay={0.04}>
-                        Remote-first, flexible timezone
+                        Remote-first · Full-Stack + DevOps · Open to collab
                       </TextAnimate>
                     </p>
                   </div>
@@ -164,7 +165,7 @@ export function Contact() {
                   </div>
                   <h3
                     className="text-xl font-bold text-foreground"
-                    style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                    style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
                     <TextAnimate
                       animation="blurInUp"
                       by="word"
@@ -190,8 +191,7 @@ export function Contact() {
                       data-tally-open={tallyFormId}
                       data-tally-layout="modal"
                       data-tally-width="600"
-                      className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
-                      style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                      className="btn-primary inline-flex w-full items-center justify-center gap-2 rounded-lg px-6 py-3.5 text-sm font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]">
                       <Send className="w-4 h-4" />
                       <TextAnimate
                         animation="blurInUp"

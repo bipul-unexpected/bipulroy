@@ -1,6 +1,7 @@
 import { Heart } from "lucide-react";
 import { GitHubIcon, LinkedInIcon, XIcon } from "../ui/SocialIcons";
 import { socialLinks } from "../../data/portfolio";
+import { scrollToSection } from "../../lib/scrollToSection";
 
 const quickLinks = [
   { label: "About", href: "#about" },
@@ -25,12 +26,17 @@ export function Footer() {
           <div className="max-w-md">
             <a
               href="#hero"
-              className="text-5xl md:text-7xl lg:text-8xl font-bold text-foreground tracking-tight"
-              style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection("#hero");
+              }}
+              className="text-5xl md:text-7xl lg:text-8xl font-bold text-foreground tracking-tight cursor-pointer"
+              style={{ fontFamily: "var(--font-heading)" }}>
               Bipul<span className="text-primary">.</span>
             </a>
             <p className="mt-6 text-lg md:text-2xl text-muted-foreground leading-relaxed tracking-[0.01em]">
-              Building the future, one commit at a time. Let's create something amazing together.
+              Building the future, one commit at a time. Full-stack products,
+              premium UI/UX, and DevOps that never flinches.
             </p>
           </div>
 
@@ -42,7 +48,11 @@ export function Footer() {
                 <a
                   key={link.label}
                   href={link.href}
-                  className="text-lg md:text-xl font-medium text-muted-foreground hover:text-primary transition-colors duration-200">
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection(link.href);
+                  }}
+                  className="text-lg md:text-xl font-medium text-muted-foreground hover:text-primary transition-colors duration-200 cursor-pointer">
                   {link.label}
                 </a>
               ))}
@@ -74,7 +84,7 @@ export function Footer() {
             &copy; {new Date().getFullYear()} Bipul. All rights reserved.
           </p>
           <p className="text-sm md:text-base text-muted-foreground leading-relaxed tracking-[0.01em] flex items-center gap-1.5">
-            Built with React, Tailwind, and attention to detail.
+            Built with React, motion, and obsessive attention to detail.
             <Heart className="w-4 h-4 text-primary" />
           </p>
         </div>
