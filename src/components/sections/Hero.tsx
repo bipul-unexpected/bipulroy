@@ -23,9 +23,10 @@ import {
 import { FiSend } from "react-icons/fi";
 import { profile, socialLinks, tallyFormId } from "../../data/portfolio";
 import { TextAnimate } from "../ui/TextAnimate";
-import { MouseSpotlight, Spotlight } from "../ui/Spotlight";
+import { MouseSpotlight } from "../ui/Spotlight";
 import { InfiniteMarquee } from "../ui/InfiniteMarquee";
 import { TerminalCard } from "../ui/TerminalCard";
+import { HeroLandscapeBg } from "../ui/HeroLandscapeBg";
 import { GitHubIcon } from "../ui/SocialIcons";
 import { scrollToSection } from "../../lib/scrollToSection";
 
@@ -173,58 +174,60 @@ export function Hero() {
     <section
       id="hero"
       className="relative min-h-screen flex flex-col justify-center pt-28 sm:pt-32 pb-20 overflow-hidden bg-background">
-      {/* Atmosphere */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <Spotlight className="-top-40 left-0 md:left-16 md:-top-16" />
-        <MouseSpotlight />
+      {/* Misty landscape photo + brand glass wash */}
+      <HeroLandscapeBg intensity="hero" />
 
+      <div className="pointer-events-none absolute inset-0 overflow-hidden z-[1]">
+        <MouseSpotlight />
         <FloatingOrb
-          className="absolute -top-10 right-[8%] h-64 w-64 rounded-full bg-primary/20 blur-[90px]"
+          className="absolute -top-10 right-[8%] h-56 w-56 rounded-full bg-primary/15 blur-[90px]"
           delay={0}
           duration={11}
         />
         <FloatingOrb
-          className="absolute bottom-[12%] left-[5%] h-72 w-72 rounded-full bg-primary/15 blur-[100px]"
+          className="absolute bottom-[18%] left-[6%] h-64 w-64 rounded-full bg-primary/10 blur-[100px]"
           delay={1.2}
           duration={13}
         />
-        <FloatingOrb
-          className="absolute top-1/2 left-1/2 h-48 w-48 -translate-x-1/2 rounded-full bg-[color-mix(in_srgb,var(--color-royalty-300)_20%,transparent)] blur-[80px]"
-          delay={0.6}
-          duration={9}
-        />
 
-        {/* Soft grid */}
-        <div
-          className="absolute inset-0 opacity-[0.28] dark:opacity-[0.18]"
-          style={{
-            backgroundImage:
-              "linear-gradient(hsl(var(--border) / 0.5) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--border) / 0.5) 1px, transparent 1px)",
-            backgroundSize: "72px 72px",
-            maskImage:
-              "radial-gradient(ellipse 65% 55% at 50% 42%, black 15%, transparent 72%)",
-          }}
-        />
+        {/* Liquid-glass floating discs — transparent over landscape */}
+        {!prefersReduced && (
+          <>
+            <motion.div
+              className="absolute right-[12%] top-[28%] h-28 w-28 rounded-full liquid-glass opacity-40"
+              animate={{ y: [0, -16, 0], rotate: [0, 6, 0] }}
+              transition={{ duration: 11, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <motion.div
+              className="absolute left-[8%] bottom-[22%] h-20 w-20 rounded-full liquid-glass opacity-35"
+              animate={{ y: [0, 12, 0], x: [0, 8, 0] }}
+              transition={{
+                duration: 9,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 0.6,
+              }}
+            />
+          </>
+        )}
 
-        {/* Floating particles */}
         {!prefersReduced &&
-          Array.from({ length: 8 }).map((_, i) => (
+          Array.from({ length: 6 }).map((_, i) => (
             <motion.span
               key={i}
-              className="absolute h-1 w-1 rounded-full bg-primary/60"
+              className="absolute h-1 w-1 rounded-full bg-primary/50"
               style={{
-                left: `${12 + i * 10}%`,
-                top: `${20 + (i % 4) * 15}%`,
+                left: `${15 + i * 12}%`,
+                top: `${25 + (i % 3) * 18}%`,
               }}
               animate={{
-                y: [0, -24 - i * 2, 0],
-                opacity: [0.15, 0.7, 0.15],
-                scale: [1, 1.6, 1],
+                y: [0, -20 - i * 2, 0],
+                opacity: [0.12, 0.55, 0.12],
               }}
               transition={{
-                duration: 4 + i * 0.4,
+                duration: 5 + i * 0.4,
                 repeat: Infinity,
-                delay: i * 0.35,
+                delay: i * 0.4,
                 ease: "easeInOut",
               }}
             />
