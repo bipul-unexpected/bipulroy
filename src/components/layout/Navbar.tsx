@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { motion, AnimatePresence, useScroll } from 'framer-motion'
-import { Moon, Sun } from 'lucide-react'
+import { Terminal } from 'lucide-react'
 import { scrollToSection } from '../../lib/scrollToSection'
 
 const navLinks = [
@@ -16,10 +16,10 @@ interface NavbarProps {
   activeSection: string
   isScrolled: boolean
   isDark?: boolean
-  onToggleTheme?: (e?: React.MouseEvent) => void
+  onToggleTerminal?: () => void
 }
 
-export function Navbar({ activeSection, isScrolled, isDark = true, onToggleTheme }: NavbarProps) {
+export function Navbar({ activeSection, isScrolled, onToggleTerminal }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [isNavHovered, setIsNavHovered] = useState(false)
   const { scrollYProgress } = useScroll()
@@ -120,47 +120,18 @@ export function Navbar({ activeSection, isScrolled, isDark = true, onToggleTheme
           {/* Right: Actions */}
           <div className="flex items-center gap-1.5 md:gap-3 relative z-10 shrink-0">
 
-            {/* Theme toggle — expands circular royalty reveal */}
+            {/* Terminal mode — the visual command center for the portfolio */}
             <motion.button
               type="button"
-              onClick={(e) => onToggleTheme?.(e)}
-              aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-              title={isDark ? 'Light mode' : 'Dark mode'}
+              onClick={onToggleTerminal}
+              aria-label="Open terminal mode"
+              title="Open terminal mode"
               whileHover={{ scale: 1.08 }}
               whileTap={{ scale: 0.9, rotate: 20 }}
               className="relative flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-full border border-border bg-secondary/80 text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary overflow-hidden"
             >
-              <motion.span
-                className="absolute inset-0 rounded-full bg-primary/20"
-                initial={false}
-                animate={{ scale: [1, 1.6, 1], opacity: [0, 0.5, 0] }}
-                transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-              />
-              <AnimatePresence mode="wait" initial={false}>
-                {isDark ? (
-                  <motion.span
-                    key="sun"
-                    initial={{ opacity: 0, rotate: -90, scale: 0.4, y: 8 }}
-                    animate={{ opacity: 1, rotate: 0, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, rotate: 90, scale: 0.4, y: -8 }}
-                    transition={{ type: 'spring', stiffness: 320, damping: 18 }}
-                    className="relative z-10"
-                  >
-                    <Sun className="w-4 h-4" />
-                  </motion.span>
-                ) : (
-                  <motion.span
-                    key="moon"
-                    initial={{ opacity: 0, rotate: 90, scale: 0.4, y: 8 }}
-                    animate={{ opacity: 1, rotate: 0, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, rotate: -90, scale: 0.4, y: -8 }}
-                    transition={{ type: 'spring', stiffness: 320, damping: 18 }}
-                    className="relative z-10"
-                  >
-                    <Moon className="w-4 h-4" />
-                  </motion.span>
-                )}
-              </AnimatePresence>
+              <motion.span className="absolute inset-0 rounded-full bg-primary/20" initial={false} animate={{ scale: [1, 1.6, 1], opacity: [0, 0.5, 0] }} transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }} />
+              <Terminal className="relative z-10 h-4 w-4" />
             </motion.button>
 
             <a

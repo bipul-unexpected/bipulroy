@@ -64,3 +64,11 @@ npm run build
 Deploy the generated `dist/angular` directory through Appwrite Sites. Keep
 `public/robots.txt`, `public/sitemap.xml`, and the canonical domain aligned with
 the final Appwrite Sites custom domain.
+
+## Terminal mode
+
+The terminal icon in the navigation opens a full-screen interactive browser
+shell. It is intentionally sandboxed and never executes operating-system
+commands. Supported commands include `whoami`, `ls`, `pwd`, `date`, `echo`,
+`cat README`, `neofetch`, `open <path>`, `theme`, `clear`, `help`, and `exit`.
+Use `Esc` or `exit` to return to the normal portfolio.

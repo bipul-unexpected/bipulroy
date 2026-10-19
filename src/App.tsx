@@ -22,6 +22,7 @@ import { ContentHub } from "./components/sections/ContentHub";
 import { AdminStudio } from "./components/admin/AdminStudio";
 import { useScrollProgress } from "./hooks/useScrollProgress";
 import { playClickSound } from "./lib/clickSound";
+import { TerminalMode } from "./components/ui/TerminalMode";
 
 const THEME_KEY = "bipul-theme";
 
@@ -47,6 +48,7 @@ function readStoredDark(): boolean {
 function App() {
   const { activeSection, isScrolled } = useScrollProgress();
   const [isDark, setIsDark] = useState(readStoredDark);
+  const [terminalOpen, setTerminalOpen] = useState(false);
   const [ripple, setRipple] = useState<ThemeRipple | null>(null);
   const pendingTheme = useRef<boolean | null>(null);
   const midFired = useRef(false);
@@ -186,8 +188,12 @@ function App() {
       <Navbar
         activeSection={activeSection}
         isScrolled={isScrolled}
-        isDark={isDark}
-        onToggleTheme={toggleTheme}
+        onToggleTerminal={() => setTerminalOpen(true)}
+      />
+      <TerminalMode
+        open={terminalOpen}
+        onExit={() => setTerminalOpen(false)}
+        onToggleTheme={() => toggleTheme()}
       />
       <main className="relative z-10">
         <Hero />
