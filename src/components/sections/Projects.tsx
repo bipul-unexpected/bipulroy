@@ -88,7 +88,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         </div>
 
         {/* Body */}
-        <div className="p-6 md:p-7 space-y-3.5">
+        <div className="p-5 sm:p-6 md:p-7 space-y-3.5">
           <span className="text-xs font-mono text-primary bg-primary/10 rounded-full px-2 py-0.5">
             <TextAnimate
               animation="blurInUp"
@@ -247,7 +247,7 @@ export function Projects() {
 
   return (
     <section id="projects" className="relative py-24 md:py-32">
-      <div className="mx-auto max-w-6xl px-6" ref={ref}>
+      <div className="mx-auto max-w-6xl px-4 sm:px-6" ref={ref}>
         {/* Section header */}
         <motion.div
           className="max-w-2xl mb-10 md:mb-11"

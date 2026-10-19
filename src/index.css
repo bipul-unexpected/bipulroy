@@ -477,8 +477,7 @@ html.dark .glass-panel {
 }
 
 html {
-  /* Smooth scroll handled in JS (scrollToSection) so first nav click is never cancelled */
-  scroll-behavior: auto;
+  scroll-behavior: smooth;
   scroll-padding-top: 100px;
 }
 
@@ -487,6 +486,57 @@ body {
   overscroll-behavior-y: none;
   background-color: var(--color-bg);
   color: var(--color-text);
+  overflow-x: hidden;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 639px) {
+  html {
+    scroll-padding-top: 84px;
+  }
+
+  section[id] {
+    scroll-margin-top: 84px;
+  }
+
+  .section-title {
+    font-size: clamp(1.8rem, 8vw, 2.35rem);
+    line-height: 1.08;
+  }
+
+  .section-lead {
+    font-size: 0.95rem;
+    line-height: 1.65;
+  }
+
+  .section-kicker {
+    margin-bottom: 0.8rem;
+  }
+
+  .glass-panel,
+  .liquid-glass,
+  .liquid-glass-strong {
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+  }
+
+  .btn-primary,
+  .btn-primary-glow {
+    min-height: 44px;
+  }
 }
 
 /* Primary buttons — white on #7C3AED is 5.7:1 AA */

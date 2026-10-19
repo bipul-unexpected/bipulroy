@@ -26,7 +26,7 @@ export function AdminStudio() {
   if (!isSignedIn) {
     return (
       <section id="admin" className="relative py-20">
-        <div className="mx-auto max-w-6xl px-6"><div className="glass-panel rounded-2xl p-7 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6"><div className="glass-panel rounded-2xl p-5 sm:p-7 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
           <div><p className="text-xs font-mono uppercase tracking-[0.18em] text-primary">Private studio</p><h2 className="mt-2 text-xl font-bold text-foreground">Manage the portfolio securely.</h2><p className="mt-1 text-sm text-muted-foreground">Sign in with Clerk to access the publishing workspace.</p></div>
           <SignInButton mode="modal"><button type="button" className="btn-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"><LogIn className="h-4 w-4" /> Admin sign in</button></SignInButton>
         </div></div>
@@ -62,7 +62,7 @@ export function AdminStudio() {
 
   return (
     <section id="admin" className="relative py-20">
-      <div className="mx-auto max-w-6xl px-6"><div className="glass-panel rounded-2xl p-7 md:p-9">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6"><div className="glass-panel rounded-2xl p-5 sm:p-7 md:p-9">
         <div className="mb-7 flex flex-col sm:flex-row justify-between gap-4"><div><p className="text-xs font-mono uppercase tracking-[0.18em] text-primary">Private studio</p><h2 className="mt-2 text-2xl font-bold text-foreground">Publish new work</h2><p className="mt-1 text-sm text-muted-foreground">Appwrite Database stores metadata; Storage stores media.</p></div><UserButton /></div>
         <form onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-2">
           <label className="text-sm text-muted-foreground">Content type<select value={kind} onChange={(event) => setKind(event.target.value as ContentKind)} className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground">{contentKinds.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label>

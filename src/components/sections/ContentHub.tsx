@@ -52,7 +52,7 @@ export function ContentHub() {
 
   return (
     <section id="journal" className="relative py-24 md:py-32">
-      <div className="mx-auto max-w-6xl px-6">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="mb-12 max-w-2xl">
           <div className="section-kicker"><div className="h-px w-8 bg-primary" /><span>Journal &amp; studio</span></div>
           <h2 className="section-title">The work behind the work.</h2>
@@ -62,12 +62,12 @@ export function ContentHub() {
         <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
           <ContentCard>
             <div className="grid md:grid-cols-[0.9fr_1.1fr]">
-              <div className="min-h-64 bg-primary/10 p-8 flex items-end">
+              <div className="min-h-44 sm:min-h-64 bg-primary/10 p-6 sm:p-8 flex items-end">
                 <BookOpen className="h-10 w-10 text-primary" />
               </div>
-              <div className="p-7 md:p-9">
+              <div className="p-6 sm:p-7 md:p-9">
                 <p className="mb-3 text-xs font-mono uppercase tracking-[0.18em] text-primary">Featured article</p>
-                <h3 className="text-2xl font-bold text-foreground">{articles[0]?.title || staticArticle.title}</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-foreground">{articles[0]?.title || staticArticle.title}</h3>
                 <p className="mt-3 card-copy">{articles[0]?.excerpt || staticArticle.description}</p>
                 <a href={articles[0]?.url || "#contact"} className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:gap-3 transition-all">
                   Read the field note <ArrowUpRight className="h-4 w-4" />

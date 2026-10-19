@@ -12,7 +12,7 @@ export function CaseStudies() {
 
   return (
     <section id="case-studies" className="relative py-24 md:py-32">
-      <div className="mx-auto max-w-6xl px-6" ref={ref}>
+      <div className="mx-auto max-w-6xl px-4 sm:px-6" ref={ref}>
         {/* Section header */}
         <motion.div
           className="max-w-2xl mb-12 md:mb-14"

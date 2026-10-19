@@ -1,13 +1,11 @@
 /**
- * Footer — same misty landscape as hero + liquid glass panels
- * Visual continuity: hero → CTA → footer share /hero-bg.jpg language
+ * Footer — quiet closing surface for the portfolio.
  */
 import { useReducedMotion, motion } from "framer-motion";
 import { Heart } from "lucide-react";
 import { GitHubIcon, LinkedInIcon, XIcon } from "../ui/SocialIcons";
 import { socialLinks } from "../../data/portfolio";
 import { scrollToSection } from "../../lib/scrollToSection";
-import { HeroLandscapeBg } from "../ui/HeroLandscapeBg";
 
 const quickLinks = [
   { label: "About", href: "#about" },
@@ -27,19 +25,16 @@ export function Footer() {
 
   return (
     <footer className="border-t border-border/60 min-h-[50vh] md:min-h-[70vh] flex flex-col justify-center relative z-10 overflow-hidden">
-      {/* Shared landscape + animated mist fog */}
-      <HeroLandscapeBg intensity="footer" />
-
-      {/* Floating liquid-glass orbs — transparent motion synced with CTA */}
+      {/* Subtle ambient accents keep the closing surface connected to the page. */}
       {!prefersReduced && (
         <>
           <motion.div
-            className="pointer-events-none absolute left-[6%] top-[22%] h-36 w-36 rounded-full liquid-glass opacity-45"
+            className="pointer-events-none absolute left-[6%] top-[22%] h-36 w-36 rounded-full bg-primary/10 blur-3xl"
             animate={{ y: [0, -18, 0], rotate: [0, 6, 0] }}
             transition={{ duration: 11, repeat: Infinity, ease: "easeInOut" }}
           />
           <motion.div
-            className="pointer-events-none absolute right-[8%] bottom-[20%] h-48 w-48 rounded-full liquid-glass opacity-40"
+            className="pointer-events-none absolute right-[8%] bottom-[20%] h-48 w-48 rounded-full bg-sky-400/10 blur-3xl"
             animate={{ y: [0, 16, 0], rotate: [0, -5, 0] }}
             transition={{
               duration: 13,
@@ -49,7 +44,7 @@ export function Footer() {
             }}
           />
           <motion.div
-            className="pointer-events-none absolute left-[55%] top-[12%] h-20 w-20 rounded-full liquid-glass opacity-35"
+            className="pointer-events-none absolute left-[55%] top-[12%] h-20 w-20 rounded-full bg-primary/10 blur-2xl"
             animate={{ y: [0, -12, 0], x: [0, 10, 0] }}
             transition={{
               duration: 9,
@@ -61,14 +56,14 @@ export function Footer() {
         </>
       )}
 
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-14 flex-1 flex flex-col justify-between">
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 py-10 sm:py-14 flex-1 flex flex-col justify-between">
         {/* Main liquid-glass panel */}
         <motion.div
           initial={{ opacity: 0, y: 28, scale: 0.98 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
-          className="relative overflow-hidden liquid-glass-strong rounded-3xl p-8 md:p-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-12 shadow-lg">
+          className="relative overflow-hidden rounded-3xl border border-border bg-card/70 p-6 shadow-xl shadow-primary/5 backdrop-blur-xl sm:p-8 md:p-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-8 sm:gap-12">
           {/* Inner glass shimmer sweep */}
           {!prefersReduced && (
             <motion.div

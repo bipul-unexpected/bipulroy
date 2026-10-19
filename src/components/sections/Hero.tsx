@@ -1,480 +1,143 @@
-/**
- * Clean premium Full-Stack Hero
- * Motion: staggered entrance, floating orbs, magnetic CTAs, live role swap, terminal identity
- */
-import { useEffect, useState } from "react";
-import {
-  motion,
-  AnimatePresence,
-  useReducedMotion,
-  useMotionValue,
-  useSpring,
-} from "framer-motion";
-import type { CSSProperties, MouseEventHandler, ReactNode } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import type { ReactNode } from "react";
 import {
   ArrowRight,
-  ChevronDown,
-  MapPin,
-  Sparkles,
+  ArrowUpRight,
   Code2,
-  Server,
-  Cloud,
+  ExternalLink,
+  Monitor,
+  Sparkles,
 } from "lucide-react";
-import { FiSend } from "react-icons/fi";
 import { profile, socialLinks } from "../../data/portfolio";
-import { TextAnimate } from "../ui/TextAnimate";
-import { MouseSpotlight } from "../ui/Spotlight";
-import { InfiniteMarquee } from "../ui/InfiniteMarquee";
-import { TerminalCard } from "../ui/TerminalCard";
-import { HeroLandscapeBg } from "../ui/HeroLandscapeBg";
 import { GitHubIcon } from "../ui/SocialIcons";
 import { scrollToSection } from "../../lib/scrollToSection";
 
-const easeOut = [0.16, 1, 0.3, 1] as const;
-
-const container = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08, delayChildren: 0.12 },
-  },
-};
-
-const itemUp = {
-  hidden: { opacity: 0, y: 32, filter: "blur(10px)" },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: { type: "spring" as const, stiffness: 70, damping: 16 },
-  },
-};
-
-const valueProps = [
-  { icon: Code2, title: "Frontend", desc: "React · Next · Motion" },
-  { icon: Server, title: "Backend", desc: "Node · Django · APIs" },
-  { icon: Cloud, title: "DevOps", desc: "Docker · K8s · CI/CD" },
-];
-
-const marqueeStack = [
-  "React",
-  "Next.js",
-  "TypeScript",
-  "Node.js",
-  "Django",
-  "PostgreSQL",
-  "Docker",
-  "Kubernetes",
-  "AWS",
-  "GraphQL",
-  "Figma",
-  "Three.js",
-];
-
-function RoleRotator({ roles }: { roles: readonly string[] }) {
-  const [index, setIndex] = useState(0);
-  const prefersReducedMotion = useReducedMotion();
-
-  useEffect(() => {
-    if (prefersReducedMotion) return;
-    const id = setInterval(
-      () => setIndex((p) => (p + 1) % roles.length),
-      2800,
-    );
-    return () => clearInterval(id);
-  }, [roles.length, prefersReducedMotion]);
-
-  return (
-    <span className="relative inline-flex h-[1.4em] min-w-[15ch] items-center overflow-hidden align-bottom sm:min-w-[18ch]">
-      <AnimatePresence mode="wait">
-        <motion.span
-          key={roles[index]}
-          initial={{ y: 20, opacity: 0, filter: "blur(8px)", scale: 0.96 }}
-          animate={{ y: 0, opacity: 1, filter: "blur(0px)", scale: 1 }}
-          exit={{ y: -18, opacity: 0, filter: "blur(8px)", scale: 0.98 }}
-          transition={{ duration: 0.45, ease: easeOut }}
-          className="absolute inset-x-0 text-gradient-theme font-semibold">
-          {roles[index]}
-        </motion.span>
-      </AnimatePresence>
-      <span className="invisible font-semibold" aria-hidden>
-        DevOps Architect
-      </span>
-    </span>
-  );
-}
-
-function FloatingOrb({
-  className,
-  delay = 0,
-  duration = 10,
-}: {
-  className: string;
-  delay?: number;
-  duration?: number;
-}) {
-  return (
-    <motion.div
-      className={className}
-      animate={{
-        y: [0, -18, 0, 12, 0],
-        x: [0, 10, 0, -8, 0],
-        scale: [1, 1.08, 1, 0.96, 1],
-        opacity: [0.35, 0.55, 0.4, 0.5, 0.35],
-      }}
-      transition={{
-        duration,
-        delay,
-        repeat: Infinity,
-        ease: "easeInOut",
-      }}
-    />
-  );
-}
-
-function MagneticButton({
-  children,
-  className,
-  onClick,
+function ActionLink({
   href,
-  style,
+  children,
+  secondary = false,
 }: {
+  href: string;
   children: ReactNode;
-  className?: string;
-  href?: string;
-  onClick?: MouseEventHandler<HTMLAnchorElement>;
-  style?: CSSProperties;
+  secondary?: boolean;
 }) {
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const springX = useSpring(x, { stiffness: 280, damping: 18 });
-  const springY = useSpring(y, { stiffness: 280, damping: 18 });
-
   return (
     <motion.a
       href={href}
-      onClick={onClick}
-      onMouseMove={(e) => {
-        const rect = e.currentTarget.getBoundingClientRect();
-        x.set((e.clientX - rect.left - rect.width / 2) * 0.25);
-        y.set((e.clientY - rect.top - rect.height / 2) * 0.25);
+      onClick={(event) => {
+        event.preventDefault();
+        scrollToSection(href);
       }}
-      onMouseLeave={() => {
-        x.set(0);
-        y.set(0);
-      }}
-      whileHover={{ scale: 1.03 }}
-      whileTap={{ scale: 0.97 }}
-      className={className}
-      style={{ ...style, x: springX, y: springY }}>
+      whileHover={{ y: -3 }}
+      whileTap={{ scale: 0.98 }}
+      className={
+        secondary
+          ? "inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-border bg-background/80 px-6 text-sm font-semibold text-foreground transition-colors hover:border-primary/40 hover:bg-primary/5"
+          : "btn-primary inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 text-sm font-semibold shadow-xl shadow-primary/20"
+      }>
       {children}
     </motion.a>
   );
 }
 
 export function Hero() {
-  const prefersReduced = useReducedMotion();
+  const reducedMotion = useReducedMotion();
 
   return (
-    <section
-      id="hero"
-      className="relative min-h-screen flex flex-col justify-center pt-28 sm:pt-32 pb-20 overflow-hidden bg-background">
-      {/* Misty landscape photo + brand glass wash */}
-      <HeroLandscapeBg intensity="hero" />
+    <section id="hero" className="relative isolate overflow-hidden border-b border-border/70 bg-background pt-28 sm:pt-36">
+      <div aria-hidden className="absolute inset-x-0 top-0 -z-10 h-[32rem] bg-[radial-gradient(ellipse_at_top,rgba(124,58,237,0.10),transparent_65%)]" />
+      <div aria-hidden className="absolute inset-x-0 bottom-0 -z-10 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
 
-      <div className="pointer-events-none absolute inset-0 overflow-hidden z-[1]">
-        <MouseSpotlight />
-        <FloatingOrb
-          className="absolute -top-10 right-[8%] h-56 w-56 rounded-full bg-primary/15 blur-[90px]"
-          delay={0}
-          duration={11}
-        />
-        <FloatingOrb
-          className="absolute bottom-[18%] left-[6%] h-64 w-64 rounded-full bg-primary/10 blur-[100px]"
-          delay={1.2}
-          duration={13}
-        />
+      <div className="mx-auto grid w-full max-w-6xl gap-14 px-4 pb-24 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.82fr)] lg:items-center lg:gap-20">
+        <motion.div
+          initial={reducedMotion ? undefined : { opacity: 0, y: 22 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+          className="max-w-2xl">
+          <div className="mb-7 flex items-center gap-3 text-xs font-medium text-muted-foreground">
+            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card/70 px-3 py-1.5">
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              Available for select work
+            </span>
+            <span className="hidden text-border sm:inline">/</span>
+            <span className="hidden sm:inline">Dhaka · Worldwide</span>
+          </div>
 
-        {/* Liquid-glass floating discs — transparent over landscape */}
-        {!prefersReduced && (
-          <>
-            <motion.div
-              className="absolute right-[12%] top-[28%] h-28 w-28 rounded-full liquid-glass opacity-40"
-              animate={{ y: [0, -16, 0], rotate: [0, 6, 0] }}
-              transition={{ duration: 11, repeat: Infinity, ease: "easeInOut" }}
-            />
-            <motion.div
-              className="absolute left-[8%] bottom-[22%] h-20 w-20 rounded-full liquid-glass opacity-35"
-              animate={{ y: [0, 12, 0], x: [0, 8, 0] }}
-              transition={{
-                duration: 9,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: 0.6,
-              }}
-            />
-          </>
-        )}
+          <p className="mb-5 text-sm font-semibold tracking-wide text-primary">
+            Full-stack engineering for ambitious teams
+          </p>
+          <h1 className="max-w-2xl text-[clamp(2.75rem,7vw,5.8rem)] font-bold leading-[0.97] tracking-[-0.06em] text-foreground">
+            Build the right thing.
+            <span className="block text-muted-foreground">Build it well.</span>
+          </h1>
+          <p className="mt-7 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">
+            I design and engineer thoughtful digital products that are clear to
+            use, fast in the browser, and dependable in production.
+          </p>
 
-        {!prefersReduced &&
-          Array.from({ length: 6 }).map((_, i) => (
-            <motion.span
-              key={i}
-              className="absolute h-1 w-1 rounded-full bg-primary/50"
-              style={{
-                left: `${15 + i * 12}%`,
-                top: `${25 + (i % 3) * 18}%`,
-              }}
-              animate={{
-                y: [0, -20 - i * 2, 0],
-                opacity: [0.12, 0.55, 0.12],
-              }}
-              transition={{
-                duration: 5 + i * 0.4,
-                repeat: Infinity,
-                delay: i * 0.4,
-                ease: "easeInOut",
-              }}
-            />
-          ))}
-      </div>
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+            <ActionLink href="#projects">
+              Explore the work <ArrowRight className="h-4 w-4" />
+            </ActionLink>
+            <ActionLink href="#contact" secondary>
+              Let&apos;s talk
+            </ActionLink>
+          </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-5 sm:px-6">
-        <div className="grid lg:grid-cols-[1.12fr_0.88fr] gap-12 lg:gap-14 items-center">
-          {/* Left column */}
-          <motion.div
-            variants={container}
-            initial="hidden"
-            animate="visible"
-            className="flex flex-col items-start text-left">
-            <motion.div
-              variants={itemUp}
-              className="mb-7 inline-flex flex-wrap items-center gap-2.5 rounded-full liquid-glass px-4 py-2">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(52,211,153,0.7)]" />
-              </span>
-              <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                Open to work
-              </span>
-              <span className="hidden sm:inline h-3 w-px bg-border" />
-              <span className="hidden sm:inline-flex items-center gap-1 text-[11px] text-muted-foreground">
-                <MapPin className="h-3 w-3 text-primary" />
-                {profile.location}
-              </span>
-            </motion.div>
+          <div className="mt-10 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+            <span className="rounded-full border border-border bg-card/60 px-3 py-1.5">React &amp; TypeScript</span>
+            <span className="rounded-full border border-border bg-card/60 px-3 py-1.5">Product UI</span>
+            <span className="rounded-full border border-border bg-card/60 px-3 py-1.5">Cloud systems</span>
+          </div>
+        </motion.div>
 
-            <motion.p
-              variants={itemUp}
-              className="mb-2 text-sm sm:text-base text-muted-foreground"
-              style={{ fontFamily: "var(--font-body)" }}>
-              Hi, I&apos;m{" "}
-              <motion.span
-                className="inline-block font-bold text-foreground"
-                style={{ fontFamily: "var(--font-heading)" }}
-                animate={{
-                  textShadow: [
-                    "0 0 0px transparent",
-                    "0 0 24px color-mix(in srgb, var(--color-primary) 45%, transparent)",
-                    "0 0 0px transparent",
-                  ],
-                }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}>
-                {profile.name}
-              </motion.span>
-            </motion.p>
-
-            <motion.div
-              variants={itemUp}
-              className="mb-5 flex flex-wrap items-center gap-2 text-sm sm:text-base text-muted-foreground">
-              <motion.span
-                animate={{ rotate: [0, 12, -8, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}>
-                <Sparkles className="h-4 w-4 text-primary" />
-              </motion.span>
-              <span>I am a</span>
-              <RoleRotator roles={profile.roles} />
-            </motion.div>
-
-            <motion.h1
-              variants={itemUp}
-              className="max-w-xl text-[2.05rem] sm:text-4xl md:text-5xl lg:text-[3.4rem] font-bold leading-[1.1] tracking-[-0.025em] text-foreground"
-              style={{ fontFamily: "var(--font-heading)" }}>
-              <TextAnimate
-                animation="blurInUp"
-                by="word"
-                duration={1.6}
-                staggerDelay={0.055}
-                className="inline">
-                Full-stack products people trust —
-              </TextAnimate>{" "}
-              <span className="text-gradient-theme">
-                <TextAnimate
-                  animation="blurInUp"
-                  by="word"
-                  duration={1.6}
-                  delay={0.3}
-                  staggerDelay={0.055}
-                  className="inline">
-                  systems that scale.
-                </TextAnimate>
-              </span>
-            </motion.h1>
-
-            <motion.p
-              variants={itemUp}
-              className="mt-5 max-w-md text-[15px] sm:text-base leading-[1.75] text-muted-foreground"
-              style={{ fontFamily: "var(--font-body)" }}>
-              Pixel-perfect UI, solid APIs, and calm Kubernetes deploys — I ship
-              end-to-end web platforms that feel premium and hold up in
-              production.
-            </motion.p>
-
-            <motion.div
-              variants={itemUp}
-              className="mt-5 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3.5 py-1.5">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="absolute inset-0 animate-ping rounded-full bg-primary opacity-60" />
-                <span className="relative h-1.5 w-1.5 rounded-full bg-primary" />
-              </span>
-              <span className="text-[11px] sm:text-xs font-semibold tracking-wide text-foreground">
-                {profile.philosophy}
-              </span>
-            </motion.div>
-
-            <motion.div
-              variants={itemUp}
-              className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
-              <MagneticButton
-                href="#projects"
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection("#projects");
-                }}
-                className="btn-primary-glow group inline-flex items-center justify-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold border border-primary/25 cursor-pointer shadow-royalty"
-                style={{ fontFamily: "var(--font-heading)" }}>
-                View my work
-                <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-              </MagneticButton>
-
-              <MagneticButton
-                href="#contact"
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection("#contact");
-                }}
-                className="group liquid-glass inline-flex items-center justify-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-foreground transition-colors hover:border-primary/40 cursor-pointer"
-                style={{ fontFamily: "var(--font-heading)" }}>
-                <FiSend className="h-4 w-4 text-primary transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                Let&apos;s build
-              </MagneticButton>
-
-              <motion.a
-                href={socialLinks.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.06, rotate: -4 }}
-                whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-transparent px-4 py-3.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:border-primary/30"
-                aria-label="GitHub">
-                <GitHubIcon className="h-4 w-4" />
-              </motion.a>
-            </motion.div>
-
-          </motion.div>
-
-          {/* Right column */}
-          <div className="relative flex flex-col items-center lg:items-end gap-5">
-            <motion.div
-              className="relative w-full max-w-md"
-              animate={
-                prefersReduced
-                  ? undefined
-                  : { y: [0, -10, 0] }
-              }
-              transition={{
-                duration: 6,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}>
-              {/* Glow behind terminal */}
-              <motion.div
-                className="absolute -inset-6 rounded-[2rem] bg-primary/15 blur-3xl"
-                animate={{ opacity: [0.35, 0.6, 0.35], scale: [0.98, 1.04, 0.98] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-              />
-              <TerminalCard className="w-full relative z-10" />
-            </motion.div>
-
-            <div className="grid grid-cols-3 gap-2.5 w-full max-w-md">
-              {valueProps.map((v, i) => {
-                const Icon = v.icon;
-                return (
-                  <motion.div
-                    key={v.title}
-                    initial={{ opacity: 0, y: 20, scale: 0.94 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{
-                      delay: 0.85 + i * 0.1,
-                      type: "spring",
-                      stiffness: 120,
-                      damping: 14,
-                    }}
-                    whileHover={{
-                      y: -6,
-                      boxShadow:
-                        "0 16px 40px -12px color-mix(in srgb, var(--color-primary) 35%, transparent)",
-                    }}
-                    className="rounded-2xl liquid-glass p-3.5 text-center cursor-default">
-                    <motion.div
-                      animate={{ y: [0, -3, 0] }}
-                      transition={{
-                        duration: 2.8 + i * 0.3,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        delay: i * 0.2,
-                      }}>
-                      <Icon className="mx-auto h-4 w-4 text-primary mb-1.5" />
-                    </motion.div>
-                    <div className="text-[11px] font-bold text-foreground leading-tight">
-                      {v.title}
-                    </div>
-                    <div className="mt-0.5 text-[10px] text-muted-foreground leading-tight">
-                      {v.desc}
-                    </div>
-                  </motion.div>
-                );
-              })}
+        <motion.div
+          initial={reducedMotion ? undefined : { opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.85, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
+          className="relative mx-auto w-full max-w-[30rem]">
+          <div className="absolute -inset-5 rounded-[2.5rem] bg-primary/8 blur-3xl" />
+          <div className="relative overflow-hidden rounded-[1.5rem] border border-border bg-card shadow-2xl shadow-primary/10">
+            <div className="flex items-center justify-between border-b border-border bg-secondary/45 px-4 py-3">
+              <div className="flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-rose-400/80" />
+                <span className="h-2.5 w-2.5 rounded-full bg-amber-400/80" />
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/80" />
+              </div>
+              <span className="font-mono text-[10px] text-muted-foreground">bipul.tech / work</span>
+              <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
+            </div>
+            <div className="p-5 sm:p-7">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-primary">Selected direction</p>
+                  <h2 className="mt-3 text-2xl font-bold tracking-tight text-foreground">Make complexity feel simple.</h2>
+                </div>
+                <div className="rounded-xl bg-primary/10 p-2.5 text-primary"><Sparkles className="h-5 w-5" /></div>
+              </div>
+              <div className="mt-8 grid grid-cols-2 gap-3">
+                <div className="rounded-xl border border-border bg-background p-4">
+                  <Monitor className="h-4 w-4 text-primary" />
+                  <p className="mt-5 text-xs font-semibold text-foreground">Interface</p>
+                  <p className="mt-1 text-[11px] leading-4 text-muted-foreground">Clear, responsive, considered.</p>
+                </div>
+                <div className="rounded-xl border border-border bg-background p-4">
+                  <Code2 className="h-4 w-4 text-primary" />
+                  <p className="mt-5 text-xs font-semibold text-foreground">Engineering</p>
+                  <p className="mt-1 text-[11px] leading-4 text-muted-foreground">Solid foundations, no theatre.</p>
+                </div>
+              </div>
+              <div className="mt-3 flex items-center justify-between rounded-xl border border-primary/15 bg-primary/5 px-4 py-3">
+                <span className="text-xs font-semibold text-foreground">From idea to shipped product</span>
+                <ArrowUpRight className="h-4 w-4 text-primary" />
+              </div>
+              <a href={socialLinks.github} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground transition-colors hover:text-primary">
+                <GitHubIcon className="h-4 w-4" /> Explore the work in public
+              </a>
             </div>
           </div>
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.15, duration: 0.7, ease: easeOut }}
-          className="mt-14 sm:mt-16">
-          <p className="mb-3 text-center text-[10px] font-mono uppercase tracking-[0.24em] text-muted-foreground">
-            Stack I ship with
-          </p>
-          <InfiniteMarquee items={marqueeStack} speed="normal" />
         </motion.div>
       </div>
-
-      <motion.div
-        className="absolute bottom-7 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 z-20 pointer-events-none"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}>
-        <span className="text-[9px] font-bold tracking-[0.32em] uppercase text-muted-foreground">
-          Scroll
-        </span>
-        <motion.div
-          animate={{ y: [0, 7, 0], opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}>
-          <ChevronDown className="h-3.5 w-3.5 text-primary" />
-        </motion.div>
-      </motion.div>
     </section>
   );
 }

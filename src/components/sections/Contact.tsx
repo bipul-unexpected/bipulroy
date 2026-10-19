@@ -28,7 +28,7 @@ export function Contact() {
 
   return (
     <section id="contact" className="relative py-24 md:py-32" ref={ref}>
-      <div className="mx-auto max-w-6xl px-6">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <motion.div
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
@@ -160,7 +160,7 @@ export function Contact() {
             {/* Right: Web3Forms contact form */}
             <motion.div variants={fadeUp}>
               <PremiumDraggable>
-                <div className="glass-panel rounded-xl p-8 md:p-10 text-center space-y-7">
+                <div className="glass-panel rounded-xl p-5 sm:p-8 md:p-10 text-center space-y-6 sm:space-y-7">
                   <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto">
                     <Send className="w-7 h-7 text-primary" />
                   </div>

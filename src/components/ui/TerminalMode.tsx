@@ -169,8 +169,8 @@ export function TerminalMode({ open, onExit, onToggleTheme }: TerminalModeProps)
           className="fixed inset-0 z-[70] overflow-hidden bg-[#07070b] text-[#e8e8ed]"
           onClick={() => inputRef.current?.focus()}>
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_15%,rgba(124,58,237,0.18),transparent_35%),radial-gradient(circle_at_15%_85%,rgba(14,165,233,0.1),transparent_30%)]" />
-          <div className="relative mx-auto flex h-full w-full max-w-6xl flex-col px-5 py-5 sm:px-8 sm:py-8">
-            <div className="flex items-center justify-between border-b border-white/10 pb-4 font-mono text-xs text-white/50">
+          <div className="relative mx-auto flex h-full w-full max-w-6xl flex-col px-4 py-[max(1rem,env(safe-area-inset-top))] sm:px-8 sm:py-8">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3 sm:pb-4 font-mono text-[11px] sm:text-xs text-white/50">
               <div className="flex items-center gap-3"><span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />bipul@portfolio:~</div>
               <button type="button" onClick={onExit} className="rounded-lg p-2 text-white/50 transition hover:bg-white/10 hover:text-white" aria-label="Exit terminal mode"><X className="h-4 w-4" /></button>
             </div>
@@ -185,7 +185,7 @@ export function TerminalMode({ open, onExit, onToggleTheme }: TerminalModeProps)
                 <input ref={inputRef} value={input} onChange={(event) => setInput(event.target.value)} className="min-w-0 flex-1 bg-transparent text-white outline-none" aria-label="Terminal command" autoComplete="off" spellCheck={false} />
               </form>
             </div>
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4 font-mono text-[10px] text-white/40">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-3 sm:pt-4 font-mono text-[10px] text-white/40">
               <span className="inline-flex items-center gap-2"><CornerDownLeft className="h-3 w-3" />Enter to run · Esc to exit</span>
               <span className="inline-flex items-center gap-1">browser shell <ArrowUpRight className="h-3 w-3" /></span>
             </div>

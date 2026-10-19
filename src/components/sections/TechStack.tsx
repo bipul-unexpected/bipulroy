@@ -27,7 +27,7 @@ export function TechStack() {
 
   return (
     <section id="tech-stack" className="relative py-24 md:py-32" ref={ref}>
-      <div className="mx-auto max-w-6xl px-6">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <motion.div
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
