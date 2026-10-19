@@ -51,6 +51,13 @@ export interface Stat {
   suffix?: string
 }
 
+export interface Article {
+  id: string
+  title: string
+  description: string
+  url?: string
+}
+
 export const profile = {
   name: 'Bipul Roy',
   shortName: 'Bipul',
@@ -170,6 +177,16 @@ export const projects: Project[] = [
     githubUrl: 'https://github.com/bipul-unexpected',
     caseStudyUrl: '#',
     featured: false,
+  },
+]
+
+export const articles: Article[] = [
+  {
+    id: 'shipping-calm-systems',
+    title: 'Shipping calm systems: a practical guide to product reliability',
+    description:
+      'The design, API, and deployment decisions that turn a promising interface into a product people can trust in production.',
+    url: '#contact',
   },
 ]
 

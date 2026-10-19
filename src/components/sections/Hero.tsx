@@ -10,7 +10,7 @@ import {
   useMotionValue,
   useSpring,
 } from "framer-motion";
-import type { ComponentProps } from "react";
+import type { CSSProperties, MouseEventHandler, ReactNode } from "react";
 import {
   ArrowRight,
   ChevronDown,
@@ -21,7 +21,7 @@ import {
   Cloud,
 } from "lucide-react";
 import { FiSend } from "react-icons/fi";
-import { profile, socialLinks, tallyFormId } from "../../data/portfolio";
+import { profile, socialLinks } from "../../data/portfolio";
 import { TextAnimate } from "../ui/TextAnimate";
 import { MouseSpotlight } from "../ui/Spotlight";
 import { InfiniteMarquee } from "../ui/InfiniteMarquee";
@@ -137,8 +137,14 @@ function MagneticButton({
   className,
   onClick,
   href,
-  ...rest
-}: ComponentProps<"a">) {
+  style,
+}: {
+  children: ReactNode;
+  className?: string;
+  href?: string;
+  onClick?: MouseEventHandler<HTMLAnchorElement>;
+  style?: CSSProperties;
+}) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const springX = useSpring(x, { stiffness: 280, damping: 18 });
@@ -148,7 +154,6 @@ function MagneticButton({
     <motion.a
       href={href}
       onClick={onClick}
-      style={{ x: springX, y: springY }}
       onMouseMove={(e) => {
         const rect = e.currentTarget.getBoundingClientRect();
         x.set((e.clientX - rect.left - rect.width / 2) * 0.25);
@@ -161,7 +166,7 @@ function MagneticButton({
       whileHover={{ scale: 1.03 }}
       whileTap={{ scale: 0.97 }}
       className={className}
-      {...rest}>
+      style={{ ...style, x: springX, y: springY }}>
       {children}
     </motion.a>
   );
@@ -358,9 +363,6 @@ export function Hero() {
                   e.preventDefault();
                   scrollToSection("#contact");
                 }}
-                data-tally-open={tallyFormId}
-                data-tally-layout="modal"
-                data-tally-width="600"
                 className="group liquid-glass inline-flex items-center justify-center gap-2 rounded-full px-8 py-3.5 text-sm font-bold text-foreground transition-colors hover:border-primary/40 cursor-pointer"
                 style={{ fontFamily: "var(--font-heading)" }}>
                 <FiSend className="h-4 w-4 text-primary transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />

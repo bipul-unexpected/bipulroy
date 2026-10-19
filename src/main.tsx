@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BlinkUIProvider, Toaster } from "@blinkdotnew/ui";
+import { ClerkProvider } from "@clerk/react";
 import App from "./App";
 import "./index.css";
 
@@ -35,12 +36,17 @@ async function bootstrap() {
   let tree = (
     <QueryClientProvider client={queryClient}>
       {/* class mode: we own dark/light on <html> */}
-      <BlinkUIProvider theme="midnight" darkMode="class">
+      <BlinkUIProvider theme="midnight">
         <Toaster />
         <App />
       </BlinkUIProvider>
     </QueryClientProvider>
   );
+
+  const clerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
+  if (clerkKey) {
+    tree = <ClerkProvider publishableKey={clerkKey}>{tree}</ClerkProvider>;
+  }
 
   if (posthogKey) {
     const { PostHogProvider } = await import("@posthog/react");

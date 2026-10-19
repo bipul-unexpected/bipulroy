@@ -1,8 +1,8 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { Mail, MapPin, Send } from "lucide-react";
 import { GitHubIcon, LinkedInIcon, XIcon } from "../ui/SocialIcons";
-import { socialLinks, tallyFormId } from "../../data/portfolio";
+import { socialLinks } from "../../data/portfolio";
 import { PremiumDraggable } from "../ui/PremiumDraggable";
 import { TextAnimate } from "../ui/TextAnimate";
 
@@ -18,6 +18,7 @@ const fadeUp = {
 export function Contact() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
   const socialProfiles = [
     { icon: GitHubIcon, href: socialLinks.github, label: "GitHub" },
@@ -156,7 +157,7 @@ export function Contact() {
               </div>
             </motion.div>
 
-            {/* Right: Tally contact form */}
+            {/* Right: Web3Forms contact form */}
             <motion.div variants={fadeUp}>
               <PremiumDraggable>
                 <div className="glass-panel rounded-xl p-8 md:p-10 text-center space-y-7">
@@ -181,27 +182,36 @@ export function Contact() {
                       duration={1}
                       delay={0.1}
                       staggerDelay={0.04}>
-                      Use the quick Tally form to share your project details.
-                      I&apos;ll get back to you within 24 hours.
+                      Tell me what you are building, what success looks like,
+                      and where you need a reliable second pair of hands.
                     </TextAnimate>
                   </p>
-                  <div className="space-y-3 pt-1">
-                    <button
-                      type="button"
-                      data-tally-open={tallyFormId}
-                      data-tally-layout="modal"
-                      data-tally-width="600"
-                      className="btn-primary inline-flex w-full items-center justify-center gap-2 rounded-lg px-6 py-3.5 text-sm font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]">
-                      <Send className="w-4 h-4" />
-                      <TextAnimate
-                        animation="blurInUp"
-                        by="word"
-                        duration={0.6}
-                        staggerDelay={0.05}>
-                        Open contact form
-                      </TextAnimate>
+                  <form className="space-y-3 text-left" onSubmit={async (event) => {
+                    event.preventDefault();
+                    setStatus("sending");
+                    const form = event.currentTarget;
+                    const data = new FormData(form);
+                    data.append("access_key", import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || "39f9a6b3-763c-4ef6-bf81-06128530394d");
+                    data.append("subject", "New project inquiry from bipul.tech");
+                    try {
+                      const response = await fetch("https://api.web3forms.com/submit", { method: "POST", body: data });
+                      if (!response.ok) throw new Error("Web3Forms request failed");
+                      form.reset();
+                      setStatus("sent");
+                    } catch (error) {
+                      console.error("Contact form submission failed:", error);
+                      setStatus("error");
+                    }
+                  }}>
+                    <input required name="name" placeholder="Your name" autoComplete="name" className="w-full rounded-lg border border-border bg-background/60 px-4 py-3 text-sm text-foreground outline-none focus:border-primary" />
+                    <input required type="email" name="email" placeholder="Email address" autoComplete="email" className="w-full rounded-lg border border-border bg-background/60 px-4 py-3 text-sm text-foreground outline-none focus:border-primary" />
+                    <textarea required name="message" rows={4} placeholder="What are you building?" className="w-full rounded-lg border border-border bg-background/60 px-4 py-3 text-sm text-foreground outline-none focus:border-primary" />
+                    <button disabled={status === "sending"} type="submit" className="btn-primary inline-flex w-full items-center justify-center gap-2 rounded-lg px-6 py-3.5 text-sm font-semibold transition-all disabled:opacity-60">
+                      <Send className="w-4 h-4" /> {status === "sending" ? "Sending..." : "Send inquiry"}
                     </button>
-                  </div>
+                    {status === "sent" && <p className="text-center text-sm text-primary">Thanks — your message is on its way.</p>}
+                    {status === "error" && <p className="text-center text-sm text-destructive">Something went wrong. Please email {socialLinks.email} directly.</p>}
+                  </form>
                 </div>
               </PremiumDraggable>
             </motion.div>

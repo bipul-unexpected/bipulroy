@@ -4,9 +4,9 @@
  */
 import { useReducedMotion, motion } from "framer-motion";
 import { FiArrowRight } from "react-icons/fi";
-import { tallyFormId } from "../../data/portfolio";
 import { HeroLandscapeBg } from "../ui/HeroLandscapeBg";
 import { BorderBeam } from "../ui/BorderBeam";
+import { scrollToSection } from "../../lib/scrollToSection";
 
 export const AuroraHero = () => {
   const prefersReduced = useReducedMotion();
@@ -101,9 +101,7 @@ export const AuroraHero = () => {
 
           <motion.button
             type="button"
-            data-tally-open={tallyFormId}
-            data-tally-layout="modal"
-            data-tally-width="600"
+            onClick={() => scrollToSection("#contact")}
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}

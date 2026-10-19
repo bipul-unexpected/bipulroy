@@ -1,0 +1,406 @@
+{
+  "root": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy",
+  "node": "v24.18.0",
+  "commands": {
+    "node": {
+      "status": 0,
+      "stdout": "C:\\Program Files\\nodejs\\node.exe\r\nC:\\Users\\somrat\\AppData\\Local\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe\\node-v24.19.0-win-x64\\node.exe\r\n",
+      "stderr": ""
+    },
+    "npm": {
+      "status": 0,
+      "stdout": "C:\\Users\\somrat\\.eigent\\bin\\npm.cmd\r\nC:\\Program Files\\nodejs\\npm\r\nC:\\Program Files\\nodejs\\npm.cmd\r\nC:\\Users\\somrat\\AppData\\Local\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe\\node-v24.19.0-win-x64\\npm\r\nC:\\Users\\somrat\\AppData\\Local\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe\\node-v24.19.0-win-x64\\npm.cmd\r\n",
+      "stderr": ""
+    },
+    "git": {
+      "status": 0,
+      "stdout": "C:\\Users\\somrat\\AppData\\Local\\Programs\\Eigent\\resources\\prebuilt\\mingit\\cmd\\git.exe\r\nC:\\Program Files\\Git\\cmd\\git.exe\r\n",
+      "stderr": ""
+    },
+    "python": {
+      "status": 0,
+      "stdout": "C:\\Users\\somrat\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\r\nC:\\Users\\somrat\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe\r\n",
+      "stderr": ""
+    },
+    "bun": {
+      "status": 1,
+      "stdout": "",
+      "stderr": "INFO: Could not find files for the given pattern(s).\r\n"
+    }
+  },
+  "git": {
+    "status": 0,
+    "stdout": " M src/vite-env.d.ts\n?? .note_register\n?? inspection-inventory.json\n?? shared_files.md\n",
+    "stderr": ""
+  },
+  "files": [
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\.env.example",
+      "bytes": 118
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\.git",
+      "type": "excluded-generated-or-third-party"
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\.gitignore",
+      "bytes": 277
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\.note_register",
+      "bytes": 12
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\index.html",
+      "bytes": 6461
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\inspection-inventory.json",
+      "bytes": 14132
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\md\\ANIMATION_COMPONENTS.md",
+      "bytes": 15747
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\md\\COMPLETE_WORK_SUMMARY.md",
+      "bytes": 14601
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\md\\DOCUMENTATION_INDEX.md",
+      "bytes": 10890
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\md\\HERO_ENHANCEMENT_SUMMARY.md",
+      "bytes": 9851
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\md\\IMPLEMENTATION_OVERVIEW.md",
+      "bytes": 15350
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\md\\IMPLEMENTATION_SUMMARY.md",
+      "bytes": 14857
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\md\\PROJECT_COMPLETION_REPORT.md",
+      "bytes": 16597
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\md\\QUICK_REFERENCE.md",
+      "bytes": 6016
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\md\\TEXTANIMATE_FEATURE_GUIDE.md",
+      "bytes": 8120
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\md\\TEXTANIMATE_README.md",
+      "bytes": 13296
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\node_modules",
+      "type": "excluded-generated-or-third-party"
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\package-lock.json",
+      "bytes": 297368
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\package.json",
+      "bytes": 1863
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\postcss.config.cjs",
+      "bytes": 127
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\public\\b.png",
+      "bytes": 74270
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\public\\github-avatar.jpg",
+      "bytes": 26859
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\public\\hero-bg.jpg",
+      "bytes": 244948
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\public\\og-image.svg",
+      "bytes": 749
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\public\\profile.jpg",
+      "bytes": 81354
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\public\\robots.txt",
+      "bytes": 68
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\public\\sitemap.xml",
+      "bytes": 270
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\public\\voiceflow-widget.css",
+      "bytes": 341
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\public\\_redirects",
+      "bytes": 23
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\README.md",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\scripts\\check-nav.mjs",
+      "bytes": 1453
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\scripts\\check-theme.mjs",
+      "bytes": 1674
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\scripts\\check-ui.mjs",
+      "bytes": 2128
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\scripts\\fix-fonts.py",
+      "bytes": 654
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\shared_files.md",
+      "bytes": 353
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\App.css",
+      "bytes": 558
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\App.tsx",
+      "bytes": 7511
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\layout\\Navbar.tsx",
+      "bytes": 15263
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\layout\\ScrollToTop.tsx",
+      "bytes": 1405
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\sections\\About.tsx",
+      "bytes": 8863
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\sections\\AuroraHero.tsx",
+      "bytes": 6531
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\sections\\CaseStudies.tsx",
+      "bytes": 5752
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\sections\\Contact.tsx",
+      "bytes": 8906
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\sections\\Experience.tsx",
+      "bytes": 5846
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\sections\\Footer.tsx",
+      "bytes": 6804
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\sections\\Hero.tsx",
+      "bytes": 17796
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\sections\\Projects.tsx",
+      "bytes": 13122
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\sections\\Services.tsx",
+      "bytes": 4656
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\sections\\Stats.tsx",
+      "bytes": 3820
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\sections\\TechStack.tsx",
+      "bytes": 4414
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\sections\\Testimonials.tsx",
+      "bytes": 4923
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\ui\\BeamEffect.tsx",
+      "bytes": 2481
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\ui\\BorderBeam.tsx",
+      "bytes": 1577
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\ui\\CustomCursor.tsx",
+      "bytes": 8663
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\ui\\DottedSurface.tsx",
+      "bytes": 6881
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\ui\\EntropyBackground.tsx",
+      "bytes": 8011
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\ui\\FloatingElement.tsx",
+      "bytes": 655
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\ui\\GlowingText.tsx",
+      "bytes": 2277
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\ui\\GradientText.tsx",
+      "bytes": 1126
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\ui\\HeroLandscapeBg.tsx",
+      "bytes": 5392
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\ui\\index.ts",
+      "bytes": 1039
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\ui\\InfiniteMarquee.tsx",
+      "bytes": 1733
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\ui\\LightingCursor.tsx",
+      "bytes": 1509
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\ui\\ParticleTrail.tsx",
+      "bytes": 2661
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\ui\\PremiumDraggable.tsx",
+      "bytes": 8121
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\ui\\PremiumTyping.tsx",
+      "bytes": 1628
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\ui\\SectionCinematicReveal.tsx",
+      "bytes": 2997
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\ui\\SocialIcons.tsx",
+      "bytes": 1999
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\ui\\SplashCursor.tsx",
+      "bytes": 45981
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\ui\\SplitText.tsx",
+      "bytes": 1252
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\ui\\Spotlight.tsx",
+      "bytes": 2589
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\ui\\TerminalCard.tsx",
+      "bytes": 3314
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\ui\\TextAnimate.demo.tsx",
+      "bytes": 7005
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\ui\\TextAnimate.tsx",
+      "bytes": 3714
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\components\\ui\\ThemeTransition.tsx",
+      "bytes": 3532
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\data\\portfolio.ts",
+      "bytes": 13754
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\hooks\\useMousePosition.ts",
+      "bytes": 439
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\hooks\\useScrollAnimations.ts",
+      "bytes": 7315
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\hooks\\useScrollProgress.ts",
+      "bytes": 1976
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\index.css",
+      "bytes": 18275
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\lib\\scrollToSection.ts",
+      "bytes": 2133
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\lib\\utils.ts",
+      "bytes": 171
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\main.tsx",
+      "bytes": 2154
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\Shell.tsx",
+      "bytes": 1437
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\shims\\react-resizable-panels.ts",
+      "bytes": 208
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\styles\\seeui-creativity.ts",
+      "bytes": 1185
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\styles\\seeui-royalty.ts",
+      "bytes": 5822
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\src\\vite-env.d.ts",
+      "bytes": 232
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\tailwind.config.cjs",
+      "bytes": 7568
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\tsconfig.json",
+      "bytes": 1174
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\tsconfig.node.json",
+      "bytes": 331
+    },
+    {
+      "path": "C:\\Users\\somrat\\Documents\\Bipul\\Portfolio\\bipulroy\\vite.config.ts",
+      "bytes": 655
+    }
+  ]
+}

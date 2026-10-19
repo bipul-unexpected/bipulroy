@@ -18,7 +18,10 @@ import { Testimonials } from "./components/sections/Testimonials";
 import { Contact } from "./components/sections/Contact";
 import { AuroraHero } from "./components/sections/AuroraHero";
 import { Footer } from "./components/sections/Footer";
+import { ContentHub } from "./components/sections/ContentHub";
+import { AdminStudio } from "./components/admin/AdminStudio";
 import { useScrollProgress } from "./hooks/useScrollProgress";
+import { playClickSound } from "./lib/clickSound";
 
 const THEME_KEY = "bipul-theme";
 
@@ -47,6 +50,17 @@ function App() {
   const [ripple, setRipple] = useState<ThemeRipple | null>(null);
   const pendingTheme = useRef<boolean | null>(null);
   const midFired = useRef(false);
+
+  useEffect(() => {
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target;
+      if (target instanceof Element && target.closest("a, button, summary, [role='button']")) {
+        playClickSound();
+      }
+    };
+    document.addEventListener("pointerdown", handlePointerDown, { passive: true });
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, []);
 
   useEffect(() => {
     applyTheme(isDark);
@@ -186,6 +200,9 @@ function App() {
         <SectionCinematicReveal tone="curtain">
           <Projects />
         </SectionCinematicReveal>
+        <SectionCinematicReveal tone="float">
+          <ContentHub />
+        </SectionCinematicReveal>
         <SectionCinematicReveal tone="glide-right">
           <CaseStudies />
         </SectionCinematicReveal>
@@ -204,6 +221,11 @@ function App() {
         <SectionCinematicReveal tone="depth">
           <Contact />
         </SectionCinematicReveal>
+        {import.meta.env.VITE_CLERK_PUBLISHABLE_KEY && (
+          <SectionCinematicReveal tone="vault">
+            <AdminStudio />
+          </SectionCinematicReveal>
+        )}
         <AuroraHero />
       </main>
       <SectionCinematicReveal tone="vault" className="relative z-10">
