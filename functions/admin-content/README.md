@@ -18,6 +18,11 @@ Create a Function in Appwrite:
   as a nested folder, or an archive whose first entry is
   `admin-content/package.json`.
 
+Use the Appwrite region-specific endpoint for the project. For the current
+portfolio project, the region is `sgp`, so configure the CLI with
+`https://sgp.cloud.appwrite.io/v1`; the global endpoint can return
+“Project is not accessible in this region.”
+
 Give the Function API key only these scopes:
 
 - Databases: read, documents create/read/update/delete

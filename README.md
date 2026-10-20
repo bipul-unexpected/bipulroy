@@ -178,6 +178,21 @@ If an Appwrite deployment reports
 Re-upload the contents of `functions/admin-content` and confirm the archive
 root contains `package.json`, `package-lock.json`, and `src/main.js`.
 
+The current Appwrite project is hosted in the `sgp` region. For CLI
+deployments, configure the regional endpoint before creating a deployment:
+
+```powershell
+appwrite client --endpoint="https://sgp.cloud.appwrite.io/v1" `
+  --project-id="69a262f10033525a04ab"
+Set-Location functions\admin-content
+appwrite functions create-deployment `
+  --function-id=admincontent `
+  --code=. `
+  --entrypoint=src/main.js `
+  --commands="npm install" `
+  --activate
+```
+
 ## Terminal mode
 
 The terminal icon in the navigation opens a full-screen interactive browser
