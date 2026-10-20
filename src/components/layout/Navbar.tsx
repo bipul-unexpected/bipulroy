@@ -17,9 +17,10 @@ interface NavbarProps {
   isScrolled: boolean
   isDark?: boolean
   onToggleTerminal?: () => void
+  showAdmin?: boolean
 }
 
-export function Navbar({ activeSection, isScrolled, onToggleTerminal }: NavbarProps) {
+export function Navbar({ activeSection, isScrolled, onToggleTerminal, showAdmin = false }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [isNavHovered, setIsNavHovered] = useState(false)
   const { scrollYProgress } = useScroll()
@@ -101,7 +102,7 @@ export function Navbar({ activeSection, isScrolled, onToggleTerminal }: NavbarPr
           <div 
             className="hidden lg:flex items-center justify-center gap-0.5 liquid-glass rounded-full py-1 px-1 min-w-max shrink-0 mx-2"
           >
-            {navLinks.map((link) => (
+            {[...navLinks, ...(showAdmin ? [{ label: 'Admin', href: '#admin', section: 'admin' }] : [])].map((link) => (
                 <a
                   key={link.section}
                   href={link.href}
@@ -232,7 +233,7 @@ export function Navbar({ activeSection, isScrolled, onToggleTerminal }: NavbarPr
             </div>
 
             <div className="relative z-10 flex flex-col items-center gap-5 w-full px-6">
-              {navLinks.map((link, i) => (
+              {[...navLinks, ...(showAdmin ? [{ label: 'Admin', href: '#admin', section: 'admin' }] : [])].map((link, i) => (
                 <motion.a
                   key={link.section}
                   href={link.href}

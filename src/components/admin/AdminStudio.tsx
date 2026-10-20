@@ -185,7 +185,30 @@ export function AdminStudio() {
       </section>
     );
   }
-  if (!canManage) return null;
+  if (!canManage) {
+    return (
+      <section id="admin" className="relative py-20">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="glass-panel rounded-2xl p-5 sm:p-7">
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <p className="text-xs font-mono uppercase tracking-[0.18em] text-amber-600">Admin access required</p>
+                <h2 className="mt-2 text-2xl font-bold text-foreground">Your Clerk account is signed in, but it is not an administrator.</h2>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+                  Add the exact public metadata below to your Clerk user, then sign out and sign in again. This dashboard intentionally stays hidden from non-admin accounts.
+                </p>
+                <pre className="mt-4 w-fit rounded-xl border border-border bg-background/70 px-4 py-3 font-mono text-sm text-foreground">{`{ "role": "admin" }`}</pre>
+                <p className="mt-3 text-xs text-muted-foreground">
+                  Clerk Dashboard → Users → your account → Public metadata → Save.
+                </p>
+              </div>
+              <UserButton />
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="admin" className="relative py-20">
