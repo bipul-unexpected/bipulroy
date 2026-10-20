@@ -9,10 +9,10 @@ import { scrollToSection } from "../../lib/scrollToSection";
 import { FooterLoupe } from "../ui/FooterLoupe";
 
 const quickLinks = [
-  { label: "About", href: "#about" },
-  { label: "Projects", href: "#projects" },
-  { label: "Services", href: "#services" },
-  { label: "Contact", href: "#contact" },
+  { label: "Projects", href: "/projects" },
+  { label: "Services", href: "/services" },
+  { label: "Journal", href: "/journal" },
+  { label: "Contact", href: "/contact" },
 ];
 
 const socialProfiles = [
@@ -111,6 +111,7 @@ export function Footer() {
                   key={link.label}
                   href={link.href}
                   onClick={(e) => {
+                    if (link.href.startsWith("/")) return;
                     e.preventDefault();
                     scrollToSection(link.href);
                   }}

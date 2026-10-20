@@ -7,7 +7,7 @@ export function FooterLoupe({ children }: { children: ReactNode }) {
   const mirrorRef = useRef<HTMLDivElement>(null);
   const lensRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(true);
-  const [zoom, setZoom] = useState(2.2);
+  const [zoom, setZoom] = useState(1.6);
   const pointer = useRef({ x: -999, y: -999, targetX: -999, targetY: -999 });
 
   useEffect(() => {

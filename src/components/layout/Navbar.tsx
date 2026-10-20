@@ -4,12 +4,11 @@ import { Terminal } from 'lucide-react'
 import { scrollToSection } from '../../lib/scrollToSection'
 
 const navLinks = [
-  { label: 'About', href: '#about', section: 'about' },
-  { label: 'Projects', href: '#projects', section: 'projects' },
-  { label: 'Services', href: '#services', section: 'services' },
-  { label: 'Experience', href: '#experience', section: 'experience' },
-  { label: 'Journal', href: '#journal', section: 'journal' },
-  { label: 'Contact', href: '#contact', section: 'contact' },
+  { label: 'Projects', href: '/projects', section: 'projects' },
+  { label: 'Services', href: '/services', section: 'services' },
+  { label: 'Experience', href: '/experience', section: 'experience' },
+  { label: 'Journal', href: '/journal', section: 'journal' },
+  { label: 'Contact', href: '/contact', section: 'contact' },
 ]
 
 interface NavbarProps {
@@ -29,7 +28,11 @@ export function Navbar({ activeSection, isScrolled, onToggleTerminal }: NavbarPr
     (e: React.MouseEvent<HTMLElement>, href: string) => {
       e.preventDefault()
       setMobileOpen(false)
-      scrollToSection(href)
+      if (href.startsWith("/")) {
+        window.location.assign(href)
+      } else {
+        scrollToSection(href)
+      }
     },
     [],
   )
@@ -58,7 +61,7 @@ export function Navbar({ activeSection, isScrolled, onToggleTerminal }: NavbarPr
 
           {/* Left: Logo & Status */}
           <div className="flex items-center gap-2 md:gap-3 relative z-10 shrink-0">
-            <a href="#hero" className="flex items-center gap-2 group cursor-pointer focus:outline-none" onClick={(e) => premiumScrollTo(e, '#hero')}>
+            <a href="/" className="flex items-center gap-2 group cursor-pointer focus:outline-none" onClick={(e) => premiumScrollTo(e, '/')}>
                
               <div className="flex flex-col justify-center">
                 
@@ -135,7 +138,7 @@ export function Navbar({ activeSection, isScrolled, onToggleTerminal }: NavbarPr
             </motion.button>
 
             <a
-              href="#contact"
+              href="/contact"
               onClick={(e) => premiumScrollTo(e, '#contact')}
               className="hidden md:inline-flex items-center justify-center h-10 px-5 lg:px-6 rounded-full bg-foreground text-background text-[13px] font-semibold hover:bg-primary hover:text-primary-foreground border border-transparent transition-colors shrink-0 cursor-pointer"
               style={{ fontFamily: "var(--font-heading)" }}
@@ -144,7 +147,7 @@ export function Navbar({ activeSection, isScrolled, onToggleTerminal }: NavbarPr
             </a>
 
             <a
-              href="#contact"
+              href="/contact"
               onClick={(e) => premiumScrollTo(e, '#contact')}
               className="btn-primary md:hidden relative inline-flex items-center justify-center gap-1.5 h-[34px] px-2.5 sm:px-4 rounded-xl text-[9px] sm:text-[10px] tracking-[0.1em] shrink-0 cursor-pointer"
             >
@@ -255,7 +258,7 @@ export function Navbar({ activeSection, isScrolled, onToggleTerminal }: NavbarPr
               <div className="h-px w-4/5 max-w-xs bg-gradient-to-r from-transparent via-border to-transparent my-3" />
 
               <motion.a
-                href="#contact"
+                href="/contact"
                 onClick={(e) => premiumScrollTo(e, '#contact')}
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}

@@ -21,6 +21,7 @@ import { useScrollProgress } from "./hooks/useScrollProgress";
 import { playClickSound } from "./lib/clickSound";
 import { TerminalMode } from "./components/ui/TerminalMode";
 import { SmoothScroll } from "./components/ui/SmoothScroll";
+import { PublicRoutePage } from "./components/PublicRoutePage";
 
 const THEME_KEY = "bipul-theme";
 
@@ -141,6 +142,7 @@ function App() {
   }, []);
 
   const isAdminPath = window.location.pathname.replace(/\/+$/, "") === "/onionbipulking";
+  const publicPath = window.location.pathname.replace(/\/+$/, "") || "/";
   const clerkConfigured = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
 
   if (isAdminPath) {
@@ -159,6 +161,10 @@ function App() {
         )}
       </div>
     );
+  }
+
+  if (publicPath !== "/") {
+    return <PublicRoutePage pathname={publicPath} />;
   }
 
   return (

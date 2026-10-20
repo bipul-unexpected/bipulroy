@@ -10,7 +10,11 @@ function SectionLink({ href, children, primary = false }: { href: string; childr
   return (
     <a
       href={href}
-      onClick={(event) => { event.preventDefault(); scrollToSection(href); }}
+      onClick={(event) => {
+        if (href.startsWith("/")) return;
+        event.preventDefault();
+        scrollToSection(href);
+      }}
       className={`group inline-flex min-h-12 w-full items-center justify-center gap-2.5 rounded-xl px-6 text-sm font-medium transition-all duration-200 active:scale-[0.98] sm:w-auto sm:rounded-2xl ${
         primary
           ? "bg-slate-900 text-white shadow-[0_6px_20px_rgba(15,23,42,0.2)] hover:scale-[1.02] hover:bg-slate-800 hover:shadow-[0_10px_28px_rgba(15,23,42,0.28)]"
@@ -72,7 +76,7 @@ export function Hero() {
             <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center">
               <h1 className="mb-5 text-3xl font-extrabold leading-[1.12] tracking-tight text-slate-900 sm:mb-6 sm:text-5xl md:text-6xl lg:text-[68px] lg:leading-[1.06]">Engineering Fluid <br className="hidden sm:inline" /><span className="bg-gradient-to-r from-slate-950 via-slate-800 to-indigo-950 bg-clip-text text-transparent">Digital Experiences.</span></h1>
               <p className="mb-8 max-w-2xl px-2 text-sm leading-relaxed text-slate-500 sm:mb-10 sm:text-base md:text-lg lg:text-xl">Full-Stack Systems Architect crafting weightless interfaces and resilient backend engines. Specializing in <b className="rounded border border-slate-200/40 bg-slate-100/60 px-1 py-0.5 text-slate-900">React</b>, <b className="rounded border border-slate-200/40 bg-slate-100/60 px-1 py-0.5 text-slate-900">TypeScript</b>, and high-throughput <b className="rounded border border-slate-200/40 bg-slate-100/60 px-1 py-0.5 text-slate-900">Node.js</b> cloud infrastructures.</p>
-              <div className="flex w-full flex-col justify-center gap-3 px-2 sm:w-auto sm:flex-row sm:gap-4"><SectionLink href="#projects" primary>Explore Engineering Work <ArrowRight className="h-4 w-4 text-slate-300 transition-transform group-hover:translate-x-1" /></SectionLink><SectionLink href="#contact"><Mail className="h-4 w-4 text-slate-600" />Initiate Dialogue</SectionLink></div>
+              <div className="flex w-full flex-col justify-center gap-3 px-2 sm:w-auto sm:flex-row sm:gap-4"><SectionLink href="/projects" primary>Explore Engineering Work <ArrowRight className="h-4 w-4 text-slate-300 transition-transform group-hover:translate-x-1" /></SectionLink><SectionLink href="/contact"><Mail className="h-4 w-4 text-slate-600" />Initiate Dialogue</SectionLink></div>
               <div className="mt-8 flex max-w-xl flex-wrap items-center justify-center gap-x-4 gap-y-2 border-t border-slate-200/60 pt-6 font-mono text-[11px] text-slate-400 sm:mt-12 sm:gap-x-6 sm:pt-8"><span className="rounded border border-slate-200/50 bg-slate-100/70 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-slate-700">Verified Core</span>{technologies.map((technology, index) => <span key={technology} className={index % 2 ? "hidden sm:inline" : ""}>{index > 0 && <span className="mr-4 text-slate-300">•</span>}{technology}</span>)}</div>
             </div>
           </motion.div>

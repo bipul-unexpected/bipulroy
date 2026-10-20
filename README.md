@@ -63,6 +63,21 @@ articles, gallery, tools, experience, services, and testimonials. Configure
 Appwrite collection and Storage permissions before using writes; Appwrite
 remains the authorization boundary for database and file operations.
 
+## Public pages
+
+The portfolio has direct, fast-loading paths for the main content surfaces:
+
+- `/projects`
+- `/gallery`
+- `/services`
+- `/journal`
+- `/experience`
+- `/contact`
+- `/tech-stack`
+
+Appwrite Sites must use `index.html` as the SPA fallback so these direct URLs
+continue to load after refresh.
+
 ## Contact form
 
 The contact form submits directly to Web3Forms using the supplied public access
