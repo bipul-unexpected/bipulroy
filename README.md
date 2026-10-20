@@ -78,13 +78,17 @@ The portfolio has direct, fast-loading paths for the main content surfaces:
 - `/tech-stack`
 
 The build creates an independent `index.html` entry inside each route
-directory. Configure Appwrite Sites with `dist` as the output directory so
-these paths continue to load after refresh. Keep `index.html` as the fallback
-file as a safety net for custom links.
+directory. This is an enhanced MPA, not a single-page deployment: every
+public URL has its own document, title, description, canonical URL, and Open
+Graph metadata. Configure Appwrite Sites with `dist` as the output directory
+so direct visits and refreshes resolve to the route's own HTML entry.
 
-Navigation between these paths is client-side: links use the History API, so
-the page does not fully reload when moving between pages. A direct visit or
-refresh still resolves to the route's own built HTML entry.
+Same-origin links use a progressive History API enhancement when JavaScript is
+available, so navigation changes the URL and rendered page without a document
+reload. If JavaScript is disabled, unavailable, or the browser does not
+support the API, the same semantic links fall back to normal browser
+navigation. This keeps SEO, deep links, accessibility, and static hosting
+reliable without making the application depend on SPA routing.
 
 ## Contact form
 
