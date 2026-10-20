@@ -12,7 +12,8 @@ Create a Function in Appwrite:
 - Entrypoint: `src/main.js`
 - Install command: `npm install`
 - Execute access: Any (the function itself validates the Clerk token)
-- Deploy the contents of this directory
+- Deploy the contents of this directory, including `package.json`,
+  `package-lock.json`, and `src/main.js`
 
 Give the Function API key only these scopes:
 
@@ -46,6 +47,29 @@ Copy the Function's public domain into the frontend Site variable:
 ```env
 VITE_APPWRITE_ADMIN_FUNCTION_URL=https://your-function-domain
 ```
+
+After changing Function variables or source, create and deploy a new Function
+version. Then redeploy the Appwrite Site so the frontend receives the updated
+public endpoint or environment values.
+
+## Console publish steps
+
+1. Open **Appwrite Console → Functions → Create function**.
+2. Select **Node.js 22**, set the entrypoint to `src/main.js`, and set execute
+   access to **Any**.
+3. Upload this directory or connect its repository source. Ensure the
+   Function root contains `package.json` and `src/main.js`.
+4. Add the variables above in **Settings → Environment variables**.
+5. Create a least-privilege API key under **Overview → API keys**, paste it as
+   `APPWRITE_API_KEY`, and deploy a new version.
+6. Copy the deployed Function endpoint into the Site variable
+   `VITE_APPWRITE_ADMIN_FUNCTION_URL`.
+7. Redeploy the Site and test create, update, image upload, and delete from
+   `/onionbipulking`.
+
+Do not expose `APPWRITE_API_KEY`, Clerk secret keys, or any other server
+variable through a `VITE_` prefix. `ALLOWED_ORIGIN` must exactly match the
+production origin, including protocol and without a trailing slash.
 
 Remove create, update, and delete permissions from every content collection
 and remove Storage create/delete permissions for public users. Keep public read

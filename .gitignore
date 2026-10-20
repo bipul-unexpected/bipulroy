@@ -12,6 +12,14 @@ dist
 dist-ssr
 *.local
 .env
+projects/index.html
+gallery/index.html
+services/index.html
+journal/index.html
+experience/index.html
+contact/index.html
+tech-stack/index.html
+onionbipulking/index.html
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

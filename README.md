@@ -78,7 +78,10 @@ The portfolio has direct, fast-loading paths for the main content surfaces:
 - `/tech-stack`
 
 The build creates an independent `index.html` entry inside each route
-directory. This is an enhanced MPA, not a single-page deployment: every
+directory from the single maintained `page-template.html` file and its route
+metadata map in `scripts/generate-pages.mjs`. Generated route documents are
+not source files and are recreated on every `dev` and `build` command. This is
+an enhanced MPA, not a single-page deployment: every
 public URL has its own document, title, description, canonical URL, and Open
 Graph metadata. Configure Appwrite Sites with `dist` as the output directory
 so direct visits and refreshes resolve to the route's own HTML entry.
@@ -137,6 +140,36 @@ API key, Clerk JWKS configuration, and `CLERK_ADMIN_USER_ID` in Function
 environment variables only, and set `ALLOWED_ORIGIN` to the exact portfolio
 origin. The setup and exact scopes are documented in
 `functions/admin-content/README.md`.
+
+#### Appwrite Function publish checklist
+
+1. In **Appwrite Console → Functions**, create a Function named
+   `admin-content`, choose **Node.js 22**, and set the entrypoint to
+   `src/main.js`.
+2. Deploy the complete `functions/admin-content` directory. Its
+   `package.json` and lockfile must be included so Appwrite installs
+   `node-appwrite` and `jose`.
+3. Create a server API key in **Overview → API keys**. Grant only Databases
+   document read/create/update/delete and Storage file read/create/delete
+   scopes. Never put this key in `.env`, `VITE_*`, or frontend code.
+4. Add every variable from
+   `functions/admin-content/README.md` under **Functions → Settings →
+   Environment variables**. Use the exact database, collection, bucket, Clerk
+   issuer/JWKS, owner user ID, and production origin values.
+5. Set Function **Execute access** to `Any`. The Function is intentionally
+   public at the transport layer because it validates the Clerk bearer token
+   and owner ID before every operation.
+6. Deploy a new Function version, copy its public endpoint, and set
+   `VITE_APPWRITE_ADMIN_FUNCTION_URL` to that endpoint in **Sites → Settings →
+   Environment variables**.
+7. In Clerk, disable public sign-up and copy the owner user ID into
+   `CLERK_ADMIN_USER_ID`. In Appwrite, remove public create/update/delete
+   permissions from content collections and public Storage create/delete
+   permissions.
+8. Redeploy the Site with `npm ci`, `npm run build`, and output directory
+   `dist`. Test `/onionbipulking`, sign in as the owner, create one draft,
+   publish it, edit it, and delete it. Confirm a second Clerk account receives
+   `403` and that unauthenticated requests cannot write.
 
 ## Terminal mode
 
