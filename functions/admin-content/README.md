@@ -61,6 +61,11 @@ Copy the Function's public domain into the frontend Site variable:
 VITE_APPWRITE_ADMIN_FUNCTION_URL=https://your-function-domain
 ```
 
+Use the generated HTTPS domain shown under **Functions -> admin-content ->
+Domains**. Do not substitute the regional Appwrite API endpoint
+(`https://sgp.cloud.appwrite.io/v1`) or a deployment ID. The Site must be
+rebuilt after changing this variable because Vite embeds it during build.
+
 Set `VITE_CLERK_ADMIN_USER_ID` in the Appwrite Site to the same Clerk user ID
 as `CLERK_ADMIN_USER_ID`. The frontend uses it only to show the owner studio;
 the Function remains the authoritative authorization boundary.

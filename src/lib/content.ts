@@ -91,9 +91,18 @@ function cleanContentData(data: Omit<RemoteContent, "$id" | "$createdAt">) {
 }
 
 async function adminRequest<T>(operation: string, payload: Record<string, unknown> = {}) {
-  const functionUrl = env.VITE_APPWRITE_ADMIN_FUNCTION_URL as string | undefined;
+  const functionUrl = (env.VITE_APPWRITE_ADMIN_FUNCTION_URL as string | undefined)?.trim();
   if (!functionUrl) {
     throw new Error("Admin write service is not configured. Set VITE_APPWRITE_ADMIN_FUNCTION_URL.");
+  }
+  let parsedFunctionUrl: URL;
+  try {
+    parsedFunctionUrl = new URL(functionUrl);
+  } catch {
+    throw new Error("Admin write service URL is invalid. Copy the generated Appwrite Function domain from Functions -> Domains.");
+  }
+  if (parsedFunctionUrl.protocol !== "https:") {
+    throw new Error("Admin write service must use an HTTPS Appwrite Function domain.");
   }
   let token: string | null = null;
   for (let attempt = 0; attempt < 3 && !token; attempt += 1) {
@@ -103,7 +112,7 @@ async function adminRequest<T>(operation: string, payload: Record<string, unknow
     }
   }
   if (!token) throw new Error("Your Clerk session is missing or expired. Sign in again.");
-  const response = await fetch(functionUrl, {
+  const response = await fetch(parsedFunctionUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     body: JSON.stringify({ operation, ...payload }),

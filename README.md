@@ -196,6 +196,14 @@ appwrite functions create-deployment `
   --activate
 ```
 
+For admin CRUD, open **Appwrite Console -> Functions -> admin-content ->
+Domains** and copy the generated HTTPS `.appwrite.run` domain. Set that exact
+value as `VITE_APPWRITE_ADMIN_FUNCTION_URL` in **Sites -> Settings ->
+Environment variables**. Do not use `https://sgp.cloud.appwrite.io/v1`, the
+Function deployment ID, or the Appwrite project URL as this value. Save the
+Site variables and create a new Site deployment; Vite embeds `VITE_*` values
+at build time.
+
 ## Terminal mode
 
 The terminal icon in the navigation opens a full-screen interactive browser
