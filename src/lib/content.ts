@@ -95,7 +95,13 @@ async function adminRequest<T>(operation: string, payload: Record<string, unknow
   if (!functionUrl) {
     throw new Error("Admin write service is not configured. Set VITE_APPWRITE_ADMIN_FUNCTION_URL.");
   }
-  const token = await adminTokenProvider?.();
+  let token: string | null = null;
+  for (let attempt = 0; attempt < 3 && !token; attempt += 1) {
+    token = (await adminTokenProvider?.()) ?? null;
+    if (!token && attempt < 2) {
+      await new Promise((resolve) => window.setTimeout(resolve, 250));
+    }
+  }
   if (!token) throw new Error("Your Clerk session is missing or expired. Sign in again.");
   const response = await fetch(functionUrl, {
     method: "POST",

@@ -177,7 +177,7 @@ function App() {
     return () => window.removeEventListener("popstate", handleRouteChange);
   }, []);
 
-  if (pathname === "/onionbipulking") {
+  if (pathname === "/onionbipulking" || pathname.startsWith("/onionbipulking/")) {
     return (
       <div className="min-h-screen bg-background text-foreground">
         {clerkConfigured ? (

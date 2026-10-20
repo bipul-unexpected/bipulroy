@@ -187,7 +187,7 @@ export function AdminStudio() {
       <section id="admin" className="relative py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6"><div className="glass-panel flex flex-col items-start justify-between gap-5 rounded-2xl p-5 sm:flex-row sm:items-center sm:p-7">
           <div><p className="text-xs font-mono uppercase tracking-[0.18em] text-primary">Private studio</p><h2 className="mt-2 text-xl font-bold text-foreground">Manage the portfolio securely.</h2><p className="mt-1 text-sm text-muted-foreground">Sign in with Clerk to access the publishing workspace.</p></div>
-          <SignIn routing="path" path="/onionbipulking" signUpUrl="" />
+          <SignIn routing="hash" signUpUrl="" />
         </div></div>
       </section>
     );
