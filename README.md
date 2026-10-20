@@ -148,7 +148,9 @@ origin. The setup and exact scopes are documented in
    `src/main.js`.
 2. Deploy the complete `functions/admin-content` directory. Its
    `package.json` and lockfile must be included so Appwrite installs
-   `node-appwrite` and `jose`.
+   `node-appwrite` and `jose`. The uploaded source root must contain
+   `package.json` directly; do not upload an outer `admin-content/` directory
+   inside a ZIP.
 3. Create a server API key in **Overview → API keys**. Grant only Databases
    document read/create/update/delete and Storage file read/create/delete
    scopes. Never put this key in `.env`, `VITE_*`, or frontend code.
@@ -170,6 +172,11 @@ origin. The setup and exact scopes are documented in
    `dist`. Test `/onionbipulking`, sign in as the owner, create one draft,
    publish it, edit it, and delete it. Confirm a second Clerk account receives
    `403` and that unauthenticated requests cannot write.
+
+If an Appwrite deployment reports
+`ENOENT: /usr/local/build/package.json`, the Function source root is wrong.
+Re-upload the contents of `functions/admin-content` and confirm the archive
+root contains `package.json`, `package-lock.json`, and `src/main.js`.
 
 ## Terminal mode
 

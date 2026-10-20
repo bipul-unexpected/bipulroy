@@ -13,7 +13,10 @@ Create a Function in Appwrite:
 - Install command: `npm install`
 - Execute access: Any (the function itself validates the Clerk token)
 - Deploy the contents of this directory, including `package.json`,
-  `package-lock.json`, and `src/main.js`
+  `package-lock.json`, and `src/main.js`. The deployment root must contain
+  `package.json` directly; do not upload `functions/`, `functions/admin-content`
+  as a nested folder, or an archive whose first entry is
+  `admin-content/package.json`.
 
 Give the Function API key only these scopes:
 
@@ -57,8 +60,11 @@ public endpoint or environment values.
 1. Open **Appwrite Console → Functions → Create function**.
 2. Select **Node.js 22**, set the entrypoint to `src/main.js`, and set execute
    access to **Any**.
-3. Upload this directory or connect its repository source. Ensure the
-   Function root contains `package.json` and `src/main.js`.
+3. Upload this directory's **contents** or connect its repository source.
+   Ensure the Function root contains `package.json` and `src/main.js` at its
+   top level. If uploading a ZIP, open it before uploading and verify that it
+   contains `package.json`, `package-lock.json`, and `src/main.js` rather than
+   an outer `admin-content/` directory.
 4. Add the variables above in **Settings → Environment variables**.
 5. Create a least-privilege API key under **Overview → API keys**, paste it as
    `APPWRITE_API_KEY`, and deploy a new version.
@@ -70,6 +76,32 @@ public endpoint or environment values.
 Do not expose `APPWRITE_API_KEY`, Clerk secret keys, or any other server
 variable through a `VITE_` prefix. `ALLOWED_ORIGIN` must exactly match the
 production origin, including protocol and without a trailing slash.
+
+## Troubleshooting `ENOENT: /usr/local/build/package.json`
+
+This error means Appwrite started the build in a source directory that does
+not contain the Function package manifest. It is a deployment-source problem,
+not a missing dependency. Delete the failed deployment, re-upload the
+contents of this directory with the correct root, and keep these settings:
+
+```text
+Runtime: Node.js 22
+Entrypoint: src/main.js
+Install command: npm install
+Build command: npm install
+```
+
+The repository's canonical source files are:
+
+```text
+functions/admin-content/package.json
+functions/admin-content/package-lock.json
+functions/admin-content/src/main.js
+```
+
+Do not use `functions/package-lock.tar.gz`, a cache archive, or the portfolio
+root as the Function source. After upload, Appwrite's build log should show
+`npm install` reading `/usr/local/build/package.json`.
 
 Remove create, update, and delete permissions from every content collection
 and remove Storage create/delete permissions for public users. Keep public read
