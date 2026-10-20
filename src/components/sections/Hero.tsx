@@ -1,6 +1,8 @@
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, Code2, Cpu, Gauge, Mail, Zap } from "lucide-react";
+import { ArrowRight, Code2, Gauge, Mail, Zap } from "lucide-react";
 import { scrollToSection } from "../../lib/scrollToSection";
+import { TechBrandIcon } from "../ui/TechBrandIcon";
+import { ThreeDIconTile } from "../ui/ThreeDIconTile";
 
 const technologies = ["Next.js 15", "TypeScript", "Tailwind CSS", "Node.js", "PostgreSQL", "GraphQL"];
 
@@ -61,7 +63,7 @@ export function Hero() {
           </GlassCard>
 
           <GlassCard className="float-card-2 mb-4 w-full sm:max-w-md lg:absolute lg:-right-8 lg:-top-12 lg:z-20 lg:mb-0 lg:w-72">
-            <div className="flex items-center gap-3"><div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white bg-white/90 shadow-sm"><Cpu className="h-6 w-6 animate-[spin_12s_linear_infinite] text-cyan-600" /></div><div><div className="flex items-center gap-1.5 text-[13px] font-semibold leading-tight text-slate-900">React &amp; Next.js <span className="h-2 w-2 rounded-full bg-emerald-500" /></div><p className="text-[11px] text-slate-500">Fluid Reactive Systems</p></div></div>
+            <div className="group flex items-center gap-3"><ThreeDIconTile><TechBrandIcon name="React" className="h-6 w-6" /><img src="/icons/3dicons/next-dynamic-clay.png" alt="" className="absolute -right-2 -top-2 h-7 w-7 object-contain drop-shadow-sm" /></ThreeDIconTile><div><div className="flex items-center gap-1.5 text-[13px] font-semibold leading-tight text-slate-900">React &amp; Next.js <span className="h-2 w-2 rounded-full bg-emerald-500" /></div><p className="text-[11px] text-slate-500">Fluid Reactive Systems</p></div></div>
             <div className="mt-3.5 grid grid-cols-3 gap-1.5 font-mono text-center text-[11px]"><div className="rounded-lg border border-white/90 bg-white/70 px-2 py-1"><span className="block text-[9px] uppercase tracking-wider text-slate-400">Node</span><b>Async</b></div><div className="rounded-lg border border-white/90 bg-white/70 px-2 py-1"><span className="block text-[9px] uppercase tracking-wider text-slate-400">GraphQL</span><b>Typed</b></div><div className="rounded-lg border border-white/90 bg-white/70 px-2 py-1"><span className="block text-[9px] uppercase tracking-wider text-slate-400">Cloud</span><b>Edge</b></div></div>
           </GlassCard>
 

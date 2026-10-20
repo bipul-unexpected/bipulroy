@@ -94,3 +94,11 @@ Native touch scrolling remains enabled on phones and tablets. The WebGL splash
 cursor is desktop-only, disables itself for reduced-motion/coarse-pointer
 devices, and cleans up its animation frame and global listeners on unmount so
 it cannot duplicate render loops under React Strict Mode.
+
+## Icon sources
+
+The hero uses the bundled Next.js asset from [3Dicons](https://3dicons.co/)
+under its CC0 1.0 license. Technology pills use the existing `react-icons`
+package for brand marks. Flaticon packs are not hotlinked because pack-specific
+download and attribution terms vary; add a specific licensed pack only after
+selecting its license and attribution requirements.

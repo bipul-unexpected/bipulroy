@@ -3,6 +3,7 @@ import { motion, useInView } from "framer-motion";
 import { techStack } from "../../data/portfolio";
 import { PremiumDraggable } from "../ui/PremiumDraggable";
 import { TextAnimate } from "../ui/TextAnimate";
+import { TechBrandIcon } from "../ui/TechBrandIcon";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -93,7 +94,8 @@ export function TechStack() {
                 <div className="flex flex-wrap gap-2.5">
                   {cat.items.map((tech) => (
                     <PremiumDraggable key={tech} className="w-auto">
-                      <span className="inline-block bg-secondary rounded-full px-4 py-2.5 text-sm font-mono text-muted-foreground border border-transparent transition-all duration-200 hover:bg-primary/10 hover:text-primary hover:border-primary/30 cursor-default">
+                      <span className="inline-flex items-center gap-2 bg-secondary rounded-full px-4 py-2.5 text-sm font-mono text-muted-foreground border border-transparent transition-all duration-200 hover:bg-primary/10 hover:text-primary hover:border-primary/30 cursor-default">
+                        <TechBrandIcon name={tech} className="h-4 w-4 shrink-0" />
                         <TextAnimate
                           animation="blurInUp"
                           by="word"

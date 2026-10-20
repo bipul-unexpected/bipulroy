@@ -1,0 +1,80 @@
+import {
+  SiAngular,
+  SiDocker,
+  SiDjango,
+  SiFigma,
+  SiGit,
+  SiGithub,
+  SiGraphql,
+  SiKubernetes,
+  SiMongodb,
+  SiNextdotjs,
+  SiNginx,
+  SiNodedotjs,
+  SiPostgresql,
+  SiPrisma,
+  SiPython,
+  SiReact,
+  SiRedis,
+  SiTailwindcss,
+  SiTerraform,
+  SiThreedotjs,
+  SiTypescript,
+} from "react-icons/si";
+import type { IconType } from "react-icons";
+
+const icons: Record<string, IconType> = {
+  Angular: SiAngular,
+  Docker: SiDocker,
+  Django: SiDjango,
+  Figma: SiFigma,
+  Git: SiGit,
+  "GitHub Actions": SiGithub,
+  GraphQL: SiGraphql,
+  Kubernetes: SiKubernetes,
+  MongoDB: SiMongodb,
+  "Next.js": SiNextdotjs,
+  Nginx: SiNginx,
+  "Node.js": SiNodedotjs,
+  PostgreSQL: SiPostgresql,
+  Prisma: SiPrisma,
+  Python: SiPython,
+  React: SiReact,
+  Redis: SiRedis,
+  Tailwind: SiTailwindcss,
+  "Tailwind CSS": SiTailwindcss,
+  Terraform: SiTerraform,
+  "Three.js": SiThreedotjs,
+  TypeScript: SiTypescript,
+};
+
+const colors: Record<string, string> = {
+  Angular: "#dd0031",
+  Docker: "#2496ed",
+  Django: "#0c4b33",
+  Figma: "#f24e1e",
+  Git: "#f05032",
+  "GitHub Actions": "currentColor",
+  GraphQL: "#e10098",
+  Kubernetes: "#326ce5",
+  MongoDB: "#47a248",
+  "Next.js": "currentColor",
+  Nginx: "#009639",
+  "Node.js": "#339933",
+  PostgreSQL: "#4169e1",
+  Prisma: "#2d3748",
+  Python: "#3776ab",
+  React: "#087ea4",
+  Redis: "#dc382d",
+  Tailwind: "#06b6d4",
+  "Tailwind CSS": "#06b6d4",
+  Terraform: "#844fba",
+  "Three.js": "currentColor",
+  TypeScript: "#3178c6",
+};
+
+export function TechBrandIcon({ name, className = "" }: { name: string; className?: string }) {
+  const Icon = icons[name];
+  if (!Icon) return null;
+  return <Icon aria-hidden className={className} style={{ color: colors[name] }} />;
+}
