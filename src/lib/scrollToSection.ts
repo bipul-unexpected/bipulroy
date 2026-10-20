@@ -35,10 +35,17 @@ export function scrollToSection(
   const absoluteTop =
     target.getBoundingClientRect().top + window.scrollY - NAV_GAP;
 
-  window.scrollTo({
-    top: Math.max(0, absoluteTop),
-    behavior,
+  const scrollEvent = new CustomEvent("portfolio:smooth-scroll", {
+    cancelable: true,
+    detail: { top: Math.max(0, absoluteTop), behavior },
   });
+  window.dispatchEvent(scrollEvent);
+  if (!scrollEvent.defaultPrevented) {
+    window.scrollTo({
+      top: Math.max(0, absoluteTop),
+      behavior,
+    });
+  }
 
   // Restore after the jump starts
   window.requestAnimationFrame(() => {

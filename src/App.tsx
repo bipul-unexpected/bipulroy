@@ -23,6 +23,7 @@ import { AdminStudio } from "./components/admin/AdminStudio";
 import { useScrollProgress } from "./hooks/useScrollProgress";
 import { playClickSound } from "./lib/clickSound";
 import { TerminalMode } from "./components/ui/TerminalMode";
+import { SmoothScroll } from "./components/ui/SmoothScroll";
 
 const THEME_KEY = "bipul-theme";
 
@@ -166,6 +167,7 @@ function App() {
         onMidpoint={handleRippleMid}
         onComplete={handleRippleDone}
       />
+      <SmoothScroll />
 
       <div
         aria-hidden

@@ -83,3 +83,11 @@ shell. It is intentionally sandboxed and never executes operating-system
 commands. Supported commands include `whoami`, `ls`, `pwd`, `date`, `echo`,
 `cat README`, `neofetch`, `open <path>`, `theme`, `clear`, `help`, and `exit`.
 Use `Esc` or `exit` to return to the normal portfolio.
+
+## Scrolling and motion
+
+Desktop wheel scrolling uses Lenis for one coordinated smooth-scroll loop.
+Native touch scrolling remains enabled on phones and tablets. The WebGL splash
+cursor is desktop-only, disables itself for reduced-motion/coarse-pointer
+devices, and cleans up its animation frame and global listeners on unmount so
+it cannot duplicate render loops under React Strict Mode.
