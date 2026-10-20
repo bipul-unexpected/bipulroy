@@ -68,16 +68,29 @@ npm run lint:types
 npm run build
 ```
 
-Deploy the generated `dist/angular` directory through Appwrite Sites. Keep
+Deploy the generated `dist` directory through Appwrite Sites. Keep
 `public/robots.txt`, `public/sitemap.xml`, and the canonical domain aligned with
 the final Appwrite Sites custom domain.
 
 Appwrite Sites is a static frontend host, so keep only public SDK identifiers in
 `VITE_*` variables. Never add an Appwrite API key or Clerk secret key to the
-Vite environment. Configure the Site build command as `npm run build`, output
-directory as `dist/angular`, and add the production hostname as an Appwrite Web
-platform. Use the same hostname in Web3Forms allowed domains and Clerk
-production domains.
+Vite environment. Configure the Site with these exact settings:
+
+- Rendering strategy: **Static**
+- Install command: `npm ci`
+- Build command: `npm run build`
+- Output directory: `dist`
+- SPA fallback file: `index.html`
+
+The fallback file is configured in **Sites → Settings → Build settings**. The
+`public/_redirects` file is not used by Appwrite Sites for SPA fallback. After
+changing any build setting, save the site and create a new deployment. Add the
+production hostname as an Appwrite Web platform, then use that same hostname in
+Web3Forms allowed domains and Clerk production domains.
+
+Set the `VITE_*` values from `.env.example` in **Sites → Settings →
+Environment variables** before deploying. The tagged `.env` path is not part of
+this repository; do not create or commit a secret `.env` file.
 
 ## Terminal mode
 

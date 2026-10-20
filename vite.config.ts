@@ -4,6 +4,7 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
+  base: '/',
   resolve: {
     alias: [
       {
@@ -20,7 +21,7 @@ export default defineConfig({
     ],
   },
   build: {
-    outDir: 'dist/angular',
+    outDir: 'dist',
   },
   server: {
     port: 3000,
