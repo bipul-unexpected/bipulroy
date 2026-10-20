@@ -139,13 +139,9 @@ export function PremiumDraggable({
     }
   )
 
-  /* ── 3D tilt follows drag direction ── */
+  /* ── Glow aura reacts to drag distance ── */
   const smoothX = useSpring(dragX, { stiffness: 160, damping: 16, mass: 0.5 })
   const smoothY = useSpring(dragY, { stiffness: 160, damping: 16, mass: 0.5 })
-  const rotateY = useTransform(smoothX, [-250, 250], [-cfg.tiltDeg, cfg.tiltDeg])
-  const rotateX = useTransform(smoothY, [-300, 300], [cfg.tiltDeg, -cfg.tiltDeg])
-
-  /* ── Glow aura reacts to drag distance ── */
   const dragDist = useTransform<number, number>(
     [smoothX, smoothY],
     ([x, y]: number[]) => Math.sqrt(x * x + y * y)
@@ -207,21 +203,14 @@ export function PremiumDraggable({
       animate={controls}
       style={{
         ...style,
-        rotateX,
-        rotateY,
-        skewX,
-        skewY,
         scaleX: isDragging && dragEnabled ? jellyScaleX : undefined,
         scaleY: isDragging && dragEnabled ? jellyScaleY : undefined,
         touchAction: dragEnabled ? 'none' : 'pan-y',
-        perspective: 1000,
-        transformStyle: 'preserve-3d' as const,
       }}
       whileHover={
         dragEnabled
           ? {
               cursor: 'grab',
-              scale: 1.01,
               ...(typeof whileHover === 'object' ? whileHover : {}),
             }
           : undefined
@@ -245,7 +234,7 @@ export function PremiumDraggable({
         ...(typeof transition === 'object' ? transition : {}),
       }}
       className={cn(
-        'relative inline-block w-full will-change-transform',
+        'relative inline-block w-full',
         isDragging && 'z-50',
         className
       )}

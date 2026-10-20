@@ -77,7 +77,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
           boxShadow: "0 16px 48px -8px hsl(271 91% 65% / 0.18)",
         }}
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
-        style={{ transformStyle: "preserve-3d" }}>
+        style={{ transformStyle: "flat" }}>
         {/* Image area */}
         <div className="h-48 bg-secondary relative overflow-hidden">
           <div
