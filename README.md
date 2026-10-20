@@ -33,9 +33,11 @@ to `Any` if images are public. Keep file creation restricted to authenticated
 users. Set the web platform hostname to the Appwrite Sites domain and the
 production domain.
 
-Set collection permissions so documents are readable by `Any`, while create,
-update, and delete are restricted to authenticated users. The UI only exposes
-the publishing studio to a Clerk user whose public metadata contains:
+Set collection permissions so documents are readable by `Any`, and leave
+create, update, and delete ungranted to client users. The private Appwrite
+Function performs writes with its restricted server API key after verifying the
+owner's Clerk token. The UI only exposes the publishing studio to a Clerk user
+whose public metadata contains:
 
 ```json
 { "role": "admin" }
@@ -43,10 +45,10 @@ the publishing studio to a Clerk user whose public metadata contains:
 
 Appwrite permissions are the authoritative security boundary; configure them
 in the console rather than relying only on the client-side admin check. Grant
-the authenticated role create/read/update/delete permissions on all four
-collections and create/delete permissions on the media bucket. Public visitors
-only need read access to published documents and file view access. The studio
-supports create, draft listing, edit, delete, and tracked image cleanup.
+the Function API key only the database document and Storage file scopes it
+needs. Public visitors only need read access to published documents and file
+view access. The studio supports create, draft listing, edit, delete, and
+tracked image cleanup.
 
 ## Clerk setup
 
@@ -114,6 +116,16 @@ Web3Forms allowed domains and Clerk production domains.
 Set the `VITE_*` values from `.env.example` in **Sites → Settings →
 Environment variables** before deploying. The tagged `.env` path is not part of
 this repository; do not create or commit a secret `.env` file.
+
+### Admin write security
+
+Browser Clerk authentication does not create an Appwrite session. Therefore the
+admin studio sends create, update, delete, and image operations to the
+`functions/admin-content` Appwrite Function. Deploy that Function first and
+set its public domain as `VITE_APPWRITE_ADMIN_FUNCTION_URL`. Keep the Function
+API key, Clerk JWKS configuration, and `CLERK_ADMIN_USER_ID` in Function
+environment variables only. The setup and exact scopes are documented in
+`functions/admin-content/README.md`.
 
 ## Terminal mode
 

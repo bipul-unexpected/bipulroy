@@ -1,0 +1,9 @@
+{
+  "name": "portfolio-admin-content-function",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "node-appwrite": "^20.1.0",
+    "jose": "^6.1.0"
+  }
+}

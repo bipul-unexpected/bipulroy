@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
-import { useUser, SignIn, UserButton } from "@clerk/react";
+import { useAuth, useUser, SignIn, UserButton } from "@clerk/react";
 import { CheckCircle2, Edit3, Plus, RefreshCw, Trash2, Upload, X } from "lucide-react";
 import {
   createContent,
@@ -10,6 +10,7 @@ import {
   listContent,
   updateContent,
   uploadContentImage,
+  configureAdminTokenProvider,
   type ContentKind,
   type RemoteContent,
 } from "../../lib/content";
@@ -77,6 +78,7 @@ function toPayload(form: FormState, imageUrl?: string, imageFileId?: string) {
 
 export function AdminStudio() {
   const { isLoaded, isSignedIn, user } = useUser();
+  const { getToken } = useAuth();
   const [kind, setKind] = useState<ContentKind>("projects");
   const [records, setRecords] = useState<RemoteContent[]>([]);
   const [form, setForm] = useState<FormState>(emptyForm);
@@ -87,6 +89,11 @@ export function AdminStudio() {
   const [loading, setLoading] = useState(false);
 
   const canManage = isLoaded && isSignedIn && isAdminUser(user);
+
+  useEffect(() => {
+    configureAdminTokenProvider(getToken);
+    return () => configureAdminTokenProvider(null);
+  }, [getToken]);
 
   async function loadRecords(selectedKind = kind) {
     setLoading(true);

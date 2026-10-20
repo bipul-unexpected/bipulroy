@@ -1,4 +1,4 @@
-import { Client, Databases, ID, Query, Storage } from "appwrite";
+import { Client, Databases, Query, Storage } from "appwrite";
 
 export type ContentKind =
   | "projects"
@@ -30,6 +30,11 @@ export interface RemoteContent {
 }
 
 const env = import.meta.env;
+let adminTokenProvider: (() => Promise<string | null>) | null = null;
+
+export function configureAdminTokenProvider(provider: (() => Promise<string | null>) | null) {
+  adminTokenProvider = provider;
+}
 const collectionIds: Record<ContentKind, string | undefined> = {
   projects: env.VITE_APPWRITE_PROJECTS_COLLECTION_ID as string | undefined,
   articles: env.VITE_APPWRITE_ARTICLES_COLLECTION_ID as string | undefined,
@@ -85,6 +90,23 @@ function cleanContentData(data: Omit<RemoteContent, "$id" | "$createdAt">) {
   );
 }
 
+async function adminRequest<T>(operation: string, payload: Record<string, unknown> = {}) {
+  const functionUrl = env.VITE_APPWRITE_ADMIN_FUNCTION_URL as string | undefined;
+  if (!functionUrl) {
+    throw new Error("Admin write service is not configured. Set VITE_APPWRITE_ADMIN_FUNCTION_URL.");
+  }
+  const token = await adminTokenProvider?.();
+  if (!token) throw new Error("Your Clerk session is missing or expired. Sign in again.");
+  const response = await fetch(functionUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ operation, ...payload }),
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(result.error || "Admin write service rejected the request.");
+  return result.data as T;
+}
+
 export async function createContent(
   kind: ContentKind,
   data: Omit<RemoteContent, "$id" | "$createdAt">,
@@ -93,13 +115,10 @@ export async function createContent(
     throw new Error("Appwrite is not configured for this deployment.");
   }
 
-  const response = await databases.createDocument(
-    env.VITE_APPWRITE_DATABASE_ID as string,
-    getCollectionId(kind),
-    ID.unique(),
-    cleanContentData(data),
-  );
-  return response as unknown as RemoteContent;
+  return adminRequest<RemoteContent>("create", {
+    kind,
+    data: cleanContentData(data),
+  });
 }
 
 export async function updateContent(
@@ -111,13 +130,11 @@ export async function updateContent(
     throw new Error("Appwrite is not configured for this deployment.");
   }
 
-  const response = await databases.updateDocument(
-    env.VITE_APPWRITE_DATABASE_ID as string,
-    getCollectionId(kind),
+  return adminRequest<RemoteContent>("update", {
+    kind,
     documentId,
-    cleanContentData(data),
-  );
-  return response as unknown as RemoteContent;
+    data: cleanContentData(data),
+  });
 }
 
 export async function deleteContent(kind: ContentKind, documentId: string) {
@@ -125,11 +142,7 @@ export async function deleteContent(kind: ContentKind, documentId: string) {
     throw new Error("Appwrite is not configured for this deployment.");
   }
 
-  await databases.deleteDocument(
-    env.VITE_APPWRITE_DATABASE_ID as string,
-    getCollectionId(kind),
-    documentId,
-  );
+  await adminRequest("delete", { kind, documentId });
 }
 
 export async function uploadContentImage(file: File) {
@@ -138,13 +151,14 @@ export async function uploadContentImage(file: File) {
     throw new Error("Appwrite Storage is not configured for this deployment.");
   }
 
-  const uploaded = await storage.createFile(bucketId, ID.unique(), file);
-  const endpoint = env.VITE_APPWRITE_ENDPOINT as string;
-  const projectId = env.VITE_APPWRITE_PROJECT_ID as string;
-  return {
-    fileId: uploaded.$id,
-    url: `${endpoint}/storage/buckets/${bucketId}/files/${uploaded.$id}/view?project=${projectId}`,
-  };
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  let binary = "";
+  bytes.forEach((byte) => { binary += String.fromCharCode(byte); });
+  return adminRequest<{ fileId: string; url: string }>("upload", {
+    fileName: file.name,
+    mimeType: file.type,
+    fileBase64: btoa(binary),
+  });
 }
 
 export function getContentImageUrl(fileId: string) {
@@ -162,7 +176,7 @@ export async function deleteContentImage(fileId: string) {
   if (!bucketId || !appwriteIsConfigured) {
     throw new Error("Appwrite Storage is not configured for this deployment.");
   }
-  await storage.deleteFile(bucketId, fileId);
+  await adminRequest("deleteImage", { fileId });
 }
 
 export function isAdminUser(user: { publicMetadata?: Record<string, unknown> } | null | undefined) {
