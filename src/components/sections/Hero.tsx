@@ -1,40 +1,25 @@
 import { motion, useReducedMotion } from "framer-motion";
-import type { ReactNode } from "react";
-import {
-  ArrowRight,
-  ArrowUpRight,
-  Code2,
-  ExternalLink,
-  Monitor,
-  Sparkles,
-} from "lucide-react";
+import { ArrowRight, Check, Code2, Cloud, Server } from "lucide-react";
 import { profile, socialLinks } from "../../data/portfolio";
 import { GitHubIcon } from "../ui/SocialIcons";
 import { scrollToSection } from "../../lib/scrollToSection";
 
-function ActionLink({
-  href,
-  children,
-  secondary = false,
-}: {
-  href: string;
-  children: ReactNode;
-  secondary?: boolean;
-}) {
+const stack = [
+  { label: "Frontend", value: "React · Next.js", icon: Code2 },
+  { label: "Backend", value: "Node · Django", icon: Server },
+  { label: "Infrastructure", value: "Docker · Cloud", icon: Cloud },
+];
+
+function HeroLink({ href, children, secondary = false }: { href: string; children: React.ReactNode; secondary?: boolean }) {
   return (
     <motion.a
       href={href}
-      onClick={(event) => {
-        event.preventDefault();
-        scrollToSection(href);
-      }}
-      whileHover={{ y: -3 }}
+      onClick={(event) => { event.preventDefault(); scrollToSection(href); }}
+      whileHover={{ y: -2 }}
       whileTap={{ scale: 0.98 }}
-      className={
-        secondary
-          ? "inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-border bg-background/80 px-6 text-sm font-semibold text-foreground transition-colors hover:border-primary/40 hover:bg-primary/5"
-          : "btn-primary inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 text-sm font-semibold shadow-xl shadow-primary/20"
-      }>
+      className={secondary
+        ? "inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-slate-200/80 bg-white/65 px-6 text-sm font-semibold text-slate-800 shadow-sm transition hover:bg-white"
+        : "inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-slate-950 px-6 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(15,23,42,0.16)] transition hover:bg-slate-800"}>
       {children}
     </motion.a>
   );
@@ -44,99 +29,80 @@ export function Hero() {
   const reducedMotion = useReducedMotion();
 
   return (
-    <section id="hero" className="relative isolate overflow-hidden border-b border-border/70 bg-background pt-28 sm:pt-36">
-      <div aria-hidden className="absolute inset-x-0 top-0 -z-10 h-[32rem] bg-[radial-gradient(ellipse_at_top,rgba(124,58,237,0.10),transparent_65%)]" />
-      <div aria-hidden className="absolute inset-x-0 bottom-0 -z-10 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+    <section id="hero" className="relative isolate overflow-hidden bg-[#f8fafc] pb-16 pt-28 text-slate-900 sm:pb-24 sm:pt-36 dark:bg-[#130b25] dark:text-slate-100">
+      <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_left,rgba(226,232,240,0.9),transparent_42%),radial-gradient(ellipse_at_bottom_right,rgba(224,231,255,0.7),transparent_42%)] dark:bg-[radial-gradient(ellipse_at_top_left,rgba(76,29,149,0.24),transparent_42%),radial-gradient(ellipse_at_bottom_right,rgba(30,41,59,0.42),transparent_48%)]" />
+      <div aria-hidden className="absolute inset-0 -z-10 opacity-30 [background-image:radial-gradient(rgba(100,116,139,0.22)_1px,transparent_1px)] [background-size:22px_22px] dark:opacity-15" />
 
-      <div className="mx-auto grid w-full max-w-6xl gap-14 px-4 pb-24 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.82fr)] lg:items-center lg:gap-20">
-        <motion.div
-          initial={reducedMotion ? undefined : { opacity: 0, y: 22 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
-          className="max-w-2xl">
-          <div className="mb-7 flex items-center gap-3 text-xs font-medium text-muted-foreground">
-            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card/70 px-3 py-1.5">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" />
-              Available for select work
-            </span>
-            <span className="hidden text-border sm:inline">/</span>
-            <span className="hidden sm:inline">Dhaka · Worldwide</span>
-          </div>
-
-          <p className="mb-5 text-sm font-semibold tracking-wide text-primary">
-            Full-stack engineering for ambitious teams
-          </p>
-          <h1 className="max-w-2xl text-[clamp(2.75rem,7vw,5.8rem)] font-bold leading-[0.97] tracking-[-0.06em] text-foreground">
-            Build the right thing.
-            <span className="block text-muted-foreground">Build it well.</span>
-          </h1>
-          <p className="mt-7 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">
-            I design and engineer thoughtful digital products that are clear to
-            use, fast in the browser, and dependable in production.
-          </p>
-
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <ActionLink href="#projects">
-              Explore the work <ArrowRight className="h-4 w-4" />
-            </ActionLink>
-            <ActionLink href="#contact" secondary>
-              Let&apos;s talk
-            </ActionLink>
-          </div>
-
-          <div className="mt-10 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-            <span className="rounded-full border border-border bg-card/60 px-3 py-1.5">React &amp; TypeScript</span>
-            <span className="rounded-full border border-border bg-card/60 px-3 py-1.5">Product UI</span>
-            <span className="rounded-full border border-border bg-card/60 px-3 py-1.5">Cloud systems</span>
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={reducedMotion ? undefined : { opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.85, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
-          className="relative mx-auto w-full max-w-[30rem]">
-          <div className="absolute -inset-5 rounded-[2.5rem] bg-primary/8 blur-3xl" />
-          <div className="relative overflow-hidden rounded-[1.5rem] border border-border bg-card shadow-2xl shadow-primary/10">
-            <div className="flex items-center justify-between border-b border-border bg-secondary/45 px-4 py-3">
-              <div className="flex items-center gap-2">
-                <span className="h-2.5 w-2.5 rounded-full bg-rose-400/80" />
-                <span className="h-2.5 w-2.5 rounded-full bg-amber-400/80" />
-                <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/80" />
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="relative overflow-hidden rounded-[1.5rem] border border-white/80 bg-white/50 p-5 shadow-[0_30px_90px_-20px_rgba(15,23,42,0.16)] backdrop-blur-2xl sm:rounded-[2.25rem] sm:p-8 md:p-14 dark:border-white/10 dark:bg-white/[0.06]">
+          <div aria-hidden className="absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-white/80 to-transparent opacity-70 dark:from-white/10" />
+          <div className="relative z-10 grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16">
+            <motion.div
+              initial={reducedMotion ? undefined : { opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              className="max-w-3xl">
+              <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/90 bg-white/65 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-600 shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-300">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_0_4px_rgba(16,185,129,0.12)]" />
+                System architecture · active
               </div>
-              <span className="font-mono text-[10px] text-muted-foreground">bipul.tech / work</span>
-              <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
-            </div>
-            <div className="p-5 sm:p-7">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-primary">Selected direction</p>
-                  <h2 className="mt-3 text-2xl font-bold tracking-tight text-foreground">Make complexity feel simple.</h2>
+              <p className="mb-4 text-sm font-semibold text-indigo-600 dark:text-violet-300">Full-stack engineer · UI/UX · DevOps</p>
+              <h1 className="max-w-3xl text-[clamp(2.65rem,7vw,5.6rem)] font-extrabold leading-[0.98] tracking-[-0.06em] text-slate-950 dark:text-white">
+                Engineering fluid
+                <span className="block bg-gradient-to-r from-slate-950 via-indigo-900 to-violet-700 bg-clip-text text-transparent dark:from-white dark:via-violet-200 dark:to-violet-400">
+                  digital experiences.
+                </span>
+              </h1>
+              <p className="mt-7 max-w-2xl text-base leading-7 text-slate-500 sm:text-lg dark:text-slate-300">
+                I design and ship resilient web products with thoughtful interfaces,
+                dependable APIs, and infrastructure that stays calm under pressure.
+              </p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <HeroLink href="#projects">Explore engineering work <ArrowRight className="h-4 w-4" /></HeroLink>
+                <HeroLink href="#contact" secondary>Start a conversation</HeroLink>
+              </div>
+              <div className="mt-8 flex flex-wrap gap-x-5 gap-y-3 text-xs text-slate-500 dark:text-slate-300">
+                {["Design-led engineering", "Production-ready delivery", "Remote worldwide"].map((item) => (
+                  <span key={item} className="inline-flex items-center gap-2"><Check className="h-3.5 w-3.5 text-indigo-500" />{item}</span>
+                ))}
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={reducedMotion ? undefined : { opacity: 0, y: 18, rotate: 1 }}
+              animate={{ opacity: 1, y: 0, rotate: 0 }}
+              transition={{ duration: 0.8, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
+              className="relative mx-auto w-full max-w-md">
+              <div className="absolute -inset-5 rounded-[2rem] bg-indigo-400/15 blur-3xl dark:bg-violet-500/15" />
+              <div className="relative rounded-2xl border border-white/90 bg-white/65 p-4 shadow-[0_18px_45px_-8px_rgba(15,23,42,0.12)] backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/35">
+                <div className="flex items-center justify-between border-b border-slate-200/60 pb-3 dark:border-white/10">
+                  <div className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-rose-400" /><span className="h-2.5 w-2.5 rounded-full bg-amber-400" /><span className="h-2.5 w-2.5 rounded-full bg-emerald-400" /><span className="ml-2 font-mono text-[10px] text-slate-500 dark:text-slate-400">Engine.ts</span></div>
+                  <span className="rounded-full bg-white/70 px-2 py-0.5 font-mono text-[10px] text-slate-500 dark:bg-white/10 dark:text-slate-300">99.98%</span>
                 </div>
-                <div className="rounded-xl bg-primary/10 p-2.5 text-primary"><Sparkles className="h-5 w-5" /></div>
-              </div>
-              <div className="mt-8 grid grid-cols-2 gap-3">
-                <div className="rounded-xl border border-border bg-background p-4">
-                  <Monitor className="h-4 w-4 text-primary" />
-                  <p className="mt-5 text-xs font-semibold text-foreground">Interface</p>
-                  <p className="mt-1 text-[11px] leading-4 text-muted-foreground">Clear, responsive, considered.</p>
+                <div className="space-y-1.5 py-5 font-mono text-[11px] leading-5 text-slate-600 dark:text-slate-300">
+                  <p className="text-slate-400">// compiled fluid stack</p>
+                  <p><span className="text-indigo-600 dark:text-violet-300">const</span> runtime = <span className="font-semibold text-slate-900 dark:text-white">createPipeline</span>({"{"}</p>
+                  <p className="pl-4">architecture: <span className="text-emerald-600 dark:text-emerald-300">&apos;Distributed&apos;</span>,</p>
+                  <p className="pl-4">latency: <span className="text-amber-600 dark:text-amber-300">&apos;14ms&apos;</span>,</p>
+                  <p className="pl-4">renderMode: <span className="text-indigo-600 dark:text-violet-300">&apos;EdgeHydrated&apos;</span></p>
+                  <p>{"});"}</p>
                 </div>
-                <div className="rounded-xl border border-border bg-background p-4">
-                  <Code2 className="h-4 w-4 text-primary" />
-                  <p className="mt-5 text-xs font-semibold text-foreground">Engineering</p>
-                  <p className="mt-1 text-[11px] leading-4 text-muted-foreground">Solid foundations, no theatre.</p>
+                <div className="grid gap-2 sm:grid-cols-3">
+                  {stack.map(({ label, value, icon: Icon }) => (
+                    <div key={label} className="rounded-xl border border-white/90 bg-white/60 p-3 dark:border-white/10 dark:bg-white/10">
+                      <Icon className="h-4 w-4 text-indigo-500 dark:text-violet-300" />
+                      <p className="mt-3 text-[10px] font-semibold text-slate-800 dark:text-white">{label}</p>
+                      <p className="mt-1 text-[10px] text-slate-500 dark:text-slate-400">{value}</p>
+                    </div>
+                  ))}
                 </div>
+                <a href={socialLinks.github} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 text-xs font-semibold text-slate-500 transition hover:text-indigo-600 dark:text-slate-300 dark:hover:text-violet-300">
+                  <GitHubIcon className="h-4 w-4" /> {profile.alias} · open source
+                </a>
               </div>
-              <div className="mt-3 flex items-center justify-between rounded-xl border border-primary/15 bg-primary/5 px-4 py-3">
-                <span className="text-xs font-semibold text-foreground">From idea to shipped product</span>
-                <ArrowUpRight className="h-4 w-4 text-primary" />
-              </div>
-              <a href={socialLinks.github} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground transition-colors hover:text-primary">
-                <GitHubIcon className="h-4 w-4" /> Explore the work in public
-              </a>
-            </div>
+            </motion.div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

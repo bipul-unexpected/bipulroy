@@ -1,0 +1,93 @@
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Eye, Minus, Plus } from "lucide-react";
+
+const zoomModes = [1.6, 2.2, 2.8];
+
+export function FooterLoupe({ children }: { children: ReactNode }) {
+  const areaRef = useRef<HTMLDivElement>(null);
+  const sourceRef = useRef<HTMLDivElement>(null);
+  const mirrorRef = useRef<HTMLDivElement>(null);
+  const lensRef = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(true);
+  const [zoom, setZoom] = useState(2.2);
+  const pointer = useRef({ x: -999, y: -999, targetX: -999, targetY: -999 });
+
+  useEffect(() => {
+    const source = sourceRef.current;
+    const mirror = mirrorRef.current;
+    const area = areaRef.current;
+    const lens = lensRef.current;
+    if (!source || !mirror || !area || !lens) return;
+
+    const copyContent = () => {
+      mirror.replaceChildren();
+      const clone = source.cloneNode(true) as HTMLDivElement;
+      clone.removeAttribute("ref");
+      clone.querySelectorAll("[id]").forEach((element) => element.removeAttribute("id"));
+      clone.style.width = `${source.offsetWidth}px`;
+      clone.style.maxWidth = "none";
+      clone.style.pointerEvents = "none";
+      mirror.appendChild(clone);
+    };
+    copyContent();
+
+    let frame = 0;
+    const render = () => {
+      const state = pointer.current;
+      state.x += (state.targetX - state.x) * 0.2;
+      state.y += (state.targetY - state.y) * 0.2;
+      if (active && state.targetX > 0) {
+        lens.style.opacity = "1";
+        lens.style.left = `${state.x}px`;
+        lens.style.top = `${state.y}px`;
+        const bounds = area.getBoundingClientRect();
+        const radius = lens.offsetWidth / 2;
+        const relativeX = state.x - bounds.left;
+        const relativeY = state.y - bounds.top;
+        const cloned = mirror.firstElementChild as HTMLElement | null;
+        if (cloned) {
+          cloned.style.transform = `translate(${-relativeX * zoom + radius}px, ${-relativeY * zoom + radius}px) scale(${zoom})`;
+          cloned.style.transformOrigin = "top left";
+        }
+      } else {
+        lens.style.opacity = "0";
+      }
+      frame = requestAnimationFrame(render);
+    };
+    const move = (event: PointerEvent) => {
+      const bounds = area.getBoundingClientRect();
+      if (event.clientX >= bounds.left && event.clientX <= bounds.right && event.clientY >= bounds.top && event.clientY <= bounds.bottom) {
+        pointer.current.targetX = event.clientX;
+        pointer.current.targetY = event.clientY;
+      } else {
+        pointer.current.targetX = -999;
+        pointer.current.targetY = -999;
+      }
+    };
+    window.addEventListener("pointermove", move, { passive: true });
+    window.addEventListener("resize", copyContent);
+    frame = requestAnimationFrame(render);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("resize", copyContent);
+    };
+  }, [active, zoom]);
+
+  return (
+    <div ref={areaRef} className="relative">
+      <div ref={sourceRef}>{children}</div>
+      <div ref={lensRef} aria-hidden className="pointer-events-none fixed z-[55] h-44 w-44 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full opacity-0 transition-opacity duration-200 sm:h-56 sm:w-56">
+        <div ref={mirrorRef} className="absolute inset-0 overflow-hidden rounded-full border-[8px] border-slate-200/90 bg-white/70 shadow-[0_24px_50px_-12px_rgba(15,23,42,0.28),inset_0_0_22px_rgba(255,255,255,0.9)] backdrop-blur-sm dark:border-slate-600/90 dark:bg-slate-950/60" />
+        <div className="absolute inset-3 rounded-full border border-indigo-400/60 shadow-[inset_0_0_18px_rgba(99,102,241,0.24)]" />
+        <div className="absolute inset-0 flex items-center justify-center opacity-50"><span className="h-px w-full bg-indigo-500/70" /><span className="absolute h-full w-px bg-indigo-500/70" /><span className="absolute h-8 w-8 rounded-full border border-indigo-500/70" /></div>
+        <span className="absolute left-1/2 top-3 -translate-x-1/2 rounded-full bg-slate-950/85 px-2 py-0.5 font-mono text-[8px] text-white">ZOOM {zoom.toFixed(1)}x</span>
+      </div>
+      <div className="pointer-events-auto absolute right-4 top-4 z-20 flex items-center gap-1 rounded-xl border border-border bg-card/80 p-1 shadow-sm backdrop-blur-md">
+        <button type="button" onClick={() => setZoom((value) => Math.max(1.6, value - 0.6))} className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground" aria-label="Decrease footer magnifier zoom"><Minus className="h-3.5 w-3.5" /></button>
+        <button type="button" onClick={() => setActive((value) => !value)} className={`inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-semibold ${active ? "bg-slate-950 text-white dark:bg-white dark:text-slate-950" : "bg-secondary text-muted-foreground"}`}><Eye className="h-3 w-3" />{active ? "Loupe" : "Off"}</button>
+        <button type="button" onClick={() => setZoom((value) => Math.min(2.8, value + 0.6))} className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground" aria-label="Increase footer magnifier zoom"><Plus className="h-3.5 w-3.5" /></button>
+      </div>
+    </div>
+  );
+}

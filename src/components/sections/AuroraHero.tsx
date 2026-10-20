@@ -4,7 +4,6 @@
  */
 import { useReducedMotion, motion } from "framer-motion";
 import { FiArrowRight } from "react-icons/fi";
-import { HeroLandscapeBg } from "../ui/HeroLandscapeBg";
 import { BorderBeam } from "../ui/BorderBeam";
 import { scrollToSection } from "../../lib/scrollToSection";
 
@@ -13,8 +12,10 @@ export const AuroraHero = () => {
 
   return (
     <section className="relative grid min-h-[75vh] place-content-center overflow-hidden px-4 py-24 text-foreground">
-      {/* Same landscape as hero — synced visual language */}
-      <HeroLandscapeBg intensity="cta" />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(124,58,237,0.12),transparent_58%)]"
+      />
 
       {/* Floating liquid-glass orbs — translucent motion over mist */}
       {!prefersReduced && (

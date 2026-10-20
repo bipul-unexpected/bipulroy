@@ -6,6 +6,7 @@ import { Heart } from "lucide-react";
 import { GitHubIcon, LinkedInIcon, XIcon } from "../ui/SocialIcons";
 import { socialLinks } from "../../data/portfolio";
 import { scrollToSection } from "../../lib/scrollToSection";
+import { FooterLoupe } from "../ui/FooterLoupe";
 
 const quickLinks = [
   { label: "About", href: "#about" },
@@ -56,7 +57,8 @@ export function Footer() {
         </>
       )}
 
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 py-10 sm:py-14 flex-1 flex flex-col justify-between">
+      <FooterLoupe>
+        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 py-10 sm:py-14 flex-1 flex flex-col justify-between">
         {/* Main liquid-glass panel */}
         <motion.div
           initial={{ opacity: 0, y: 28, scale: 0.98 }}
@@ -147,7 +149,8 @@ export function Footer() {
             <Heart className="w-4 h-4 text-primary" />
           </p>
         </div>
-      </div>
+        </div>
+      </FooterLoupe>
     </footer>
   );
 }
