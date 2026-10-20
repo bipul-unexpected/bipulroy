@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import { motion, AnimatePresence, useScroll } from 'framer-motion'
 import { Terminal } from 'lucide-react'
-import { scrollToSection } from '../../lib/scrollToSection'
+import { navigateToPath, scrollToSection } from '../../lib/scrollToSection'
 
 const navLinks = [
   { label: 'Projects', href: '/projects', section: 'projects' },
@@ -29,7 +29,7 @@ export function Navbar({ activeSection, isScrolled, onToggleTerminal }: NavbarPr
       e.preventDefault()
       setMobileOpen(false)
       if (href.startsWith("/")) {
-        window.location.assign(href)
+        navigateToPath(href)
       } else {
         scrollToSection(href)
       }

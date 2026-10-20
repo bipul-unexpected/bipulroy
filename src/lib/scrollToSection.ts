@@ -5,6 +5,12 @@
 
 const NAV_GAP = 96;
 
+export function navigateToPath(path: string) {
+  if (window.location.pathname === path) return;
+  window.history.pushState({}, "", path);
+  window.dispatchEvent(new PopStateEvent("popstate"));
+}
+
 export function scrollToSection(
   hrefOrId: string,
   options?: { behavior?: ScrollBehavior },

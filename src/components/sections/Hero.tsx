@@ -1,6 +1,6 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Code2, Gauge, Mail, Zap } from "lucide-react";
-import { scrollToSection } from "../../lib/scrollToSection";
+import { navigateToPath, scrollToSection } from "../../lib/scrollToSection";
 import { TechBrandIcon } from "../ui/TechBrandIcon";
 import { ThreeDIconTile } from "../ui/ThreeDIconTile";
 
@@ -11,7 +11,11 @@ function SectionLink({ href, children, primary = false }: { href: string; childr
     <a
       href={href}
       onClick={(event) => {
-        if (href.startsWith("/")) return;
+        if (href.startsWith("/")) {
+          event.preventDefault();
+          navigateToPath(href);
+          return;
+        }
         event.preventDefault();
         scrollToSection(href);
       }}

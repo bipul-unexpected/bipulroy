@@ -5,7 +5,7 @@ import { useReducedMotion, motion } from "framer-motion";
 import { Heart } from "lucide-react";
 import { GitHubIcon, LinkedInIcon, XIcon } from "../ui/SocialIcons";
 import { socialLinks } from "../../data/portfolio";
-import { scrollToSection } from "../../lib/scrollToSection";
+import { navigateToPath, scrollToSection } from "../../lib/scrollToSection";
 import { FooterLoupe } from "../ui/FooterLoupe";
 
 const quickLinks = [
@@ -111,7 +111,11 @@ export function Footer() {
                   key={link.label}
                   href={link.href}
                   onClick={(e) => {
-                    if (link.href.startsWith("/")) return;
+                    if (link.href.startsWith("/")) {
+                      e.preventDefault();
+                      navigateToPath(link.href);
+                      return;
+                    }
                     e.preventDefault();
                     scrollToSection(link.href);
                   }}

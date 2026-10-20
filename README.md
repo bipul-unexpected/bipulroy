@@ -80,6 +80,10 @@ The portfolio has direct, fast-loading paths for the main content surfaces:
 Appwrite Sites must use `index.html` as the SPA fallback so these direct URLs
 continue to load after refresh.
 
+Navigation between these paths is client-side: links use the History API, so
+the page does not fully reload when moving between sections. Browser refreshes
+and direct links still resolve through the Appwrite SPA fallback.
+
 ## Contact form
 
 The contact form submits directly to Web3Forms using the supplied public access

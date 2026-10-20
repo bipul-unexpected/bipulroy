@@ -45,6 +45,7 @@ function readStoredDark(): boolean {
 }
 
 function App() {
+  const [pathname, setPathname] = useState(() => window.location.pathname.replace(/\/+$/, "") || "/");
   const { activeSection, isScrolled } = useScrollProgress();
   const [isDark, setIsDark] = useState(readStoredDark);
   const [terminalOpen, setTerminalOpen] = useState(false);
@@ -141,11 +142,18 @@ function App() {
     setRipple(null);
   }, []);
 
-  const isAdminPath = window.location.pathname.replace(/\/+$/, "") === "/onionbipulking";
-  const publicPath = window.location.pathname.replace(/\/+$/, "") || "/";
   const clerkConfigured = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
 
-  if (isAdminPath) {
+  useEffect(() => {
+    const handleRouteChange = () => {
+      setPathname(window.location.pathname.replace(/\/+$/, "") || "/");
+      window.scrollTo({ top: 0, behavior: "auto" });
+    };
+    window.addEventListener("popstate", handleRouteChange);
+    return () => window.removeEventListener("popstate", handleRouteChange);
+  }, []);
+
+  if (pathname === "/onionbipulking") {
     return (
       <div className="min-h-screen bg-background text-foreground">
         {clerkConfigured ? (
@@ -163,8 +171,8 @@ function App() {
     );
   }
 
-  if (publicPath !== "/") {
-    return <PublicRoutePage pathname={publicPath} />;
+  if (pathname !== "/") {
+    return <PublicRoutePage pathname={pathname} />;
   }
 
   return (
