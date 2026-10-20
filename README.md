@@ -77,12 +77,14 @@ The portfolio has direct, fast-loading paths for the main content surfaces:
 - `/contact`
 - `/tech-stack`
 
-Appwrite Sites must use `index.html` as the SPA fallback so these direct URLs
-continue to load after refresh.
+The build creates an independent `index.html` entry inside each route
+directory. Configure Appwrite Sites with `dist` as the output directory so
+these paths continue to load after refresh. Keep `index.html` as the fallback
+file as a safety net for custom links.
 
 Navigation between these paths is client-side: links use the History API, so
-the page does not fully reload when moving between sections. Browser refreshes
-and direct links still resolve through the Appwrite SPA fallback.
+the page does not fully reload when moving between pages. A direct visit or
+refresh still resolves to the route's own built HTML entry.
 
 ## Contact form
 
