@@ -2,9 +2,6 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { Navbar } from "./components/layout/Navbar";
 import { SectionCinematicReveal } from "./components/ui/SectionCinematicReveal";
 import { ThemeTransition, type ThemeRipple } from "./components/ui/ThemeTransition";
-import SplashCursor from "./components/ui/SplashCursor";
-import { LightingCursor } from "./components/ui/LightingCursor";
-import { useMediaQuery } from "react-responsive";
 
 import { Hero } from "./components/sections/Hero";
 import { Stats } from "./components/sections/Stats";
@@ -143,25 +140,8 @@ function App() {
     setRipple(null);
   }, []);
 
-  const isDesktop = useMediaQuery({ query: "(min-width: 1024px)" });
-
   return (
     <div className="min-h-screen bg-background text-foreground relative overflow-x-hidden transition-colors duration-300">
-      {/* Fluid mouse trail (from copy repo) + soft lighting glow */}
-      {isDesktop && (
-        <>
-          <SplashCursor
-            DENSITY_DISSIPATION={2.8}
-            VELOCITY_DISSIPATION={1.8}
-            SPLAT_RADIUS={0.18}
-            SPLAT_FORCE={5200}
-            COLOR_UPDATE_SPEED={8}
-            TRANSPARENT
-          />
-          <LightingCursor />
-        </>
-      )}
-
       <ThemeTransition
         ripple={ripple}
         onMidpoint={handleRippleMid}

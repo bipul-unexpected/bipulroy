@@ -19,6 +19,9 @@ const contentKinds: { value: ContentKind; label: string }[] = [
   { value: "articles", label: "Article" },
   { value: "gallery", label: "Gallery image" },
   { value: "tools", label: "Tool" },
+  { value: "experience", label: "Experience" },
+  { value: "services", label: "Service" },
+  { value: "testimonials", label: "Testimonial" },
 ];
 
 type FormState = {
@@ -196,7 +199,7 @@ export function AdminStudio() {
           <label className="text-sm text-muted-foreground">Title<input required value={form.title} onChange={(event) => updateForm("title", event.target.value)} className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>
           <label className="text-sm text-muted-foreground">Category / slug<input value={form.category} onChange={(event) => updateForm("category", event.target.value)} placeholder="saas, frontend, engineering" className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>
           <label className="text-sm text-muted-foreground md:col-span-2">Description<textarea required value={form.description} onChange={(event) => updateForm("description", event.target.value)} rows={3} className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>
-          {kind === "articles" && <label className="text-sm text-muted-foreground md:col-span-2">Article body<textarea value={form.body} onChange={(event) => updateForm("body", event.target.value)} rows={6} className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 font-mono text-sm text-foreground" /></label>}
+          {(kind === "articles" || kind === "experience" || kind === "testimonials") && <label className="text-sm text-muted-foreground md:col-span-2">{kind === "articles" ? "Article body" : "Additional details"}<textarea value={form.body} onChange={(event) => updateForm("body", event.target.value)} rows={6} className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 font-mono text-sm text-foreground" /></label>}
           <label className="text-sm text-muted-foreground">Public URL<input type="url" value={form.url} onChange={(event) => updateForm("url", event.target.value)} placeholder="https://" className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>
           {kind === "tools" && <label className="text-sm text-muted-foreground">Tool website<input type="url" value={form.website} onChange={(event) => updateForm("website", event.target.value)} placeholder="https://" className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>}
           <label className="text-sm text-muted-foreground">Tags, comma separated<input value={form.tags} onChange={(event) => updateForm("tags", event.target.value)} className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>

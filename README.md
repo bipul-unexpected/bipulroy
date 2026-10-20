@@ -24,6 +24,9 @@ Create one database and these collections in the Appwrite console:
 | `articles` | `title` string, `excerpt` string, `body` string, `description` string, `imageUrl` string, `imageFileId` string, `url` string, `category` string, `tags` string array, `published` boolean, `featured` boolean |
 | `gallery` | `title` string, `description` string, `imageUrl` string, `imageFileId` string, `published` boolean, `featured` boolean |
 | `tools` | `title` string, `name` string, `description` string, `website` string, `icon` string, `category` string, `tags` string array, `published` boolean, `featured` boolean |
+| `experience` | `title` string, `description` string, `body` string, `category` string, `tags` string array, `published` boolean, `featured` boolean |
+| `services` | `title` string, `description` string, `category` string, `tags` string array, `published` boolean, `featured` boolean |
+| `testimonials` | `title` string, `description` string, `body` string, `category` string, `published` boolean, `featured` boolean |
 
 Create a Storage bucket for portfolio media and set its file read permission
 to `Any` if images are public. Keep file creation restricted to authenticated

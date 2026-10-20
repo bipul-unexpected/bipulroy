@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Eye, Minus, Plus } from "lucide-react";
 
-const zoomModes = [1.6, 2.2, 2.8];
-
 export function FooterLoupe({ children }: { children: ReactNode }) {
   const areaRef = useRef<HTMLDivElement>(null);
   const sourceRef = useRef<HTMLDivElement>(null);
@@ -24,6 +22,16 @@ export function FooterLoupe({ children }: { children: ReactNode }) {
       const clone = source.cloneNode(true) as HTMLDivElement;
       clone.removeAttribute("ref");
       clone.querySelectorAll("[id]").forEach((element) => element.removeAttribute("id"));
+      clone.querySelectorAll("[class]").forEach((element) => {
+        const className = element.getAttribute("class") ?? "";
+        element.setAttribute("class", className
+          .split(/\s+/)
+          .filter((className) => !className.startsWith("backdrop-blur") && !className.includes("blur-"))
+          .join(" "));
+        if (element instanceof HTMLElement || element instanceof SVGElement) {
+          element.style.filter = "none";
+        }
+      });
       clone.style.width = `${source.offsetWidth}px`;
       clone.style.maxWidth = "none";
       clone.style.pointerEvents = "none";
@@ -78,7 +86,7 @@ export function FooterLoupe({ children }: { children: ReactNode }) {
     <div ref={areaRef} className="relative">
       <div ref={sourceRef}>{children}</div>
       <div ref={lensRef} aria-hidden className="pointer-events-none fixed z-[55] h-44 w-44 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full opacity-0 transition-opacity duration-200 sm:h-56 sm:w-56">
-        <div ref={mirrorRef} className="absolute inset-0 overflow-hidden rounded-full border-[8px] border-slate-200/90 bg-white/70 shadow-[0_24px_50px_-12px_rgba(15,23,42,0.28),inset_0_0_22px_rgba(255,255,255,0.9)] backdrop-blur-sm dark:border-slate-600/90 dark:bg-slate-950/60" />
+        <div ref={mirrorRef} className="absolute inset-0 overflow-hidden rounded-full border-[8px] border-slate-200/90 bg-white shadow-[0_24px_50px_-12px_rgba(15,23,42,0.28),inset_0_0_22px_rgba(255,255,255,0.9)] dark:border-slate-600/90 dark:bg-slate-950" />
         <div className="absolute inset-3 rounded-full border border-indigo-400/60 shadow-[inset_0_0_18px_rgba(99,102,241,0.24)]" />
         <div className="absolute inset-0 flex items-center justify-center opacity-50"><span className="h-px w-full bg-indigo-500/70" /><span className="absolute h-full w-px bg-indigo-500/70" /><span className="absolute h-8 w-8 rounded-full border border-indigo-500/70" /></div>
         <span className="absolute left-1/2 top-3 -translate-x-1/2 rounded-full bg-slate-950/85 px-2 py-0.5 font-mono text-[8px] text-white">ZOOM {zoom.toFixed(1)}x</span>

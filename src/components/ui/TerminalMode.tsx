@@ -166,15 +166,20 @@ export function TerminalMode({ open, onExit, onToggleTheme }: TerminalModeProps)
           animate={{ opacity: 1, clipPath: "circle(150% at 95% 5%)" }}
           exit={{ opacity: 0, clipPath: "circle(0% at 95% 5%)" }}
           transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-          className="fixed inset-0 z-[70] overflow-hidden bg-[#07070b] text-[#e8e8ed]"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Bipul portfolio terminal"
+          className="fixed inset-0 z-[70] overflow-hidden bg-[#050507] p-3 text-[#e8e8ed] sm:p-8"
           onClick={() => inputRef.current?.focus()}>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_15%,rgba(124,58,237,0.18),transparent_35%),radial-gradient(circle_at_15%_85%,rgba(14,165,233,0.1),transparent_30%)]" />
-          <div className="relative mx-auto flex h-full w-full max-w-6xl flex-col px-4 py-[max(1rem,env(safe-area-inset-top))] sm:px-8 sm:py-8">
-            <div className="flex items-center justify-between border-b border-white/10 pb-3 sm:pb-4 font-mono text-[11px] sm:text-xs text-white/50">
-              <div className="flex items-center gap-3"><span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />bipul@portfolio:~</div>
-              <button type="button" onClick={onExit} className="rounded-lg p-2 text-white/50 transition hover:bg-white/10 hover:text-white" aria-label="Exit terminal mode"><X className="h-4 w-4" /></button>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_15%,rgba(124,58,237,0.2),transparent_35%),radial-gradient(circle_at_15%_85%,rgba(14,165,233,0.1),transparent_30%)]" />
+          <div className="relative mx-auto flex h-full w-full max-w-7xl flex-col overflow-hidden rounded-2xl border border-white/15 bg-[#101014]/95 shadow-[0_32px_100px_rgba(0,0,0,0.55)] ring-1 ring-white/5 sm:rounded-3xl">
+            <div className="flex items-center border-b border-white/10 bg-[#18181d] px-4 py-3 sm:px-5">
+              <div className="flex items-center gap-2"><button type="button" onClick={onExit} className="h-3 w-3 rounded-full bg-[#ff5f57] transition hover:brightness-125" aria-label="Close terminal" /><button type="button" onClick={onExit} className="h-3 w-3 rounded-full bg-[#febc2e] transition hover:brightness-125" aria-label="Minimize terminal" /><span className="h-3 w-3 rounded-full bg-[#28c840]" aria-hidden /></div>
+              <div className="mx-auto flex items-center gap-2 font-mono text-[11px] text-white/55 sm:text-xs"><span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />bipul@portfolio — zsh</div>
+              <button type="button" onClick={onExit} className="rounded-lg p-1.5 text-white/45 transition hover:bg-white/10 hover:text-white" aria-label="Exit terminal mode"><X className="h-4 w-4" /></button>
             </div>
-            <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto py-6 font-mono text-[12px] leading-6 sm:text-sm">
+            <div className="flex items-center justify-between border-b border-white/5 bg-[#131318] px-4 py-2 font-mono text-[10px] text-white/35 sm:px-5"><span>~/portfolio</span><span>browser sandbox · {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span></div>
+            <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-4 py-6 font-mono text-[12px] leading-6 sm:px-8 sm:text-sm">
               {lines.map((line, index) => (
                 <div key={`${index}-${line.text}`} className={line.type === "command" ? "text-white" : line.type === "error" ? "text-rose-400" : line.type === "system" ? "text-violet-300" : "text-white/65"}>
                   {line.type === "command" && <span className="mr-2 text-emerald-400">❯</span>}{line.text || "\u00a0"}
@@ -185,7 +190,7 @@ export function TerminalMode({ open, onExit, onToggleTheme }: TerminalModeProps)
                 <input ref={inputRef} value={input} onChange={(event) => setInput(event.target.value)} className="min-w-0 flex-1 bg-transparent text-white outline-none" aria-label="Terminal command" autoComplete="off" spellCheck={false} />
               </form>
             </div>
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-3 sm:pt-4 font-mono text-[10px] text-white/40">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-[#0c0c0f] px-4 py-3 font-mono text-[10px] text-white/40 sm:px-5">
               <span className="inline-flex items-center gap-2"><CornerDownLeft className="h-3 w-3" />Enter to run · Esc to exit</span>
               <span className="inline-flex items-center gap-1">browser shell <ArrowUpRight className="h-3 w-3" /></span>
             </div>

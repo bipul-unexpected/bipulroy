@@ -1,6 +1,13 @@
 import { Client, Databases, ID, Query, Storage } from "appwrite";
 
-export type ContentKind = "projects" | "articles" | "gallery" | "tools";
+export type ContentKind =
+  | "projects"
+  | "articles"
+  | "gallery"
+  | "tools"
+  | "experience"
+  | "services"
+  | "testimonials";
 
 export interface RemoteContent {
   $id: string;
@@ -28,6 +35,9 @@ const collectionIds: Record<ContentKind, string | undefined> = {
   articles: env.VITE_APPWRITE_ARTICLES_COLLECTION_ID as string | undefined,
   gallery: env.VITE_APPWRITE_GALLERY_COLLECTION_ID as string | undefined,
   tools: env.VITE_APPWRITE_TOOLS_COLLECTION_ID as string | undefined,
+  experience: env.VITE_APPWRITE_EXPERIENCE_COLLECTION_ID as string | undefined,
+  services: env.VITE_APPWRITE_SERVICES_COLLECTION_ID as string | undefined,
+  testimonials: env.VITE_APPWRITE_TESTIMONIALS_COLLECTION_ID as string | undefined,
 };
 
 export const appwriteIsConfigured = Boolean(
