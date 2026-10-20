@@ -51,9 +51,17 @@ supports create, draft listing, edit, delete, and tracked image cleanup.
 ## Clerk setup
 
 Create a Clerk application, add the production and local domains, and set the
-publishable key in `VITE_CLERK_PUBLISHABLE_KEY`. Add `{ "role": "admin" }` to
-the owner account's public metadata. No secret Clerk key belongs in this
-frontend repository.
+publishable key in `VITE_CLERK_PUBLISHABLE_KEY`. Disable **Sign-up** in
+Clerk's User & Authentication settings and restrict access to the owner
+account. Add `{ "role": "admin" }` to the owner account's public metadata. No
+secret Clerk key belongs in this frontend repository.
+
+The public portfolio does not render or link to the admin studio. The private
+studio is available only at `/onionbipulking`. It renders Clerk sign-in with
+signup disabled and, after authentication, exposes CRUD tabs for projects,
+articles, gallery, tools, experience, services, and testimonials. Configure
+Appwrite collection and Storage permissions before using writes; Appwrite
+remains the authorization boundary for database and file operations.
 
 ## Contact form
 

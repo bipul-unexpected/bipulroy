@@ -140,6 +140,27 @@ function App() {
     setRipple(null);
   }, []);
 
+  const isAdminPath = window.location.pathname.replace(/\/+$/, "") === "/onionbipulking";
+  const clerkConfigured = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
+
+  if (isAdminPath) {
+    return (
+      <div className="min-h-screen bg-background text-foreground">
+        {clerkConfigured ? (
+          <AdminStudio />
+        ) : (
+          <div className="mx-auto flex min-h-screen max-w-2xl items-center px-6">
+            <div className="glass-panel w-full rounded-2xl p-7">
+              <p className="text-xs font-mono uppercase tracking-[0.18em] text-amber-600">Admin setup incomplete</p>
+              <h1 className="mt-2 text-2xl font-bold">Clerk is not configured for this deployment.</h1>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">Add VITE_CLERK_PUBLISHABLE_KEY in Appwrite Sites environment variables and redeploy before opening this private path.</p>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground relative overflow-x-hidden transition-colors duration-300">
       <ThemeTransition
@@ -170,7 +191,6 @@ function App() {
       <Navbar
         activeSection={activeSection}
         isScrolled={isScrolled}
-        showAdmin={Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY)}
         onToggleTerminal={() => setTerminalOpen(true)}
       />
       <TerminalMode
@@ -210,11 +230,6 @@ function App() {
         <SectionCinematicReveal tone="depth">
           <Contact />
         </SectionCinematicReveal>
-        {import.meta.env.VITE_CLERK_PUBLISHABLE_KEY && (
-          <SectionCinematicReveal tone="vault">
-            <AdminStudio />
-          </SectionCinematicReveal>
-        )}
         <AuroraHero />
       </main>
       <SectionCinematicReveal tone="vault" className="relative z-10">

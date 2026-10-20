@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
-import { useUser, SignInButton, UserButton } from "@clerk/react";
-import { CheckCircle2, Edit3, LogIn, Plus, RefreshCw, Trash2, Upload, X } from "lucide-react";
+import { useUser, SignIn, UserButton } from "@clerk/react";
+import { CheckCircle2, Edit3, Plus, RefreshCw, Trash2, Upload, X } from "lucide-react";
 import {
   createContent,
   deleteContentImage,
@@ -180,7 +180,7 @@ export function AdminStudio() {
       <section id="admin" className="relative py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6"><div className="glass-panel flex flex-col items-start justify-between gap-5 rounded-2xl p-5 sm:flex-row sm:items-center sm:p-7">
           <div><p className="text-xs font-mono uppercase tracking-[0.18em] text-primary">Private studio</p><h2 className="mt-2 text-xl font-bold text-foreground">Manage the portfolio securely.</h2><p className="mt-1 text-sm text-muted-foreground">Sign in with Clerk to access the publishing workspace.</p></div>
-          <SignInButton mode="modal"><button type="button" className="btn-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"><LogIn className="h-4 w-4" /> Admin sign in</button></SignInButton>
+          <SignIn routing="path" path="/onionbipulking" signUpUrl="" />
         </div></div>
       </section>
     );
