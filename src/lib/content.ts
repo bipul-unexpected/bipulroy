@@ -179,6 +179,13 @@ export async function deleteContentImage(fileId: string) {
   await adminRequest("deleteImage", { fileId });
 }
 
-export function isAdminUser(user: { publicMetadata?: Record<string, unknown> } | null | undefined) {
-  return user?.publicMetadata?.role === "admin";
+export function isAdminUser(
+  user: { id?: string; publicMetadata?: Record<string, unknown> } | null | undefined,
+) {
+  const configuredAdminId = env.VITE_CLERK_ADMIN_USER_ID as string | undefined;
+  return Boolean(
+    user &&
+      ((configuredAdminId && user.id === configuredAdminId) ||
+        user.publicMetadata?.role === "admin"),
+  );
 }

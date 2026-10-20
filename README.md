@@ -129,6 +129,9 @@ Web3Forms allowed domains and Clerk production domains.
 Set the `VITE_*` values from `.env.example` in **Sites → Settings →
 Environment variables** before deploying. The tagged `.env` path is not part of
 this repository; do not create or commit a secret `.env` file.
+Set `VITE_CLERK_ADMIN_USER_ID` to the same public Clerk user ID used by the
+Function's `CLERK_ADMIN_USER_ID`. This is an identifier, not a secret; it keeps
+the owner-facing dashboard gate aligned with the server authorization check.
 
 ### Admin write security
 

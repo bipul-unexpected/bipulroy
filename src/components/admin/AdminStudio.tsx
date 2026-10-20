@@ -202,7 +202,7 @@ export function AdminStudio() {
                 <p className="text-xs font-mono uppercase tracking-[0.18em] text-amber-600">Admin access required</p>
                 <h2 className="mt-2 text-2xl font-bold text-foreground">Your Clerk account is signed in, but it is not an administrator.</h2>
                 <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-                  Add the exact public metadata below to your Clerk user, then sign out and sign in again. This dashboard intentionally stays hidden from non-admin accounts.
+                  Configure the owner Clerk user ID in the Site environment or add the exact public metadata below, then sign out and sign in again. This dashboard intentionally stays hidden from non-admin accounts.
                 </p>
                 <pre className="mt-4 w-fit rounded-xl border border-border bg-background/70 px-4 py-3 font-mono text-sm text-foreground">{`{ "role": "admin" }`}</pre>
                 <p className="mt-3 text-xs text-muted-foreground">

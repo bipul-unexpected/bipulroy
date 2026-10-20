@@ -18,6 +18,11 @@ Create a Function in Appwrite:
   as a nested folder, or an archive whose first entry is
   `admin-content/package.json`.
 
+The entrypoint is intentionally CommonJS because Appwrite's Node 22 runtime
+loads Function entrypoints with `require()`. Do not add `"type": "module"` to
+this package. The ESM-only `jose` dependency is loaded with an awaited
+dynamic import after the request handler starts.
+
 Use the Appwrite region-specific endpoint for the project. For the current
 portfolio project, the region is `sgp`, so configure the CLI with
 `https://sgp.cloud.appwrite.io/v1`; the global endpoint can return
@@ -55,6 +60,10 @@ Copy the Function's public domain into the frontend Site variable:
 ```env
 VITE_APPWRITE_ADMIN_FUNCTION_URL=https://your-function-domain
 ```
+
+Set `VITE_CLERK_ADMIN_USER_ID` in the Appwrite Site to the same Clerk user ID
+as `CLERK_ADMIN_USER_ID`. The frontend uses it only to show the owner studio;
+the Function remains the authoritative authorization boundary.
 
 After changing Function variables or source, create and deploy a new Function
 version. Then redeploy the Appwrite Site so the frontend receives the updated

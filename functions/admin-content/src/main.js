@@ -1,5 +1,4 @@
-import { Client, Databases, ID, InputFile, Storage } from "node-appwrite";
-import { createRemoteJWKSet, jwtVerify } from "jose";
+const { Client, Databases, ID, InputFile, Storage } = require("node-appwrite");
 
 const kinds = new Set([
   "projects",
@@ -35,6 +34,7 @@ async function verifyAdmin(req) {
     : "";
   if (!token) throw new Error("Missing Clerk authorization token.");
 
+  const { createRemoteJWKSet, jwtVerify } = await import("jose");
   const issuer = process.env.CLERK_JWT_ISSUER;
   const jwks = createRemoteJWKSet(new URL(process.env.CLERK_JWKS_URL));
   const { payload } = await jwtVerify(token, jwks, issuer ? { issuer } : undefined);
@@ -49,7 +49,7 @@ async function verifyAdmin(req) {
   return payload;
 }
 
-export default async ({ req, res, log, error }) => {
+module.exports = async ({ req, res, log, error }) => {
   if (req.method === "OPTIONS") {
     return res.empty(204, corsHeaders);
   }
