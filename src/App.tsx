@@ -22,6 +22,7 @@ import { playClickSound } from "./lib/clickSound";
 import { TerminalMode } from "./components/ui/TerminalMode";
 import { SmoothScroll } from "./components/ui/SmoothScroll";
 import { PublicRoutePage } from "./components/PublicRoutePage";
+import { navigateToPath } from "./lib/scrollToSection";
 
 const THEME_KEY = "bipul-theme";
 
@@ -62,6 +63,29 @@ function App() {
     };
     document.addEventListener("pointerdown", handlePointerDown, { passive: true });
     return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, []);
+
+  useEffect(() => {
+    const handleInternalNavigation = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const anchor = (event.target as Element | null)?.closest("a");
+      if (!anchor || anchor.target === "_blank" || anchor.hasAttribute("download")) return;
+      const url = new URL(anchor.href, window.location.href);
+      if (url.origin !== window.location.origin || !url.pathname.startsWith("/")) return;
+      if (url.pathname === window.location.pathname && !url.hash) return;
+      event.preventDefault();
+      if (url.hash) {
+        const target = document.getElementById(url.hash.slice(1));
+        if (target) {
+          window.history.pushState({}, "", `${url.pathname}${url.hash}`);
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+          return;
+        }
+      }
+      navigateToPath(url.pathname);
+    };
+    document.addEventListener("click", handleInternalNavigation, true);
+    return () => document.removeEventListener("click", handleInternalNavigation, true);
   }, []);
 
   useEffect(() => {

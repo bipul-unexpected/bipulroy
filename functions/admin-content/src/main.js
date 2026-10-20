@@ -11,8 +11,14 @@ const kinds = new Set([
   "testimonials",
 ]);
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": process.env.ALLOWED_ORIGIN || "*",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
+
 function json(res, status, body) {
-  return res.json(body, status);
+  return res.json(body, status, corsHeaders);
 }
 
 function collectionId(kind) {
@@ -44,6 +50,9 @@ async function verifyAdmin(req) {
 }
 
 export default async ({ req, res, log, error }) => {
+  if (req.method === "OPTIONS") {
+    return res.empty(204, corsHeaders);
+  }
   try {
     await verifyAdmin(req);
     const body = req.bodyJson || JSON.parse(req.body || "{}");

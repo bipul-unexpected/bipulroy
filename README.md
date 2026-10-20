@@ -128,7 +128,8 @@ admin studio sends create, update, delete, and image operations to the
 `functions/admin-content` Appwrite Function. Deploy that Function first and
 set its public domain as `VITE_APPWRITE_ADMIN_FUNCTION_URL`. Keep the Function
 API key, Clerk JWKS configuration, and `CLERK_ADMIN_USER_ID` in Function
-environment variables only. The setup and exact scopes are documented in
+environment variables only, and set `ALLOWED_ORIGIN` to the exact portfolio
+origin. The setup and exact scopes are documented in
 `functions/admin-content/README.md`.
 
 ## Terminal mode

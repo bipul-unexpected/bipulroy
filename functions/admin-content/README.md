@@ -38,6 +38,7 @@ APPWRITE_TESTIMONIALS_COLLECTION_ID=testimonials
 CLERK_JWKS_URL=https://your-clerk-domain/.well-known/jwks.json
 CLERK_JWT_ISSUER=https://your-clerk-domain
 CLERK_ADMIN_USER_ID=user_your_owner_id
+ALLOWED_ORIGIN=https://your-portfolio-domain.com
 ```
 
 Copy the Function's public domain into the frontend Site variable:
