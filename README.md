@@ -20,10 +20,10 @@ Create one database and these collections in the Appwrite console:
 
 | Collection | Required attributes |
 | --- | --- |
-| `projects` | `title` string, `description` string, `imageUrl` string, `url` string, `tags` string array, `published` boolean, `featured` boolean |
-| `articles` | `title` string, `excerpt` string, `body` string, `url` string, `imageUrl` string, `tags` string array, `published` boolean, `featured` boolean |
-| `gallery` | `title` string, `description` string, `imageUrl` string, `published` boolean |
-| `tools` | `title` string, `name` string, `description` string, `website` string, `icon` string, `published` boolean |
+| `projects` | `title` string, `description` string, `imageUrl` string, `imageFileId` string, `url` string, `category` string, `tags` string array, `published` boolean, `featured` boolean |
+| `articles` | `title` string, `excerpt` string, `body` string, `description` string, `imageUrl` string, `imageFileId` string, `url` string, `category` string, `tags` string array, `published` boolean, `featured` boolean |
+| `gallery` | `title` string, `description` string, `imageUrl` string, `imageFileId` string, `published` boolean, `featured` boolean |
+| `tools` | `title` string, `name` string, `description` string, `website` string, `icon` string, `category` string, `tags` string array, `published` boolean, `featured` boolean |
 
 Create a Storage bucket for portfolio media and set its file read permission
 to `Any` if images are public. Keep file creation restricted to authenticated
@@ -39,7 +39,11 @@ the publishing studio to a Clerk user whose public metadata contains:
 ```
 
 Appwrite permissions are the authoritative security boundary; configure them
-in the console rather than relying only on the client-side admin check.
+in the console rather than relying only on the client-side admin check. Grant
+the authenticated role create/read/update/delete permissions on all four
+collections and create/delete permissions on the media bucket. Public visitors
+only need read access to published documents and file view access. The studio
+supports create, draft listing, edit, delete, and tracked image cleanup.
 
 ## Clerk setup
 
@@ -64,6 +68,13 @@ npm run build
 Deploy the generated `dist/angular` directory through Appwrite Sites. Keep
 `public/robots.txt`, `public/sitemap.xml`, and the canonical domain aligned with
 the final Appwrite Sites custom domain.
+
+Appwrite Sites is a static frontend host, so keep only public SDK identifiers in
+`VITE_*` variables. Never add an Appwrite API key or Clerk secret key to the
+Vite environment. Configure the Site build command as `npm run build`, output
+directory as `dist/angular`, and add the production hostname as an Appwrite Web
+platform. Use the same hostname in Web3Forms allowed domains and Clerk
+production domains.
 
 ## Terminal mode
 

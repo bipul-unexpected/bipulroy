@@ -483,10 +483,17 @@ html {
 
 body {
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: none;
+  overscroll-behavior-y: auto;
   background-color: var(--color-bg);
   color: var(--color-text);
   overflow-x: hidden;
+  touch-action: pan-y;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 img,

@@ -11,14 +11,15 @@ export interface RemoteContent {
   excerpt?: string;
   body?: string;
   imageUrl?: string;
+  imageFileId?: string;
   url?: string;
   category?: string;
   tags?: string[];
   published?: boolean;
   featured?: boolean;
   name?: string;
-  website?: string;
   icon?: string;
+  website?: string;
 }
 
 const env = import.meta.env;
@@ -54,15 +55,24 @@ function getCollectionId(kind: ContentKind) {
   return collectionId;
 }
 
-export async function listContent(kind: ContentKind) {
+export async function listContent(kind: ContentKind, options: { includeUnpublished?: boolean } = {}) {
   if (!appwriteIsConfigured) return [] as RemoteContent[];
 
+  const queries = options.includeUnpublished
+    ? [Query.orderDesc("$createdAt")]
+    : [Query.equal("published", true), Query.orderDesc("$createdAt")];
   const response = await databases.listDocuments(
     env.VITE_APPWRITE_DATABASE_ID as string,
     getCollectionId(kind),
-    [Query.equal("published", true), Query.orderDesc("$createdAt")],
+    queries,
   );
   return response.documents as unknown as RemoteContent[];
+}
+
+function cleanContentData(data: Omit<RemoteContent, "$id" | "$createdAt">) {
+  return Object.fromEntries(
+    Object.entries(data).filter(([, value]) => value !== undefined && value !== ""),
+  );
 }
 
 export async function createContent(
@@ -77,9 +87,39 @@ export async function createContent(
     env.VITE_APPWRITE_DATABASE_ID as string,
     getCollectionId(kind),
     ID.unique(),
-    data,
+    cleanContentData(data),
   );
   return response as unknown as RemoteContent;
+}
+
+export async function updateContent(
+  kind: ContentKind,
+  documentId: string,
+  data: Omit<RemoteContent, "$id" | "$createdAt">,
+) {
+  if (!appwriteIsConfigured) {
+    throw new Error("Appwrite is not configured for this deployment.");
+  }
+
+  const response = await databases.updateDocument(
+    env.VITE_APPWRITE_DATABASE_ID as string,
+    getCollectionId(kind),
+    documentId,
+    cleanContentData(data),
+  );
+  return response as unknown as RemoteContent;
+}
+
+export async function deleteContent(kind: ContentKind, documentId: string) {
+  if (!appwriteIsConfigured) {
+    throw new Error("Appwrite is not configured for this deployment.");
+  }
+
+  await databases.deleteDocument(
+    env.VITE_APPWRITE_DATABASE_ID as string,
+    getCollectionId(kind),
+    documentId,
+  );
 }
 
 export async function uploadContentImage(file: File) {
@@ -91,7 +131,28 @@ export async function uploadContentImage(file: File) {
   const uploaded = await storage.createFile(bucketId, ID.unique(), file);
   const endpoint = env.VITE_APPWRITE_ENDPOINT as string;
   const projectId = env.VITE_APPWRITE_PROJECT_ID as string;
-  return `${endpoint}/storage/buckets/${bucketId}/files/${uploaded.$id}/view?project=${projectId}`;
+  return {
+    fileId: uploaded.$id,
+    url: `${endpoint}/storage/buckets/${bucketId}/files/${uploaded.$id}/view?project=${projectId}`,
+  };
+}
+
+export function getContentImageUrl(fileId: string) {
+  const bucketId = env.VITE_APPWRITE_STORAGE_BUCKET_ID as string | undefined;
+  const endpoint = env.VITE_APPWRITE_ENDPOINT as string | undefined;
+  const projectId = env.VITE_APPWRITE_PROJECT_ID as string | undefined;
+  if (!bucketId || !endpoint || !projectId) {
+    throw new Error("Appwrite Storage is not configured for this deployment.");
+  }
+  return `${endpoint}/storage/buckets/${bucketId}/files/${fileId}/view?project=${projectId}`;
+}
+
+export async function deleteContentImage(fileId: string) {
+  const bucketId = env.VITE_APPWRITE_STORAGE_BUCKET_ID as string | undefined;
+  if (!bucketId || !appwriteIsConfigured) {
+    throw new Error("Appwrite Storage is not configured for this deployment.");
+  }
+  await storage.deleteFile(bucketId, fileId);
 }
 
 export function isAdminUser(user: { publicMetadata?: Record<string, unknown> } | null | undefined) {

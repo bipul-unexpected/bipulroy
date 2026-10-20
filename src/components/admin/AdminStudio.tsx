@@ -1,8 +1,18 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { useUser, SignInButton, UserButton } from "@clerk/react";
-import { CheckCircle2, LogIn, Plus, Upload } from "lucide-react";
-import { createContent, isAdminUser, uploadContentImage, type ContentKind } from "../../lib/content";
+import { CheckCircle2, Edit3, LogIn, Plus, RefreshCw, Trash2, Upload, X } from "lucide-react";
+import {
+  createContent,
+  deleteContentImage,
+  deleteContent,
+  isAdminUser,
+  listContent,
+  updateContent,
+  uploadContentImage,
+  type ContentKind,
+  type RemoteContent,
+} from "../../lib/content";
 
 const contentKinds: { value: ContentKind; label: string }[] = [
   { value: "projects", label: "Project" },
@@ -11,68 +21,195 @@ const contentKinds: { value: ContentKind; label: string }[] = [
   { value: "tools", label: "Tool" },
 ];
 
+type FormState = {
+  title: string;
+  description: string;
+  body: string;
+  url: string;
+  website: string;
+  tags: string;
+  category: string;
+  icon: string;
+  published: boolean;
+  featured: boolean;
+};
+
+const emptyForm: FormState = {
+  title: "", description: "", body: "", url: "", website: "", tags: "",
+  category: "", icon: "", published: true, featured: false,
+};
+
+function toForm(item: RemoteContent): FormState {
+  return {
+    title: item.title || item.name || "",
+    description: item.description || item.excerpt || "",
+    body: item.body || "",
+    url: item.url || "",
+    website: item.website || "",
+    tags: item.tags?.join(", ") || "",
+    category: item.category || "",
+    icon: item.icon || "",
+    published: item.published !== false,
+    featured: Boolean(item.featured),
+  };
+}
+
+function toPayload(form: FormState, imageUrl?: string, imageFileId?: string) {
+  return {
+    title: form.title.trim(),
+    description: form.description.trim(),
+    excerpt: form.description.trim(),
+    body: form.body.trim() || undefined,
+    url: form.url.trim() || undefined,
+    website: form.website.trim() || undefined,
+    tags: form.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
+    category: form.category.trim() || undefined,
+    icon: form.icon.trim() || undefined,
+    imageUrl,
+    imageFileId,
+    published: form.published,
+    featured: form.featured,
+  };
+}
+
 export function AdminStudio() {
   const { isLoaded, isSignedIn, user } = useUser();
   const [kind, setKind] = useState<ContentKind>("projects");
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [url, setUrl] = useState("");
-  const [tags, setTags] = useState("");
+  const [records, setRecords] = useState<RemoteContent[]>([]);
+  const [form, setForm] = useState<FormState>(emptyForm);
   const [image, setImage] = useState<File | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  if (!isLoaded) return null;
-  if (!isSignedIn) {
-    return (
-      <section id="admin" className="relative py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6"><div className="glass-panel rounded-2xl p-5 sm:p-7 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
-          <div><p className="text-xs font-mono uppercase tracking-[0.18em] text-primary">Private studio</p><h2 className="mt-2 text-xl font-bold text-foreground">Manage the portfolio securely.</h2><p className="mt-1 text-sm text-muted-foreground">Sign in with Clerk to access the publishing workspace.</p></div>
-          <SignInButton mode="modal"><button type="button" className="btn-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"><LogIn className="h-4 w-4" /> Admin sign in</button></SignInButton>
-        </div></div>
-      </section>
-    );
+  const canManage = isLoaded && isSignedIn && isAdminUser(user);
+
+  async function loadRecords(selectedKind = kind) {
+    setLoading(true);
+    try {
+      setRecords(await listContent(selectedKind, { includeUnpublished: true }));
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Unable to load Appwrite content.");
+    } finally {
+      setLoading(false);
+    }
   }
-  if (!isAdminUser(user)) return null;
+
+  useEffect(() => {
+    if (canManage) void loadRecords();
+  // The selected kind is intentionally handled by the explicit selector below.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canManage]);
+
+  const modeLabel = useMemo(() => editingId ? "Update content" : "Publish content", [editingId]);
+
+  function updateForm<K extends keyof FormState>(key: K, value: FormState[K]) {
+    setForm((current) => ({ ...current, [key]: value }));
+  }
+
+  function startEdit(item: RemoteContent) {
+    setEditingId(item.$id);
+    setForm(toForm(item));
+    setImage(null);
+    window.scrollTo({ top: document.getElementById("admin")?.offsetTop || 0, behavior: "smooth" });
+  }
+
+  function resetForm() {
+    setEditingId(null);
+    setForm(emptyForm);
+    setImage(null);
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);
     setStatus("");
     try {
-      const imageUrl = image ? await uploadContentImage(image) : undefined;
-      await createContent(kind, {
-        title,
-        description,
-        excerpt: description,
-        url: url || undefined,
-        imageUrl,
-        tags: tags.split(",").map((tag) => tag.trim()).filter(Boolean),
-        published: true,
-        featured: true,
-      });
-      setTitle(""); setDescription(""); setUrl(""); setTags(""); setImage(null);
-      setStatus("Published successfully. Refresh the public sections to see it.");
+      const uploaded = image ? await uploadContentImage(image) : undefined;
+      const payload = toPayload(form, uploaded?.url, uploaded?.fileId);
+      const previous = editingId ? records.find((record) => record.$id === editingId) : undefined;
+      if (editingId) await updateContent(kind, editingId, payload);
+      else await createContent(kind, payload);
+      if (previous?.imageFileId && uploaded?.fileId && previous.imageFileId !== uploaded.fileId) {
+        try {
+          await deleteContentImage(previous.imageFileId);
+        } catch (error) {
+          console.warn("Content updated, but its previous Appwrite image could not be removed:", error);
+        }
+      }
+      resetForm();
+      await loadRecords();
+      setStatus(editingId ? "Content updated successfully." : "Content published successfully.");
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Publishing failed. Check Appwrite permissions and try again.");
+      setStatus(error instanceof Error ? error.message : "Appwrite operation failed. Check permissions and attributes.");
     } finally {
       setBusy(false);
     }
   }
 
+  async function handleDelete(item: RemoteContent) {
+    if (!window.confirm(`Delete “${item.title || item.name}”? This cannot be undone.`)) return;
+    setBusy(true);
+    setStatus("");
+    try {
+      await deleteContent(kind, item.$id);
+      if (item.imageFileId) {
+        try {
+          await deleteContentImage(item.imageFileId);
+        } catch (error) {
+          console.warn("Content deleted, but its Appwrite image could not be removed:", error);
+        }
+      }
+      if (editingId === item.$id) resetForm();
+      await loadRecords();
+      setStatus("Content deleted successfully.");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Delete failed. Check Appwrite permissions.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (!isLoaded) return null;
+  if (!isSignedIn) {
+    return (
+      <section id="admin" className="relative py-20">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6"><div className="glass-panel flex flex-col items-start justify-between gap-5 rounded-2xl p-5 sm:flex-row sm:items-center sm:p-7">
+          <div><p className="text-xs font-mono uppercase tracking-[0.18em] text-primary">Private studio</p><h2 className="mt-2 text-xl font-bold text-foreground">Manage the portfolio securely.</h2><p className="mt-1 text-sm text-muted-foreground">Sign in with Clerk to access the publishing workspace.</p></div>
+          <SignInButton mode="modal"><button type="button" className="btn-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"><LogIn className="h-4 w-4" /> Admin sign in</button></SignInButton>
+        </div></div>
+      </section>
+    );
+  }
+  if (!canManage) return null;
+
   return (
     <section id="admin" className="relative py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6"><div className="glass-panel rounded-2xl p-5 sm:p-7 md:p-9">
-        <div className="mb-7 flex flex-col sm:flex-row justify-between gap-4"><div><p className="text-xs font-mono uppercase tracking-[0.18em] text-primary">Private studio</p><h2 className="mt-2 text-2xl font-bold text-foreground">Publish new work</h2><p className="mt-1 text-sm text-muted-foreground">Appwrite Database stores metadata; Storage stores media.</p></div><UserButton /></div>
-        <form onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-2">
-          <label className="text-sm text-muted-foreground">Content type<select value={kind} onChange={(event) => setKind(event.target.value as ContentKind)} className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground">{contentKinds.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label>
-          <label className="text-sm text-muted-foreground">Title<input required value={title} onChange={(event) => setTitle(event.target.value)} className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>
-          <label className="text-sm text-muted-foreground md:col-span-2">Description<textarea required value={description} onChange={(event) => setDescription(event.target.value)} rows={3} className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>
-          <label className="text-sm text-muted-foreground">URL<input value={url} onChange={(event) => setUrl(event.target.value)} placeholder="https://" className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>
-          <label className="text-sm text-muted-foreground">Tags, comma separated<input value={tags} onChange={(event) => setTags(event.target.value)} className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>
-          <label className="md:col-span-2 flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground"><Upload className="h-4 w-4 text-primary" /><span>{image?.name || "Upload image (optional)"}</span><input type="file" accept="image/*" onChange={(event) => setImage(event.target.files?.[0] || null)} className="sr-only" /></label>
-          <div className="md:col-span-2 flex items-center gap-4"><button disabled={busy} className="btn-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold disabled:opacity-60"><Plus className="h-4 w-4" />{busy ? "Publishing..." : "Publish content"}</button>{status && <p className="inline-flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="h-4 w-4 text-primary" />{status}</p>}</div>
+        <div className="mb-7 flex flex-col justify-between gap-4 sm:flex-row"><div><p className="text-xs font-mono uppercase tracking-[0.18em] text-primary">Private studio</p><h2 className="mt-2 text-2xl font-bold text-foreground">Portfolio content CRUD</h2><p className="mt-1 text-sm text-muted-foreground">Appwrite Database stores records; Storage stores public media.</p></div><UserButton /></div>
+        <div className="mb-5 flex flex-wrap items-center gap-2">
+          {contentKinds.map((item) => <button key={item.value} type="button" onClick={() => { setKind(item.value); resetForm(); void loadRecords(item.value); }} className={`rounded-full px-3 py-1.5 text-xs font-semibold ${kind === item.value ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>{item.label}</button>)}
+          <button type="button" onClick={() => void loadRecords()} className="ml-auto inline-flex items-center gap-1 rounded-full bg-secondary px-3 py-1.5 text-xs text-muted-foreground" disabled={loading}><RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} /> Refresh</button>
+        </div>
+        <form onSubmit={handleSubmit} className="grid gap-4 border-b border-border/60 pb-8 md:grid-cols-2">
+          <label className="text-sm text-muted-foreground">Title<input required value={form.title} onChange={(event) => updateForm("title", event.target.value)} className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>
+          <label className="text-sm text-muted-foreground">Category / slug<input value={form.category} onChange={(event) => updateForm("category", event.target.value)} placeholder="saas, frontend, engineering" className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>
+          <label className="text-sm text-muted-foreground md:col-span-2">Description<textarea required value={form.description} onChange={(event) => updateForm("description", event.target.value)} rows={3} className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>
+          {kind === "articles" && <label className="text-sm text-muted-foreground md:col-span-2">Article body<textarea value={form.body} onChange={(event) => updateForm("body", event.target.value)} rows={6} className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 font-mono text-sm text-foreground" /></label>}
+          <label className="text-sm text-muted-foreground">Public URL<input type="url" value={form.url} onChange={(event) => updateForm("url", event.target.value)} placeholder="https://" className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>
+          {kind === "tools" && <label className="text-sm text-muted-foreground">Tool website<input type="url" value={form.website} onChange={(event) => updateForm("website", event.target.value)} placeholder="https://" className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>}
+          <label className="text-sm text-muted-foreground">Tags, comma separated<input value={form.tags} onChange={(event) => updateForm("tags", event.target.value)} className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>
+          {kind === "tools" && <label className="text-sm text-muted-foreground">Icon name / URL<input value={form.icon} onChange={(event) => updateForm("icon", event.target.value)} className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>}
+          <label className="md:col-span-2 flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground"><Upload className="h-4 w-4 text-primary" /><span>{image?.name || "Upload or replace image (optional)"}</span><input type="file" accept="image/*" onChange={(event) => setImage(event.target.files?.[0] || null)} className="sr-only" /></label>
+          <div className="flex flex-wrap gap-4 text-sm text-muted-foreground md:col-span-2"><label className="inline-flex items-center gap-2"><input type="checkbox" checked={form.published} onChange={(event) => updateForm("published", event.target.checked)} /> Published</label><label className="inline-flex items-center gap-2"><input type="checkbox" checked={form.featured} onChange={(event) => updateForm("featured", event.target.checked)} /> Featured</label></div>
+          <div className="flex flex-wrap items-center gap-3 md:col-span-2"><button disabled={busy} className="btn-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold disabled:opacity-60"><Plus className="h-4 w-4" />{busy ? "Saving..." : modeLabel}</button>{editingId && <button type="button" onClick={resetForm} className="inline-flex items-center gap-2 rounded-full bg-secondary px-5 py-3 text-sm font-semibold text-muted-foreground"><X className="h-4 w-4" />Cancel edit</button>}{status && <p role="status" className="inline-flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="h-4 w-4 text-primary" />{status}</p>}</div>
         </form>
+        <div className="mt-7 space-y-2">
+          <h3 className="text-sm font-semibold text-foreground">{contentKinds.find((item) => item.value === kind)?.label} records ({records.length})</h3>
+          {records.length === 0 && <p className="rounded-xl border border-dashed border-border p-5 text-sm text-muted-foreground">{loading ? "Loading records..." : "No records yet."}</p>}
+          {records.map((item) => <div key={item.$id} className="flex flex-col gap-3 rounded-xl border border-border/70 bg-background/30 p-4 sm:flex-row sm:items-center sm:justify-between"><div className="min-w-0"><p className="truncate font-semibold text-foreground">{item.title || item.name}</p><p className="mt-1 line-clamp-1 text-xs text-muted-foreground">{item.description || item.excerpt}</p><span className={`mt-2 inline-flex rounded-full px-2 py-0.5 text-[10px] ${item.published === false ? "bg-amber-500/10 text-amber-600" : "bg-emerald-500/10 text-emerald-600"}`}>{item.published === false ? "Draft" : "Published"}</span></div><div className="flex shrink-0 gap-2"><button type="button" onClick={() => startEdit(item)} className="inline-flex items-center gap-1 rounded-full bg-secondary px-3 py-1.5 text-xs font-semibold text-muted-foreground"><Edit3 className="h-3.5 w-3.5" /> Edit</button><button type="button" onClick={() => void handleDelete(item)} disabled={busy} className="inline-flex items-center gap-1 rounded-full bg-destructive/10 px-3 py-1.5 text-xs font-semibold text-destructive"><Trash2 className="h-3.5 w-3.5" /> Delete</button></div></div>)}
+        </div>
       </div></div>
     </section>
   );

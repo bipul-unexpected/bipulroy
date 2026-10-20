@@ -191,11 +191,16 @@ export function Contact() {
                     setStatus("sending");
                     const form = event.currentTarget;
                     const data = new FormData(form);
-                    data.append("access_key", import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || "39f9a6b3-763c-4ef6-bf81-06128530394d");
-                    data.append("subject", "New project inquiry from bipul.tech");
                     try {
-                      const response = await fetch("https://api.web3forms.com/submit", { method: "POST", body: data });
-                      if (!response.ok) throw new Error("Web3Forms request failed");
+                      const response = await fetch("https://api.web3forms.com/submit", {
+                        method: "POST",
+                        body: data,
+                        headers: { Accept: "application/json" },
+                      });
+                      const result = await response.json() as { success?: boolean; message?: string };
+                      if (!response.ok || result.success !== true) {
+                        throw new Error(result.message || "Web3Forms request failed");
+                      }
                       form.reset();
                       setStatus("sent");
                     } catch (error) {
@@ -203,6 +208,10 @@ export function Contact() {
                       setStatus("error");
                     }
                   }}>
+                    <input type="hidden" name="access_key" value={import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || "39f9a6b3-763c-4ef6-bf81-06128530394d"} />
+                    <input type="hidden" name="subject" value="New project inquiry from bipul.tech" />
+                    <input type="hidden" name="from_name" value="Bipul.tech contact form" />
+                    <input type="checkbox" name="botcheck" className="hidden" tabIndex={-1} autoComplete="off" />
                     <input required name="name" placeholder="Your name" autoComplete="name" className="w-full rounded-lg border border-border bg-background/60 px-4 py-3 text-sm text-foreground outline-none focus:border-primary" />
                     <input required type="email" name="email" placeholder="Email address" autoComplete="email" className="w-full rounded-lg border border-border bg-background/60 px-4 py-3 text-sm text-foreground outline-none focus:border-primary" />
                     <textarea required name="message" rows={4} placeholder="What are you building?" className="w-full rounded-lg border border-border bg-background/60 px-4 py-3 text-sm text-foreground outline-none focus:border-primary" />
