@@ -603,6 +603,27 @@ section[id] {
   }
 }
 
+@keyframes hero-float-card {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(0.6deg); }
+}
+
+.glass-specular {
+  background: radial-gradient(120% 120% at 50% 0%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.25) 55%, rgba(255, 255, 255, 0.02) 100%);
+}
+
+.float-card-1 { animation: hero-float-card 7.5s ease-in-out infinite; }
+.float-card-2 { animation: hero-float-card 9s ease-in-out -2.8s infinite; }
+.float-card-3 { animation: hero-float-card 8s ease-in-out -4.5s infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .float-card-1,
+  .float-card-2,
+  .float-card-3 {
+    animation: none;
+  }
+}
+
 .badge-shimmer {
   position: relative;
   overflow: hidden;
