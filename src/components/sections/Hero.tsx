@@ -41,7 +41,7 @@ function GlassCard({ children, className = "" }: { children: React.ReactNode; cl
 export function Hero() {
   const reducedMotion = useReducedMotion();
   return (
-    <section id="hero" className="relative min-h-screen overflow-hidden bg-[#fbfbfd] px-3 py-24 font-sans text-slate-900 sm:px-6 sm:py-32 lg:px-8">
+    <section id="hero" className="relative min-h-[100dvh] overflow-hidden bg-[#fbfbfd] px-3 py-24 font-sans text-slate-900 sm:px-6 sm:py-32 lg:px-8">
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#f9f9fb]">
         <div className="absolute inset-0 bg-gradient-to-b from-white via-[#f8f9fa] to-[#f1f3f5] opacity-95" />
         <motion.div className="absolute -left-[10%] -top-[18%] h-[68vw] w-[68vw] rounded-full bg-gradient-to-tr from-slate-200/70 via-slate-100/80 to-transparent blur-[110px]" animate={reducedMotion ? undefined : { x: [0, 35, -30, 0], y: [0, -50, 30, 0], scale: [1, 1.09, 0.95, 1], rotate: [0, 4, -3, 0] }} transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }} />

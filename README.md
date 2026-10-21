@@ -124,6 +124,26 @@ Use the arbitrary syntax for those values — `bg-white/[0.45]`,
 properties, so those must be declared (see
 [Admin dashboard UI](#admin-dashboard-ui)).
 
+### Mobile loading behaviour
+
+The site opens with an inline glass preloader that the app dismisses once it
+has mounted. Three things keep it from ever trapping a visitor on a phone:
+
+- the app signals readiness from `App.tsx` once it has mounted, so the loader
+  only fades away over content that is on screen;
+- the dismissal uses `requestAnimationFrame` rather than
+  `requestIdleCallback`, because a busy mobile main thread starves idle
+  callbacks and the spinner would keep running;
+- an inline script in `index.html` and `page-template.html` removes the loader
+  unconditionally after four seconds, so a slow connection — or a bundle that
+  never arrives — still ends in a usable page.
+
+Content reads are bounded too: every Appwrite call is raced against a
+deadline (8s for the public site, 20s for the studio) and the content hook has
+a 10s fallback, so no section can sit on a loading state forever. The hero
+uses `100dvh` rather than `100vh` so the mobile browser toolbar does not make
+the first screen taller than the visible area.
+
 Deploy the generated `dist` directory through Appwrite Sites. Keep
 `public/robots.txt`, `public/sitemap.xml`, and the canonical domain aligned with
 the final Appwrite Sites custom domain.

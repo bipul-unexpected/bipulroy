@@ -457,6 +457,28 @@
       </div>
     </div>
 
+    <!--
+      Preloader safety net.
+      The app removes this loader as soon as it mounts, but on a slow phone
+      connection — or if the bundle fails to load at all — the visitor must
+      never be left watching a spinner. This removes it unconditionally.
+    -->
+    <script>
+      (function () {
+        setTimeout(function () {
+          var loader = document.getElementById("app-preloader");
+          if (!loader) return;
+          loader.style.opacity = "0";
+          loader.style.pointerEvents = "none";
+          setTimeout(function () {
+            loader.remove();
+            var styles = document.getElementById("preloader-styles");
+            if (styles) styles.remove();
+          }, 700);
+        }, 4000);
+      })();
+    </script>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     

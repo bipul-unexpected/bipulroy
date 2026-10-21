@@ -169,6 +169,24 @@
       </div>
     </div>
 
+    <!-- Preloader safety net: the app removes the loader on mount, but a slow
+         connection or a failed bundle must never leave a spinner running. -->
+    <script>
+      (function () {
+        setTimeout(function () {
+          var loader = document.getElementById("app-preloader");
+          if (!loader) return;
+          loader.style.opacity = "0";
+          loader.style.pointerEvents = "none";
+          setTimeout(function () {
+            loader.remove();
+            var styles = document.getElementById("preloader-styles");
+            if (styles) styles.remove();
+          }, 700);
+        }, 4000);
+      })();
+    </script>
+
     <div id="root">__ARTICLE_CONTENT__</div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

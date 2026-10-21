@@ -182,6 +182,12 @@ function App() {
 
   const clerkConfigured = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
 
+  // The app has mounted, so the loading screen can be dismissed over real
+  // content instead of over an empty page.
+  useEffect(() => {
+    (window as unknown as { __bipulDismissPreloader?: () => void }).__bipulDismissPreloader?.();
+  }, []);
+
   useEffect(() => {
     const handleRouteChange = () => {
       setPathname(window.location.pathname.replace(/\/+$/, "") || "/");
@@ -214,7 +220,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground relative overflow-x-hidden transition-colors duration-300">
+    <div className="min-h-[100dvh] bg-background text-foreground relative overflow-x-hidden transition-colors duration-300">
       <ThemeTransition
         ripple={ripple}
         onMidpoint={handleRippleMid}

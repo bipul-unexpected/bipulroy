@@ -76,7 +76,7 @@ export function PublicRoutePage({ pathname }: { pathname: string }) {
   }, [route.title, route.description]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-[100dvh] bg-background text-foreground">
       <Navbar activeSection={pathname.slice(1)} isScrolled={isScrolled} />
       <main className="relative z-10 pt-16">
         {articleMatch ? (

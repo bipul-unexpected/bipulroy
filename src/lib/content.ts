@@ -33,6 +33,23 @@ export interface RemoteContent {
 const env = import.meta.env;
 let adminTokenProvider: (() => Promise<string | null>) | null = null;
 
+/**
+ * A stalled request must never leave a section spinning forever, so every
+ * network call is raced against a deadline. The underlying request is not
+ * cancelled, but the caller stops waiting for it.
+ */
+const REQUEST_TIMEOUT_MS = 8000;
+const ADMIN_REQUEST_TIMEOUT_MS = 20000;
+
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_resolve, reject) =>
+      setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms.`)), ms),
+    ),
+  ]);
+}
+
 export function configureAdminTokenProvider(provider: (() => Promise<string | null>) | null) {
   adminTokenProvider = provider;
 }
@@ -101,7 +118,16 @@ export async function listPublishedContent(kind: ContentKind): Promise<RemoteCon
   if (!appwriteIsConfigured) return [];
 
   try {
-    return await listDirect(kind);
+    const response = await withTimeout(
+      databases.listDocuments(
+        env.VITE_APPWRITE_DATABASE_ID as string,
+        getCollectionId(kind),
+        [Query.equal("published", true), Query.orderDesc("$createdAt"), Query.limit(100)],
+      ),
+      REQUEST_TIMEOUT_MS,
+      `Reading "${kind}"`,
+    );
+    return response.documents as unknown as RemoteContent[];
   } catch (error) {
     // The public site must keep rendering when Appwrite is unreachable, so the
     // caller falls back to the bundled content instead of showing an error.
@@ -171,11 +197,24 @@ async function adminRequest<T>(operation: string, payload: Record<string, unknow
     }
   }
   if (!token) throw new Error("Your Clerk session is missing or expired. Sign in again.");
-  const response = await fetch(parsedFunctionUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-    body: JSON.stringify({ operation, ...payload }),
-  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ADMIN_REQUEST_TIMEOUT_MS);
+  let response: Response;
+  try {
+    response = await fetch(parsedFunctionUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ operation, ...payload }),
+      signal: controller.signal,
+    });
+  } catch (error) {
+    if (controller.signal.aborted) {
+      throw new Error("The admin service did not respond in time. Check your connection and try again.");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timer);
+  }
   const result = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(result.error || "Admin write service rejected the request.");
   return result.data as T;
@@ -258,10 +297,14 @@ export async function getPublishedContent(
   if (!appwriteIsConfigured) return null;
 
   try {
-    const document = await databases.getDocument(
-      env.VITE_APPWRITE_DATABASE_ID as string,
-      getCollectionId(kind),
-      documentId,
+    const document = await withTimeout(
+      databases.getDocument(
+        env.VITE_APPWRITE_DATABASE_ID as string,
+        getCollectionId(kind),
+        documentId,
+      ),
+      REQUEST_TIMEOUT_MS,
+      `Reading "${kind}/${documentId}"`,
     );
     const record = document as unknown as RemoteContent;
     return record.published === false ? null : record;

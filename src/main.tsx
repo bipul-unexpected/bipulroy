@@ -41,8 +41,10 @@ document.documentElement.setAttribute(
 if (!stored) localStorage.setItem("bipul-theme", "light");
 
 /** Dismiss the liquid glass preloader with a smooth fade-out. */
+let preloaderDismissed = false;
 function dismissPreloader() {
-  if (!preloaderEl) return;
+  if (!preloaderEl || preloaderDismissed) return;
+  preloaderDismissed = true;
   const elapsed = performance.now() - preloaderStartTime;
   const remaining = Math.max(0, PRELOADER_MIN_DISPLAY_MS - elapsed);
 
@@ -67,6 +69,11 @@ function dismissPreloader() {
     }, 800);
   }, remaining);
 }
+
+// The app calls this once it has mounted, so the loader only fades away over
+// content that is actually on screen.
+(window as unknown as { __bipulDismissPreloader?: () => void }).__bipulDismissPreloader =
+  dismissPreloader;
 
 async function bootstrap() {
   const root = document.getElementById("root");
@@ -106,13 +113,16 @@ async function bootstrap() {
     <React.StrictMode>{tree}</React.StrictMode>,
   );
 
-  // Dismiss preloader after React has mounted
-  // Use requestIdleCallback for smooth handoff, fallback to rAF
-  if ("requestIdleCallback" in window) {
-    (window as any).requestIdleCallback(dismissPreloader);
-  } else {
-    requestAnimationFrame(() => setTimeout(dismissPreloader, 0));
-  }
+  // Dismiss the preloader once the first frame has been painted.
+  //
+  // This deliberately avoids `requestIdleCallback`: on a busy phone the main
+  // thread is saturated by the app's animations, so idle callbacks can be
+  // starved for a long time and the loading screen keeps spinning. The
+  // timeout is a hard backstop that removes the loader no matter what.
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => dismissPreloader());
+  });
+  setTimeout(dismissPreloader, PRELOADER_MIN_DISPLAY_MS + 2000);
 }
 
 bootstrap().catch((err) => {
