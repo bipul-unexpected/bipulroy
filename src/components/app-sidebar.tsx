@@ -52,24 +52,39 @@ export function AppSidebar({
   isDarkMode = false,
   onToggleTheme,
 }: AppSidebarProps) {
+  // Escape closes the mobile drawer, and the page behind it must not scroll.
+  React.useEffect(() => {
+    if (!openMobile) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onCloseMobile?.()
+    }
+    document.addEventListener("keydown", onKeyDown)
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    return () => {
+      document.removeEventListener("keydown", onKeyDown)
+      document.body.style.overflow = previousOverflow
+    }
+  }, [openMobile, onCloseMobile])
+
   const content = (
-    <div className="flex h-full w-full flex-col justify-between overflow-y-auto p-4">
+    <div className="flex h-full w-full flex-col justify-between overflow-y-auto overscroll-contain px-3 py-4 sm:px-4">
       {/* Brand & Studio Title */}
       <div>
-        <div className="flex items-center justify-between pb-5 border-b border-border/60">
+        <div className="flex items-center justify-between gap-2 border-b border-sidebar-border/70 pb-4">
           <a
             href="#admin"
-            className="flex items-center gap-3 group focus:outline-none"
+            className="flex min-w-0 items-center gap-3 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
             onClick={() => onCloseMobile?.()}
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 font-bold shadow-sm transition-transform group-hover:scale-105">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm transition-transform group-hover:scale-105">
               <Sparkles className="h-4 w-4" />
             </div>
-            <div>
-              <div className="text-sm font-bold tracking-tight text-foreground dark:text-white flex items-center gap-1.5">
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 truncate text-sm font-bold tracking-tight text-sidebar-foreground">
                 Bipul Roy Studio
               </div>
-              <div className="text-[11px] font-mono text-muted-foreground uppercase tracking-wider">
+              <div className="truncate font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
                 Admin Console
               </div>
             </div>
@@ -80,7 +95,7 @@ export function AppSidebar({
             <button
               type="button"
               onClick={onCloseMobile}
-              className="md:hidden flex h-8 w-8 items-center justify-center rounded-lg border border-border/70 text-muted-foreground hover:text-foreground dark:hover:text-white"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-sidebar-border bg-sidebar-accent text-sidebar-foreground transition-colors hover:bg-sidebar-accent/80 md:hidden"
               aria-label="Close sidebar"
             >
               <X className="h-4 w-4" />
@@ -89,8 +104,8 @@ export function AppSidebar({
         </div>
 
         {/* Content collections navigation */}
-        <div className="mt-6">
-          <div className="px-2 mb-2.5 text-[11px] font-mono font-semibold uppercase tracking-[0.16em] text-muted-foreground dark:text-zinc-400">
+        <div className="mt-5">
+          <div className="mb-2 px-2 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
             Content Collections
           </div>
           <nav className="space-y-1">
@@ -107,28 +122,29 @@ export function AppSidebar({
                     onCollectionChange?.(item.value)
                     onCloseMobile?.()
                   }}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all group ${
+                  aria-current={isActive ? "page" : undefined}
+                  className={`group relative flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-150 ${
                     isActive
-                      ? "bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 shadow-sm font-semibold"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/70 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-white/5"
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                   }`}
                 >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <Icon
-                      className={`h-4 w-4 shrink-0 transition-colors ${
-                        isActive
-                          ? "text-white dark:text-zinc-950"
-                          : "text-muted-foreground group-hover:text-foreground dark:text-zinc-400 dark:group-hover:text-white"
-                      }`}
-                    />
+                  <span
+                    aria-hidden
+                    className={`absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-primary transition-opacity ${
+                      isActive ? "opacity-100" : "opacity-0"
+                    }`}
+                  />
+                  <span className="flex min-w-0 items-center gap-2.5">
+                    <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
                     <span className="truncate">{item.label}</span>
-                  </div>
+                  </span>
                   <Badge
                     variant="outline"
-                    className={`ml-2 text-[11px] font-mono px-2 py-0.5 rounded-lg border tabular-nums transition-colors ${
+                    className={`ml-1 shrink-0 rounded-md border px-1.5 py-0 font-mono text-[11px] tabular-nums transition-colors ${
                       isActive
-                        ? "bg-white/20 text-white border-white/30 dark:bg-zinc-950/15 dark:text-zinc-950 dark:border-zinc-950/20 font-bold"
-                        : "bg-muted/60 text-muted-foreground border-border/60 group-hover:text-foreground dark:bg-white/5 dark:text-zinc-400 dark:border-white/10 dark:group-hover:text-white"
+                        ? "border-primary-foreground/25 bg-primary-foreground/[0.15] text-primary-foreground"
+                        : "border-sidebar-border bg-sidebar-accent text-muted-foreground"
                     }`}
                   >
                     {count}
@@ -140,39 +156,39 @@ export function AppSidebar({
         </div>
 
         {/* Workspace Quick Links */}
-        <div className="mt-8">
-          <div className="px-2 mb-2.5 text-[11px] font-mono font-semibold uppercase tracking-[0.16em] text-muted-foreground dark:text-zinc-400">
+        <div className="mt-7">
+          <div className="mb-2 px-2 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
             Workspace
           </div>
           <nav className="space-y-1">
             <a
               href="#admin"
               onClick={() => onCloseMobile?.()}
-              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:text-foreground hover:bg-muted/70 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-white/5 transition-colors"
+              className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
             >
-              <LayoutDashboard className="h-4 w-4" />
+              <LayoutDashboard className="h-4 w-4 shrink-0" aria-hidden="true" />
               <span>Dashboard Overview</span>
             </a>
             <a
               href="#content-editor"
               onClick={() => onCloseMobile?.()}
-              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-muted-foreground hover:text-foreground hover:bg-muted/70 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-white/5 transition-colors"
+              className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
             >
-              <Edit3 className="h-4 w-4" />
+              <Edit3 className="h-4 w-4 shrink-0" aria-hidden="true" />
               <span>Content Editor</span>
             </a>
             <a
               href="/"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-between px-3 py-2 rounded-xl text-sm text-muted-foreground hover:text-foreground hover:bg-muted/70 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-white/5 transition-colors"
+              className="flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
             >
-              <div className="flex items-center gap-2.5">
-                <ExternalLink className="h-4 w-4" />
+              <span className="flex min-w-0 items-center gap-2.5">
+                <ExternalLink className="h-4 w-4 shrink-0" aria-hidden="true" />
                 <span>View Public Site</span>
-              </div>
-              <span className="text-[10px] font-mono uppercase bg-muted/60 dark:bg-white/5 px-1.5 py-0.5 rounded text-muted-foreground">
-                LIVE
+              </span>
+              <span className="shrink-0 rounded bg-sidebar-accent px-1.5 py-0.5 font-mono text-[10px] uppercase text-muted-foreground">
+                Live
               </span>
             </a>
           </nav>
@@ -180,37 +196,43 @@ export function AppSidebar({
       </div>
 
       {/* User profile and theme toggle footer */}
-      <div className="mt-8 pt-4 border-t border-border/60 space-y-3">
+      <div className="mt-7 space-y-3 border-t border-sidebar-border/70 pt-4">
         {onToggleTheme && (
           <button
             type="button"
             onClick={onToggleTheme}
-            className="w-full flex items-center justify-between px-3 py-2 rounded-xl border border-border/70 bg-card hover:bg-accent text-xs font-medium text-foreground transition-all dark:border-white/10 dark:hover:bg-white/5"
+            className="flex w-full items-center justify-between gap-2 rounded-lg border border-sidebar-border bg-sidebar-accent/60 px-3 py-2 text-xs font-medium text-sidebar-foreground transition-colors hover:bg-sidebar-accent"
           >
-            <span className="flex items-center gap-2">
-              {isDarkMode ? <Sun className="h-3.5 w-3.5 text-amber-400" /> : <Moon className="h-3.5 w-3.5 text-indigo-500" />}
-              <span>{isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}</span>
+            <span className="flex min-w-0 items-center gap-2">
+              {isDarkMode ? (
+                <Sun className="h-3.5 w-3.5 shrink-0 text-amber-400" aria-hidden="true" />
+              ) : (
+                <Moon className="h-3.5 w-3.5 shrink-0 text-sky-500" aria-hidden="true" />
+              )}
+              <span className="truncate">
+                {isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              </span>
             </span>
-            <span className="text-[10px] font-mono uppercase text-muted-foreground">
-              {isDarkMode ? "DARK" : "LIGHT"}
+            <span className="shrink-0 font-mono text-[10px] uppercase text-muted-foreground">
+              {isDarkMode ? "Dark" : "Light"}
             </span>
           </button>
         )}
 
-        <div className="flex items-center gap-3 p-2 rounded-xl bg-card border border-border/70 dark:border-white/10">
+        <div className="flex items-center gap-3 rounded-lg border border-sidebar-border bg-sidebar-accent/40 p-2">
           {user?.avatar ? (
             <img
               src={user.avatar}
               alt={user.name || "Admin"}
-              className="h-8 w-8 rounded-lg object-cover ring-1 ring-border"
+              className="h-8 w-8 shrink-0 rounded-md object-cover ring-1 ring-sidebar-border"
             />
           ) : (
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-xs font-bold text-primary-foreground dark:bg-white dark:text-black">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-xs font-bold text-primary-foreground">
               {user?.name ? user.name.charAt(0).toUpperCase() : "A"}
             </div>
           )}
           <div className="min-w-0 flex-1 text-left">
-            <p className="truncate text-xs font-semibold text-foreground dark:text-white">
+            <p className="truncate text-xs font-semibold text-sidebar-foreground">
               {user?.name || "Portfolio Admin"}
             </p>
             <p className="truncate text-[11px] text-muted-foreground">
@@ -224,22 +246,25 @@ export function AppSidebar({
 
   return (
     <>
-      {/* Desktop Sidebar: sleek fixed/sticky side panel */}
-      <aside className="hidden md:flex md:w-64 lg:w-72 shrink-0 flex-col border-r border-border/70 bg-sidebar dark:bg-[#0c0d12] dark:border-white/10 h-screen sticky top-0 z-20">
+      {/* Desktop Sidebar: fixed-width, sticky, full-height rail */}
+      <aside className="sticky top-0 z-20 hidden h-screen w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar md:flex lg:w-72">
         {content}
       </aside>
 
-      {/* Mobile Sidebar: smooth slide-in drawer */}
+      {/* Mobile Sidebar: slide-in drawer with scrim */}
       {openMobile && (
         <div className="fixed inset-0 z-50 md:hidden">
-          {/* Backdrop overlay */}
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 animate-in fade-in-0 duration-200 bg-slate-950/70 backdrop-blur-sm"
             onClick={onCloseMobile}
             aria-hidden="true"
           />
-          {/* Sliding panel */}
-          <div className="fixed inset-y-0 left-0 w-72 max-w-[85vw] bg-sidebar dark:bg-[#0c0d12] border-r border-border/80 dark:border-white/10 shadow-2xl transition-transform ease-out duration-300">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Admin navigation"
+            className="fixed inset-y-0 left-0 flex w-72 max-w-[85vw] animate-in slide-in-from-left duration-300 flex-col border-r border-sidebar-border bg-sidebar shadow-2xl"
+          >
             {content}
           </div>
         </div>

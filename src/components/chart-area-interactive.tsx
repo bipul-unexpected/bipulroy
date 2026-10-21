@@ -128,15 +128,15 @@ const chartData = [
 
 const chartConfig = {
   visitors: {
-    label: "Visitors",
+    label: "Records",
   },
   desktop: {
-    label: "Desktop",
+    label: "Published",
     color: "var(--primary)",
   },
   mobile: {
-    label: "Mobile",
-    color: "var(--primary)",
+    label: "Drafts",
+    color: "var(--chart-2)",
   },
 } satisfies ChartConfig
 
@@ -175,7 +175,7 @@ export function ChartAreaInteractive({
         <CardTitle>Content activity</CardTitle>
         <CardDescription>
           <span className="hidden @[540px]/card:block">
-            Records created in the selected period
+            Published and draft records created in the selected period
           </span>
           <span className="@[540px]/card:hidden">Recent activity</span>
         </CardDescription>

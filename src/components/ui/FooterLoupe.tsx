@@ -16,20 +16,29 @@ export function FooterLoupe({ children }: { children: ReactNode }) {
   const areaRef = useRef<HTMLDivElement>(null);
   const sourceRef = useRef<HTMLDivElement>(null);
   const mirrorRef = useRef<HTMLDivElement>(null);
+  const shiftRef = useRef<HTMLDivElement>(null);
+  const cloneRef = useRef<HTMLDivElement>(null);
   const lensRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(true);
   const [zoom, setZoom] = useState(ZOOM_DEFAULT);
   const pointer = useRef({ x: -999, y: -999, targetX: -999, targetY: -999 });
 
+  /**
+   * Build the magnified copy of the footer once (and again on resize).
+   *
+   * The clone is magnified with the CSS `zoom` property rather than
+   * `transform: scale()`. A transform-scaled clone is rasterised once at 1x and
+   * then GPU-upscaled every frame the pointer moves, which reads as blur.
+   * `zoom` is a layout-level scale, so the browser re-lays-out and re-rasterises
+   * the copy at the magnified size and the type stays perfectly sharp.
+   */
   useEffect(() => {
     const source = sourceRef.current;
-    const mirror = mirrorRef.current;
-    const area = areaRef.current;
-    const lens = lensRef.current;
-    if (!source || !mirror || !area || !lens) return;
+    const host = cloneRef.current;
+    if (!source || !host) return;
 
     const copyContent = () => {
-      mirror.replaceChildren();
+      host.replaceChildren();
       const clone = source.cloneNode(true) as HTMLDivElement;
       clone.removeAttribute("ref");
       clone.querySelectorAll("[id]").forEach((element) => element.removeAttribute("id"));
@@ -46,9 +55,26 @@ export function FooterLoupe({ children }: { children: ReactNode }) {
       clone.style.width = `${source.offsetWidth}px`;
       clone.style.maxWidth = "none";
       clone.style.pointerEvents = "none";
-      mirror.appendChild(clone);
+      host.appendChild(clone);
+      // The host is sized in the un-zoomed coordinate space; `zoom` scales it up.
+      host.style.width = `${source.offsetWidth}px`;
     };
+
     copyContent();
+    window.addEventListener("resize", copyContent);
+    return () => window.removeEventListener("resize", copyContent);
+  }, []);
+
+  /**
+   * Track the pointer and drive the lens. The magnified copy is positioned with a
+   * pure translation, so moving the lens stays a cheap GPU transform on an
+   * already-crisp layer.
+   */
+  useEffect(() => {
+    const area = areaRef.current;
+    const lens = lensRef.current;
+    const shift = shiftRef.current;
+    if (!area || !lens || !shift) return;
 
     let frame = 0;
     const render = () => {
@@ -60,19 +86,17 @@ export function FooterLoupe({ children }: { children: ReactNode }) {
         lens.style.left = `${state.x}px`;
         lens.style.top = `${state.y}px`;
         const bounds = area.getBoundingClientRect();
-        const radius = lens.offsetWidth / 2;
+        // The mirror's content box is inset by its rim, so its centre is the lens centre.
+        const radius = (mirrorRef.current?.clientWidth ?? lens.offsetWidth) / 2;
         const relativeX = state.x - bounds.left;
         const relativeY = state.y - bounds.top;
-        const cloned = mirror.firstElementChild as HTMLElement | null;
-        if (cloned) {
-          cloned.style.transform = `translate(${-relativeX * zoom + radius}px, ${-relativeY * zoom + radius}px) scale(${zoom})`;
-          cloned.style.transformOrigin = "top left";
-        }
+        shift.style.transform = `translate(${radius - relativeX * zoom}px, ${radius - relativeY * zoom}px)`;
       } else {
         lens.style.opacity = "0";
       }
       frame = requestAnimationFrame(render);
     };
+
     const move = (event: PointerEvent) => {
       const bounds = area.getBoundingClientRect();
       if (event.clientX >= bounds.left && event.clientX <= bounds.right && event.clientY >= bounds.top && event.clientY <= bounds.bottom) {
@@ -83,25 +107,52 @@ export function FooterLoupe({ children }: { children: ReactNode }) {
         pointer.current.targetY = -999;
       }
     };
+
     window.addEventListener("pointermove", move, { passive: true });
-    window.addEventListener("resize", copyContent);
     frame = requestAnimationFrame(render);
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("pointermove", move);
-      window.removeEventListener("resize", copyContent);
     };
   }, [active, zoom]);
 
   return (
     <div ref={areaRef} className="relative">
       <div ref={sourceRef}>{children}</div>
-      <div ref={lensRef} aria-hidden className="pointer-events-none fixed z-[55] h-44 w-44 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full opacity-0 transition-opacity duration-200 sm:h-56 sm:w-56">
-        <div ref={mirrorRef} className="absolute inset-0 overflow-hidden rounded-full border-[8px] border-slate-200/90 bg-white shadow-[0_24px_50px_-12px_rgba(15,23,42,0.28),inset_0_0_22px_rgba(255,255,255,0.9)] dark:border-slate-600/90 dark:bg-slate-950" />
-        <div className="absolute inset-3 rounded-full border border-indigo-400/60 shadow-[inset_0_0_18px_rgba(99,102,241,0.24)]" />
-        <div className="absolute inset-0 flex items-center justify-center opacity-50"><span className="h-px w-full bg-indigo-500/70" /><span className="absolute h-full w-px bg-indigo-500/70" /><span className="absolute h-8 w-8 rounded-full border border-indigo-500/70" /></div>
-        <span className="absolute left-1/2 top-3 -translate-x-1/2 rounded-full bg-slate-950/85 px-2 py-0.5 font-mono text-[8px] text-white">ZOOM {zoom.toFixed(1)}x</span>
+
+      {/* ── Magnifier lens ── */}
+      <div
+        ref={lensRef}
+        aria-hidden
+        className="pointer-events-none fixed z-[55] h-44 w-44 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full opacity-0 transition-opacity duration-200 sm:h-56 sm:w-56"
+      >
+        {/* Magnified copy of the footer */}
+        <div
+          ref={mirrorRef}
+          className="absolute inset-0 overflow-hidden rounded-full border-[6px] border-white/[0.85] bg-white shadow-[0_0_0_1px_rgba(15,23,42,0.16),0_30px_60px_-18px_rgba(15,23,42,0.45),inset_0_0_20px_rgba(255,255,255,0.85)] dark:border-slate-600/90 dark:bg-slate-950"
+        >
+          <div ref={shiftRef} className="absolute left-0 top-0 will-change-transform">
+            <div ref={cloneRef} className="bg-background" style={{ zoom }} />
+          </div>
+        </div>
+
+        {/* Glass sheen */}
+        <div className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(115%_85%_at_28%_10%,rgba(255,255,255,0.38),transparent_45%)]" />
+        {/* Inner rim */}
+        <div className="pointer-events-none absolute inset-[5px] rounded-full border border-white/[0.45] shadow-[inset_0_0_16px_rgba(99,102,241,0.18)]" />
+        {/* Reticle */}
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-30">
+          <span className="h-px w-full bg-white/90" />
+          <span className="absolute h-full w-px bg-white/90" />
+          <span className="absolute h-7 w-7 rounded-full border border-white/80" />
+        </div>
+        {/* Zoom badge */}
+        <span className="absolute left-1/2 top-2.5 -translate-x-1/2 rounded-full bg-slate-950/80 px-2 py-0.5 font-mono text-[8px] tracking-wider text-white/90 ring-1 ring-white/[0.15] backdrop-blur-sm">
+          ZOOM {zoom.toFixed(1)}x
+        </span>
       </div>
+
+      {/* ── Controls ── */}
       <div className="pointer-events-auto absolute right-4 top-4 z-20 flex items-center gap-1 rounded-xl border border-border bg-card/80 p-1 shadow-sm backdrop-blur-md">
         <button type="button" onClick={() => setZoom((value) => stepZoom(value, 1))} disabled={zoom >= ZOOM_MAX} className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:pointer-events-none disabled:opacity-40" aria-label="Increase footer magnifier zoom"><Plus className="h-3.5 w-3.5" /></button>
         <button type="button" onClick={() => setZoom((value) => stepZoom(value, -1))} disabled={zoom <= ZOOM_MIN} className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:pointer-events-none disabled:opacity-40" aria-label="Decrease footer magnifier zoom"><Minus className="h-3.5 w-3.5" /></button>

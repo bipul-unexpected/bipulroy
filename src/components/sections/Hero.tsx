@@ -22,7 +22,7 @@ function SectionLink({ href, children, primary = false }: { href: string; childr
       className={`group inline-flex min-h-12 w-full items-center justify-center gap-2.5 rounded-xl px-6 text-sm font-medium transition-all duration-200 active:scale-[0.98] sm:w-auto sm:rounded-2xl ${
         primary
           ? "bg-slate-900 text-white shadow-[0_6px_20px_rgba(15,23,42,0.2)] hover:scale-[1.02] hover:bg-slate-800 hover:shadow-[0_10px_28px_rgba(15,23,42,0.28)]"
-          : "border border-white/80 bg-white/45 text-slate-800 shadow-[0_6px_18px_rgba(15,23,42,0.07)] backdrop-blur-md hover:scale-[1.02] hover:bg-white/70"
+          : "border border-white/80 bg-white/[0.45] text-slate-800 shadow-[0_6px_18px_rgba(15,23,42,0.07)] backdrop-blur-md hover:scale-[1.02] hover:bg-white/70"
       }`}
     >
       {children}
@@ -32,7 +32,7 @@ function SectionLink({ href, children, primary = false }: { href: string; childr
 
 function GlassCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <aside className={`rounded-2xl border border-white/80 bg-white/65 p-4 shadow-[0_18px_45px_-8px_rgba(15,23,42,0.1)] backdrop-blur-2xl transition duration-500 hover:scale-[1.02] hover:bg-white/80 ${className}`}>
+    <aside className={`rounded-2xl border border-white/80 bg-white/[0.65] p-4 shadow-[0_18px_45px_-8px_rgba(15,23,42,0.1)] backdrop-blur-2xl transition duration-500 hover:scale-[1.02] hover:bg-white/80 ${className}`}>
       {children}
     </aside>
   );
@@ -52,9 +52,9 @@ export function Hero() {
       <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-center justify-center">
         <div className="mb-5 flex items-center gap-2 rounded-full border border-white/90 bg-white/75 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-700 shadow-lg shadow-slate-900/[0.04] backdrop-blur-2xl sm:mb-8 sm:gap-2.5 sm:px-3.5">
           <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-indigo-400 opacity-75" /><span className="relative inline-flex h-2 w-2 rounded-full bg-indigo-500" /></span>
-          <span><span className="hidden sm:inline">Optical </span>Loupe-inspired interface</span>
+          <span><span className="hidden sm:inline">Building Reliable Web </span>Apps with a</span>
           <span className="hidden text-slate-300 sm:inline">|</span>
-          <span className="hidden rounded-md border border-white/70 bg-white/60 px-2 py-0.5 font-mono text-[10px] font-medium sm:inline">SF &amp; Remote</span>
+          <span className="hidden rounded-md border border-white/70 bg-white/60 px-2 py-0.5 font-mono text-[10px] font-medium sm:inline">Personal &amp; Touch</span>
         </div>
 
         <main id="heroInspectionArea" className="relative w-full">

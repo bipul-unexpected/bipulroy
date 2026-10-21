@@ -64,7 +64,7 @@ export function Testimonials() {
                 <PremiumDraggable className="glass-panel rounded-xl p-6 md:p-7 transition-all duration-300 hover:-translate-y-1 hover:border-primary/20">
                   <div className="flex items-center justify-between mb-4">
                     <span
-                      className="block text-5xl text-primary/15 leading-none select-none"
+                      className="block text-5xl text-primary/[0.15] leading-none select-none"
                       style={{ fontFamily: "Georgia, serif" }}>
                       &ldquo;
                     </span>

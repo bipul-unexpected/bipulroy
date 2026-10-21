@@ -44,10 +44,26 @@ type SidebarContextProps = {
 
 const SidebarContext = React.createContext<SidebarContextProps | null>(null)
 
+/**
+ * Standalone fallback so `SidebarTrigger` can be rendered outside a
+ * `SidebarProvider` (the admin studio ships its own custom sidebar and has no
+ * provider). Without this the trigger threw on click, which left the mobile
+ * navigation unusable.
+ */
+const standaloneSidebarContext: SidebarContextProps = {
+  state: "expanded",
+  open: true,
+  setOpen: () => undefined,
+  openMobile: false,
+  setOpenMobile: () => undefined,
+  isMobile: false,
+  toggleSidebar: () => undefined,
+}
+
 function useSidebar() {
   const context = React.useContext(SidebarContext)
   if (!context) {
-    throw new Error("useSidebar must be used within a SidebarProvider.")
+    return standaloneSidebarContext
   }
 
   return context

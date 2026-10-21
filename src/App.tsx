@@ -90,6 +90,9 @@ function App() {
   }, []);
 
   useEffect(() => {
+    // The admin studio owns its own theme (dark by default) so the two never
+    // fight over the document class list.
+    if (pathname === "/onionbipulking" || pathname.startsWith("/onionbipulking/")) return;
     applyTheme(isDark);
     const root = document.documentElement;
     const desired = isDark ? "dark" : "light";
@@ -111,7 +114,7 @@ function App() {
       observer.disconnect();
       window.clearTimeout(t);
     };
-  }, [isDark]);
+  }, [isDark, pathname]);
 
   useEffect(() => {
     const handleThemeChange = (event: Event) => {

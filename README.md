@@ -111,6 +111,19 @@ npm run lint:types
 npm run build
 ```
 
+### Tailwind opacity gotcha
+
+Tailwind 3's default `opacity` scale skips `1`, `15`, `35`, `45`, `55`, `65`
+and `85`. A colour modifier on one of those values (`bg-white/45`,
+`bg-background/85`, `focus:bg-destructive/20`) is therefore **silently not
+emitted**, and the element renders without its background, border or ring.
+
+Use the arbitrary syntax for those values — `bg-white/[0.45]`,
+`bg-background/[0.85]` — which always produces CSS. The same applies to
+`rounded-*`: the `borderRadius` scale is driven by the `--radius-*` custom
+properties, so those must be declared (see
+[Admin dashboard UI](#admin-dashboard-ui)).
+
 Deploy the generated `dist` directory through Appwrite Sites. Keep
 `public/robots.txt`, `public/sitemap.xml`, and the canonical domain aligned with
 the final Appwrite Sites custom domain.
@@ -159,6 +172,37 @@ account controls, and persisted dark mode are connected to the live Appwrite
 content workflow. To regenerate or add shadcn components, run
 `npx shadcn@latest add <component>` from the repository root; do not edit
 generated UI primitives to add application-specific data access.
+
+#### Theme and layout rules
+
+- The studio owns its theme and **defaults to dark**. The choice is stored
+  under `bipul-admin-theme` in `localStorage`, so the public site keeps its own
+  `bipul-theme` preference and the two never overwrite each other.
+- In dark mode the admin highlight colour is **white** (`--primary` is
+  overridden on `#admin`), and near-black in light mode. Active navigation
+  items, primary buttons, and the total-content card all use it, which keeps
+  active states readable in both themes.
+- The `--sidebar-*` tokens are declared for **both** light and dark. Omitting
+  the dark values leaves the admin rail on the light near-white surface with
+  unreadable text.
+- The radius scale (`--radius-sm` … `--radius-3xl`) is declared once in
+  `src/index.css` after the theme imports. The bundled UI theme packages each
+  ship their own scale and all target `:root`, so without the override the
+  winner depends on import order and `rounded-xl` ends up larger than
+  `rounded-2xl`.
+
+#### Writing content
+
+The dashboard overview shows the live record count for every collection
+(projects, articles, gallery, tools, experience, services, testimonials) plus
+the published count and the combined total.
+
+The admin Function reads the live attribute keys of the target collection
+before every write and drops anything the collection does not declare. If the
+schema cannot be read it stays permissive, and if Appwrite still rejects a
+field it strips that field and retries, so a collection that is missing
+`title` (or any other attribute) saves instead of failing with
+`Invalid document structure: Unknown attribute: …`.
 
 #### Appwrite Function publish checklist
 

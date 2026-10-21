@@ -25,6 +25,19 @@ class AuthorizationError extends Error {
   }
 }
 
+/**
+ * Raised when Appwrite rejects a document because the collection does not
+ * declare one of the attributes we sent. Carries the offending key so the
+ * caller can strip it and retry instead of failing the whole request.
+ */
+class UnknownAttributeError extends Error {
+  constructor(attribute) {
+    super(`Invalid document structure: Unknown attribute: ${attribute}`);
+    this.name = "UnknownAttributeError";
+    this.attribute = attribute;
+  }
+}
+
 function json(res, status, body) {
   return res.json(body, status, corsHeaders);
 }
@@ -40,48 +53,88 @@ function collectionId(kind) {
   return value;
 }
 
-async function schemaSafeData(databases, kind, data) {
-  let attributes = new Set();
+/**
+ * Read the live attribute keys of a collection.
+ * Returns null when the schema cannot be read (for example when the function
+ * key is missing the databases.read scope). Callers must treat null as
+ * "unknown schema" and stay permissive instead of guessing.
+ */
+async function readCollectionSchema(databases, kind) {
   try {
     const collection = await databases.getCollection(
       process.env.APPWRITE_DATABASE_ID,
       collectionId(kind),
     );
-    attributes = new Set((collection.attributes || []).map((attribute) => attribute.key));
+    const keys = (collection.attributes || []).map((attribute) => attribute.key);
+    return keys.length > 0 ? new Set(keys) : null;
   } catch {
-    attributes = new Set([
-      "title", "name", "description", "excerpt", "body", "url", "website",
-      "category", "icon", "imageUrl", "imageFileId", "tags", "published", "featured"
-    ]);
+    return null;
   }
+}
 
+/**
+ * Narrow the incoming payload down to the attributes the collection actually
+ * declares. When the schema is unknown every field is kept — the write retry
+ * below removes whatever Appwrite rejects, which is safer than guessing that
+ * a collection has (or has not) a "title" attribute.
+ */
+function schemaSafeData(attributes, data) {
   const input = data && typeof data === "object" ? data : {};
   const output = {};
 
   for (const [key, value] of Object.entries(input)) {
-    if (attributes.has(key) && value !== undefined && value !== "") {
-      output[key] = value;
-    }
+    if (value === undefined || value === "") continue;
+    if (!attributes || attributes.has(key)) output[key] = value;
   }
 
+  // Mirror the human title into whichever key the collection actually uses.
   if (!output.title && !output.name && (input.title || input.name)) {
-    const val = input.title || input.name;
-    if (attributes.has("title")) output.title = val;
-    else if (attributes.has("name")) output.name = val;
+    const value = input.title || input.name;
+    if (!attributes || attributes.has("title")) output.title = value;
+    else if (attributes.has("name")) output.name = value;
   }
   if (!output.description && !output.excerpt && (input.description || input.excerpt)) {
-    const val = input.description || input.excerpt;
-    if (attributes.has("description")) output.description = val;
-    else if (attributes.has("excerpt")) output.excerpt = val;
+    const value = input.description || input.excerpt;
+    if (!attributes || attributes.has("description")) output.description = value;
+    else if (attributes.has("excerpt")) output.excerpt = value;
   }
 
   if (Object.keys(output).length === 0) {
-    if (attributes.has("title")) output.title = input.title || input.name || "Untitled";
+    if (!attributes || attributes.has("title")) output.title = input.title || input.name || "Untitled";
     else if (attributes.has("name")) output.name = input.title || input.name || "Untitled";
-    else if (attributes.has("published")) output.published = true;
+    else if (!attributes || attributes.has("published")) output.published = true;
   }
 
   return output;
+}
+
+/**
+ * Appwrite reports unknown attributes as "Invalid document structure: Unknown
+ * attribute: <key>". When that happens we drop the offending key and try
+ * again, so a collection that is missing "title" (or any other field) still
+ * saves instead of failing outright.
+ */
+async function writeWithSchemaRetry(write, payload) {
+  const data = { ...payload };
+  const dropped = [];
+
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    try {
+      const result = await write(data);
+      return { result, dropped };
+    } catch (caught) {
+      const message = caught instanceof Error ? caught.message : String(caught);
+      const match = message.match(/Unknown attribute:?\s*"?([A-Za-z0-9_]+)"?/i);
+      const attribute = match ? match[1] : null;
+      if (!attribute || !(attribute in data)) throw caught;
+      delete data[attribute];
+      dropped.push(attribute);
+    }
+  }
+
+  throw new Error(
+    `Could not match the document to the collection schema. Tried dropping: ${dropped.join(", ") || "none"}.`,
+  );
 }
 
 async function verifyAdmin(req) {
@@ -121,22 +174,38 @@ module.exports = async ({ req, res, log, error }) => {
     const storage = new Storage(client);
 
     if (body.operation === "create") {
-      const data = await databases.createDocument(
-        process.env.APPWRITE_DATABASE_ID,
-        collectionId(body.kind),
-        ID.unique(),
-        await schemaSafeData(databases, body.kind, body.data),
+      const kind = body.kind;
+      const attributes = await readCollectionSchema(databases, kind);
+      const payload = schemaSafeData(attributes, body.data);
+      const { result, dropped } = await writeWithSchemaRetry(
+        (data) =>
+          databases.createDocument(
+            process.env.APPWRITE_DATABASE_ID,
+            collectionId(kind),
+            ID.unique(),
+            data,
+          ),
+        payload,
       );
-      return json(res, 200, { data });
+      if (dropped.length > 0) log(`Dropped unsupported attributes for ${kind}: ${dropped.join(", ")}`);
+      return json(res, 200, { data: result });
     }
     if (body.operation === "update") {
-      const data = await databases.updateDocument(
-        process.env.APPWRITE_DATABASE_ID,
-        collectionId(body.kind),
-        body.documentId,
-        await schemaSafeData(databases, body.kind, body.data),
+      const kind = body.kind;
+      const attributes = await readCollectionSchema(databases, kind);
+      const payload = schemaSafeData(attributes, body.data);
+      const { result, dropped } = await writeWithSchemaRetry(
+        (data) =>
+          databases.updateDocument(
+            process.env.APPWRITE_DATABASE_ID,
+            collectionId(kind),
+            body.documentId,
+            data,
+          ),
+        payload,
       );
-      return json(res, 200, { data });
+      if (dropped.length > 0) log(`Dropped unsupported attributes for ${kind}: ${dropped.join(", ")}`);
+      return json(res, 200, { data: result });
     }
     if (body.operation === "delete") {
       await databases.deleteDocument(
@@ -165,8 +234,17 @@ module.exports = async ({ req, res, log, error }) => {
     }
     return json(res, 400, { error: "Unsupported admin operation." });
   } catch (caught) {
-    error(caught instanceof Error ? caught.message : String(caught));
+    const message = caught instanceof Error ? caught.message : String(caught);
+    error(message);
     const status = caught instanceof AuthorizationError ? 403 : 500;
-    return json(res, status, { error: caught instanceof Error ? caught.message : "Admin operation failed." });
+    if (/Unknown attribute|Invalid document structure/i.test(message)) {
+      return json(res, 400, {
+        error:
+          "The collection schema does not accept one of the fields sent. " +
+          "Check that the collection declares the attributes listed in the README " +
+          "(title, description, published, featured, …) and try again.",
+      });
+    }
+    return json(res, status, { error: message || "Admin operation failed." });
   }
 };

@@ -47,6 +47,28 @@ const contentKinds: { value: ContentKind; label: string }[] = [
   { value: "testimonials", label: "Testimonial" },
 ];
 
+const ADMIN_THEME_KEY = "bipul-admin-theme";
+
+/** The admin console ships dark by default; the public site keeps its own theme. */
+function readAdminDarkMode(): boolean {
+  if (typeof document === "undefined") return true;
+  const stored = localStorage.getItem(ADMIN_THEME_KEY);
+  if (stored === "dark") return true;
+  if (stored === "light") return false;
+  return true;
+}
+
+function applyAdminTheme(dark: boolean) {
+  const root = document.documentElement;
+  root.classList.add("theme-midnight");
+  root.classList.remove(dark ? "light" : "dark");
+  root.classList.add(dark ? "dark" : "light");
+  root.setAttribute("data-theme", dark ? "dark" : "light");
+  localStorage.setItem(ADMIN_THEME_KEY, dark ? "dark" : "light");
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute("content", dark ? "#1E0549" : "#FAF5FF");
+}
+
 type FormState = {
   title: string;
   description: string;
@@ -72,6 +94,9 @@ const emptyForm: FormState = {
   published: true,
   featured: false,
 };
+
+const fieldClass =
+  "mt-1.5 w-full rounded-lg border border-border/80 bg-background/70 px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/50";
 
 function toForm(item: RemoteContent): FormState {
   return {
@@ -123,6 +148,15 @@ export function AdminStudio() {
     services: 0,
     testimonials: 0,
   });
+  const [publishedCounts, setPublishedCounts] = useState<Record<ContentKind, number>>({
+    projects: 0,
+    articles: 0,
+    gallery: 0,
+    tools: 0,
+    experience: 0,
+    services: 0,
+    testimonials: 0,
+  });
   const [form, setForm] = useState<FormState>(emptyForm);
   const [image, setImage] = useState<File | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -132,9 +166,7 @@ export function AdminStudio() {
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(() =>
-    typeof document !== "undefined" && document.documentElement.classList.contains("dark"),
-  );
+  const [isDarkMode, setIsDarkMode] = useState(readAdminDarkMode);
 
   const canManage = isLoaded && isSignedIn && isAdminUser(user);
 
@@ -142,6 +174,13 @@ export function AdminStudio() {
     configureAdminTokenProvider(getToken);
     return () => configureAdminTokenProvider(null);
   }, [getToken]);
+
+  // The studio owns its own theme so it can default to dark independently of
+  // the public site, and the two never fight over the document class list.
+  useEffect(() => {
+    applyAdminTheme(isDarkMode);
+    window.dispatchEvent(new CustomEvent(THEME_CHANGE_EVENT, { detail: isDarkMode }));
+  }, [isDarkMode]);
 
   async function loadRecords(selectedKind = kind) {
     setLoading(true);
@@ -161,13 +200,26 @@ export function AdminStudio() {
         contentKinds.map(async ({ value }) => {
           try {
             const list = await listContent(value, { includeUnpublished: true });
-            return [value, list.length] as const;
+            return [
+              value,
+              list.length,
+              list.filter((item) => item.published !== false).length,
+            ] as const;
           } catch {
-            return [value, 0] as const;
+            return [value, 0, 0] as const;
           }
         }),
       );
-      setCollectionCounts(Object.fromEntries(entries) as Record<ContentKind, number>);
+      const totals = Object.fromEntries(entries.map(([key, total]) => [key, total])) as Record<
+        ContentKind,
+        number
+      >;
+      const published = Object.fromEntries(entries.map(([key, , live]) => [key, live])) as Record<
+        ContentKind,
+        number
+      >;
+      setCollectionCounts(totals);
+      setPublishedCounts(published);
     } catch {
       // Ignore count fetch errors
     }
@@ -208,35 +260,28 @@ export function AdminStudio() {
     [filteredRecords, kind],
   );
 
+  /** A rolling 30-day series of published vs draft records. */
   const chartData = useMemo(() => {
-    const counts = new Map<string, number>();
+    const days = 30;
+    const buckets = new Map<string, { desktop: number; mobile: number }>();
+    const today = new Date();
+    for (let offset = days - 1; offset >= 0; offset -= 1) {
+      const day = new Date(today);
+      day.setDate(day.getDate() - offset);
+      buckets.set(day.toISOString().slice(0, 10), { desktop: 0, mobile: 0 });
+    }
     records.forEach((item) => {
       const date = item.$createdAt?.slice(0, 10);
-      if (date) counts.set(date, (counts.get(date) || 0) + 1);
+      const bucket = date ? buckets.get(date) : undefined;
+      if (!bucket) return;
+      if (item.published === false) bucket.mobile += 1;
+      else bucket.desktop += 1;
     });
-    return Array.from(counts.entries())
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([date, count]) => ({
-        date,
-        desktop: count,
-        mobile: 0,
-      }));
+    return Array.from(buckets.entries()).map(([date, counts]) => ({ date, ...counts }));
   }, [records]);
 
   function toggleAdminTheme() {
-    const next = !isDarkMode;
-    setIsDarkMode(next);
-    localStorage.setItem("bipul-theme", next ? "dark" : "light");
-    if (next) {
-      document.documentElement.classList.add("dark");
-      document.documentElement.classList.remove("light");
-      document.documentElement.setAttribute("data-theme", "dark");
-    } else {
-      document.documentElement.classList.add("light");
-      document.documentElement.classList.remove("dark");
-      document.documentElement.setAttribute("data-theme", "light");
-    }
-    window.dispatchEvent(new CustomEvent(THEME_CHANGE_EVENT, { detail: next }));
+    setIsDarkMode((current) => !current);
   }
 
   function updateForm<K extends keyof FormState>(key: K, value: FormState[K]) {
@@ -322,10 +367,10 @@ export function AdminStudio() {
 
   if (!isSignedIn) {
     return (
-      <section id="admin" className="relative min-h-screen flex items-center justify-center p-4 bg-background">
-        <div className="w-full max-w-md rounded-2xl border border-border/70 bg-card p-6 sm:p-8 shadow-xl">
+      <section id="admin" className="relative flex min-h-screen items-center justify-center bg-background p-4">
+        <div className="w-full max-w-md rounded-2xl border border-border/70 bg-card p-6 shadow-xl sm:p-8">
           <div className="mb-6 text-center">
-            <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-mono font-semibold uppercase tracking-wider text-primary dark:bg-white/10 dark:text-white">
+            <span className="inline-block rounded-full bg-primary/10 px-3 py-1 font-mono text-xs font-semibold uppercase tracking-wider text-primary dark:bg-white/10 dark:text-white">
               Private Studio
             </span>
             <h2 className="mt-3 text-2xl font-bold tracking-tight text-foreground dark:text-white">
@@ -343,21 +388,21 @@ export function AdminStudio() {
 
   if (!canManage) {
     return (
-      <section id="admin" className="relative min-h-screen flex items-center justify-center p-4 bg-background">
-        <div className="w-full max-w-lg rounded-2xl border border-border/70 bg-card p-6 sm:p-8 shadow-xl">
+      <section id="admin" className="relative flex min-h-screen items-center justify-center bg-background p-4">
+        <div className="w-full max-w-lg rounded-2xl border border-border/70 bg-card p-6 shadow-xl sm:p-8">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <p className="text-xs font-mono uppercase tracking-[0.18em] text-amber-500 font-semibold">
+              <p className="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-amber-500">
                 Admin Access Required
               </p>
-              <h2 className="mt-2 text-xl sm:text-2xl font-bold text-foreground dark:text-white">
+              <h2 className="mt-2 text-xl font-bold text-foreground dark:text-white sm:text-2xl">
                 Account is not an administrator
               </h2>
-              <p className="mt-2 text-xs sm:text-sm leading-relaxed text-muted-foreground">
+              <p className="mt-2 text-xs leading-relaxed text-muted-foreground sm:text-sm">
                 Your Clerk account is authenticated, but administrator privileges are required.
                 Add public metadata role=admin in your Clerk dashboard or set your Clerk user ID in VITE_CLERK_ADMIN_USER_ID.
               </p>
-              <pre className="mt-4 w-fit rounded-xl border border-border bg-background/80 px-4 py-2 font-mono text-xs text-foreground dark:text-white">
+              <pre className="mt-4 w-fit rounded-lg border border-border bg-background/80 px-4 py-2 font-mono text-xs text-foreground dark:text-white">
                 {`{ "role": "admin" }`}
               </pre>
             </div>
@@ -368,9 +413,11 @@ export function AdminStudio() {
     );
   }
 
+  const activeLabel = contentKinds.find((item) => item.value === kind)?.label || "Dashboard";
+
   return (
-    <div id="admin" className="min-h-screen w-full bg-background text-foreground flex flex-col md:flex-row antialiased">
-      {/* Sidebar: sleek desktop + full mobile drawer */}
+    <div id="admin" className="flex min-h-screen w-full flex-col bg-background text-foreground antialiased md:flex-row">
+      {/* Sidebar: sleek desktop rail + full mobile drawer */}
       <AppSidebar
         collections={contentKinds}
         activeCollection={kind}
@@ -393,9 +440,9 @@ export function AdminStudio() {
       />
 
       {/* Main Content Area */}
-      <div className="flex flex-1 flex-col min-w-0 w-full min-h-screen bg-background">
+      <div className="flex min-w-0 flex-1 flex-col bg-background">
         <SiteHeader
-          title={contentKinds.find((item) => item.value === kind)?.label || "Dashboard"}
+          title={activeLabel}
           onToggleSidebar={() => setMobileMenuOpen((prev) => !prev)}
           actions={
             <div className="flex items-center gap-2">
@@ -404,63 +451,65 @@ export function AdminStudio() {
                 size="icon"
                 onClick={toggleAdminTheme}
                 aria-label={isDarkMode ? "Use light mode" : "Use dark mode"}
-                className="h-9 w-9 rounded-xl border-border/70 hover:bg-accent dark:hover:border-white/20"
+                className="h-9 w-9 rounded-lg border-border/70 hover:bg-accent dark:hover:border-white/20"
               >
-                {isDarkMode ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-indigo-500" />}
+                {isDarkMode ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-sky-500" />}
               </Button>
               <UserButton />
             </div>
           }
         />
 
-        <main className="flex-1 p-3.5 sm:p-5 lg:p-7 max-w-7xl w-full mx-auto space-y-6">
+        <main className="mx-auto w-full max-w-7xl flex-1 space-y-5 p-3.5 sm:space-y-6 sm:p-5 lg:p-7">
           {/* Status banner */}
           {status && (
             <div
-              className={`flex items-center justify-between gap-3 p-4 rounded-2xl border text-sm transition-all ${
+              role="status"
+              className={`flex items-center justify-between gap-3 rounded-xl border p-3.5 text-sm transition-all sm:p-4 ${
                 statusType === "success"
-                  ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
-                  : "bg-destructive/10 border-destructive/30 text-destructive dark:text-red-400"
+                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+                  : "border-destructive/30 bg-destructive/10 text-destructive dark:text-red-400"
               }`}
             >
-              <div className="flex items-center gap-2.5 min-w-0">
+              <div className="flex min-w-0 items-center gap-2.5">
                 {statusType === "success" ? (
                   <CheckCircle2 className="h-4 w-4 shrink-0" />
                 ) : (
                   <AlertCircle className="h-4 w-4 shrink-0" />
                 )}
-                <span className="truncate">{status}</span>
+                <span className="min-w-0 break-words">{status}</span>
               </div>
               <button
                 type="button"
                 onClick={() => setStatus("")}
-                className="text-xs hover:opacity-75 focus:outline-none p-1"
+                className="shrink-0 rounded p-1 transition-opacity hover:opacity-75 focus:outline-none"
+                aria-label="Dismiss message"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
             </div>
           )}
 
-          {/* 1. Overview Section Cards: projects, testimonials, articles, gallery, tools, experience, services */}
+          {/* 1. Overview: live counts for every content collection */}
           <section className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="min-w-0">
                 <h2 className="text-base font-bold tracking-tight text-foreground dark:text-white">
                   Dashboard Overview
                 </h2>
                 <p className="text-xs text-muted-foreground">
-                  Quick metrics across all portfolio content collections. Click any card to manage.
+                  How much content you have across the portfolio. Select a card to manage it.
                 </p>
               </div>
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 onClick={() => {
                   void loadRecords();
                   void loadCollectionCounts();
                 }}
                 disabled={loading}
-                className="h-8 rounded-xl text-xs gap-1.5 text-muted-foreground hover:text-foreground dark:hover:text-white"
+                className="h-8 shrink-0 gap-1.5 rounded-lg text-xs text-muted-foreground hover:text-foreground dark:hover:text-white"
               >
                 <RefreshCw className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} />
                 <span>Sync</span>
@@ -468,6 +517,7 @@ export function AdminStudio() {
             </div>
             <SectionCards
               stats={collectionCounts}
+              published={publishedCounts}
               activeKind={kind}
               onSelectKind={(selectedKey) => {
                 const nextKind = selectedKey as ContentKind;
@@ -505,23 +555,23 @@ export function AdminStudio() {
           {/* 4. Content Editor Form */}
           <section
             id="content-editor"
-            className="rounded-2xl border border-border/70 bg-card p-4 sm:p-6 lg:p-7 shadow-sm transition-all"
+            className="scroll-mt-20 rounded-2xl border border-border/70 bg-card p-4 shadow-sm transition-all sm:p-6 lg:p-7"
           >
-            <div className="mb-6 flex flex-col gap-2 border-b border-border/60 pb-5 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-primary dark:text-white font-semibold">
+            <div className="mb-6 flex flex-col gap-3 border-b border-border/60 pb-5 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0">
+                <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-primary dark:text-white">
                   Content Editor
                 </span>
-                <h3 className="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-foreground dark:text-white">
-                  Manage {contentKinds.find((item) => item.value === kind)?.label.toLowerCase()} content
+                <h3 className="mt-1 text-xl font-bold tracking-tight text-foreground dark:text-white sm:text-2xl">
+                  Manage {activeLabel.toLowerCase()} content
                 </h3>
                 <p className="mt-1 text-xs text-muted-foreground">
                   Create, publish, update, and organize the content displayed on your portfolio website.
                 </p>
               </div>
               {editingId && (
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20 text-xs py-1">
+                <div className="flex shrink-0 items-center gap-2">
+                  <Badge variant="outline" className="border-amber-500/30 bg-amber-500/10 py-1 text-xs text-amber-600 dark:text-amber-400">
                     Editing Mode
                   </Badge>
                   <Button
@@ -529,7 +579,7 @@ export function AdminStudio() {
                     variant="ghost"
                     size="sm"
                     onClick={resetForm}
-                    className="h-8 rounded-xl text-xs"
+                    className="h-8 rounded-lg text-xs"
                   >
                     Cancel
                   </Button>
@@ -538,22 +588,22 @@ export function AdminStudio() {
             </div>
 
             {/* Quick stats pills */}
-            <div className="mb-6 grid gap-2.5 grid-cols-2 sm:grid-cols-3">
+            <div className="mb-6 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
               <div className="rounded-xl border border-border/70 bg-background/50 p-3 sm:p-4">
                 <p className="text-[11px] text-muted-foreground">Selected Collection</p>
-                <p className="mt-1 font-semibold text-sm sm:text-base text-foreground dark:text-white">
-                  {contentKinds.find((item) => item.value === kind)?.label}
+                <p className="mt-1 text-sm font-semibold text-foreground dark:text-white sm:text-base">
+                  {activeLabel}
                 </p>
               </div>
               <div className="rounded-xl border border-border/70 bg-background/50 p-3 sm:p-4">
                 <p className="text-[11px] text-muted-foreground">Total Records</p>
-                <p className="mt-1 font-semibold text-sm sm:text-base text-foreground dark:text-white">
+                <p className="mt-1 text-sm font-semibold text-foreground dark:text-white sm:text-base">
                   {records.length}
                 </p>
               </div>
-              <div className="rounded-xl border border-border/70 bg-background/50 p-3 sm:p-4 col-span-2 sm:col-span-1">
+              <div className="col-span-2 rounded-xl border border-border/70 bg-background/50 p-3 sm:col-span-1 sm:p-4">
                 <p className="text-[11px] text-muted-foreground">Published</p>
-                <p className="mt-1 font-semibold text-sm sm:text-base text-emerald-500">
+                <p className="mt-1 text-sm font-semibold text-emerald-600 dark:text-emerald-400 sm:text-base">
                   {records.filter((item) => item.published !== false).length}
                 </p>
               </div>
@@ -568,7 +618,7 @@ export function AdminStudio() {
                   value={form.title}
                   onChange={(event) => updateForm("title", event.target.value)}
                   placeholder="e.g. NextGen SaaS Platform"
-                  className="mt-1.5 w-full rounded-xl border border-border/80 bg-background/70 px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 dark:focus:ring-white/40 dark:focus:border-white transition-all"
+                  className={fieldClass}
                 />
               </label>
 
@@ -578,7 +628,7 @@ export function AdminStudio() {
                   value={form.category}
                   onChange={(event) => updateForm("category", event.target.value)}
                   placeholder="e.g. saas, frontend, engineering"
-                  className="mt-1.5 w-full rounded-xl border border-border/80 bg-background/70 px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 dark:focus:ring-white/40 dark:focus:border-white transition-all"
+                  className={fieldClass}
                 />
               </label>
 
@@ -590,7 +640,7 @@ export function AdminStudio() {
                   onChange={(event) => updateForm("description", event.target.value)}
                   rows={3}
                   placeholder="Short overview or excerpt..."
-                  className="mt-1.5 w-full rounded-xl border border-border/80 bg-background/70 px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 dark:focus:ring-white/40 dark:focus:border-white transition-all"
+                  className={fieldClass}
                 />
               </label>
 
@@ -602,7 +652,7 @@ export function AdminStudio() {
                     onChange={(event) => updateForm("body", event.target.value)}
                     rows={6}
                     placeholder="Full content, notes, or highlights..."
-                    className="mt-1.5 w-full rounded-xl border border-border/80 bg-background/70 px-4 py-2.5 font-mono text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 dark:focus:ring-white/40 dark:focus:border-white transition-all"
+                    className={`${fieldClass} font-mono text-xs`}
                   />
                 </label>
               )}
@@ -614,7 +664,7 @@ export function AdminStudio() {
                   value={form.url}
                   onChange={(event) => updateForm("url", event.target.value)}
                   placeholder="https://..."
-                  className="mt-1.5 w-full rounded-xl border border-border/80 bg-background/70 px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 dark:focus:ring-white/40 dark:focus:border-white transition-all"
+                  className={fieldClass}
                 />
               </label>
 
@@ -626,7 +676,7 @@ export function AdminStudio() {
                     value={form.website}
                     onChange={(event) => updateForm("website", event.target.value)}
                     placeholder="https://..."
-                    className="mt-1.5 w-full rounded-xl border border-border/80 bg-background/70 px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 dark:focus:ring-white/40 dark:focus:border-white transition-all"
+                    className={fieldClass}
                   />
                 </label>
               )}
@@ -637,7 +687,7 @@ export function AdminStudio() {
                   value={form.tags}
                   onChange={(event) => updateForm("tags", event.target.value)}
                   placeholder="React, TypeScript, Next.js"
-                  className="mt-1.5 w-full rounded-xl border border-border/80 bg-background/70 px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 dark:focus:ring-white/40 dark:focus:border-white transition-all"
+                  className={fieldClass}
                 />
               </label>
 
@@ -648,20 +698,20 @@ export function AdminStudio() {
                     value={form.icon}
                     onChange={(event) => updateForm("icon", event.target.value)}
                     placeholder="Code, Layout, Terminal"
-                    className="mt-1.5 w-full rounded-xl border border-border/80 bg-background/70 px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 dark:focus:ring-white/40 dark:focus:border-white transition-all"
+                    className={fieldClass}
                   />
                 </label>
               )}
 
               {/* Image upload */}
-              <label className="md:col-span-2 flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-dashed border-border/80 p-4 text-xs text-muted-foreground hover:border-primary dark:hover:border-white/40 transition-colors">
-                <div className="flex items-center gap-2.5">
-                  <Upload className="h-4 w-4 text-primary dark:text-white" />
-                  <span className="font-medium text-foreground dark:text-white">
+              <label className="flex cursor-pointer flex-col items-start justify-between gap-3 rounded-xl border border-dashed border-border/80 p-4 text-xs text-muted-foreground transition-colors hover:border-primary sm:flex-row sm:items-center dark:hover:border-white/40">
+                <span className="flex min-w-0 items-center gap-2.5">
+                  <Upload className="h-4 w-4 shrink-0 text-primary dark:text-white" />
+                  <span className="min-w-0 break-words font-medium text-foreground dark:text-white">
                     {image?.name || "Upload or replace media file (optional)"}
                   </span>
-                </div>
-                <span className="text-[11px] font-mono text-muted-foreground uppercase">Browse</span>
+                </span>
+                <span className="shrink-0 font-mono text-[11px] uppercase">Browse</span>
                 <input
                   type="file"
                   accept="image/*"
@@ -671,33 +721,33 @@ export function AdminStudio() {
               </label>
 
               {/* Toggles */}
-              <div className="flex flex-wrap gap-5 text-xs text-muted-foreground md:col-span-2 pt-1">
-                <label className="inline-flex items-center gap-2 cursor-pointer">
+              <div className="flex flex-wrap gap-5 pt-1 text-xs text-muted-foreground md:col-span-2">
+                <label className="inline-flex cursor-pointer items-center gap-2">
                   <input
                     type="checkbox"
                     checked={form.published}
                     onChange={(event) => updateForm("published", event.target.checked)}
-                    className="rounded border-border text-primary dark:text-white focus:ring-0"
+                    className="size-4 rounded border-border text-primary focus:ring-0 dark:text-white"
                   />
                   <span className="font-medium text-foreground dark:text-white">Published</span>
                 </label>
-                <label className="inline-flex items-center gap-2 cursor-pointer">
+                <label className="inline-flex cursor-pointer items-center gap-2">
                   <input
                     type="checkbox"
                     checked={form.featured}
                     onChange={(event) => updateForm("featured", event.target.checked)}
-                    className="rounded border-border text-primary dark:text-white focus:ring-0"
+                    className="size-4 rounded border-border text-primary focus:ring-0 dark:text-white"
                   />
                   <span className="font-medium text-foreground dark:text-white">Featured Item</span>
                 </label>
               </div>
 
               {/* Form Buttons */}
-              <div className="flex flex-wrap items-center gap-3 md:col-span-2 pt-2">
+              <div className="flex flex-wrap items-center gap-3 pt-2 md:col-span-2">
                 <button
                   type="submit"
                   disabled={busy}
-                  className="inline-flex items-center gap-2 rounded-xl px-6 py-2.5 text-xs sm:text-sm font-semibold transition-all disabled:opacity-60 bg-zinc-950 text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 shadow-sm"
+                  className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-xs font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 disabled:opacity-60 sm:text-sm"
                 >
                   <Plus className="h-4 w-4" />
                   <span>{busy ? "Saving..." : modeLabel}</span>
@@ -706,7 +756,7 @@ export function AdminStudio() {
                   <button
                     type="button"
                     onClick={resetForm}
-                    className="inline-flex items-center gap-1.5 rounded-xl border border-border/80 bg-secondary px-4 py-2.5 text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground dark:hover:text-white transition-colors"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-border/80 bg-secondary px-4 py-2.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground sm:text-sm dark:hover:text-white"
                   >
                     <X className="h-4 w-4" />
                     <span>Cancel Edit</span>
@@ -717,18 +767,18 @@ export function AdminStudio() {
 
             {/* Records List preview */}
             <div className="mt-8 space-y-3">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <h4 className="text-sm font-semibold text-foreground dark:text-white">
-                  {contentKinds.find((item) => item.value === kind)?.label} Records ({records.length})
+                  {activeLabel} Records ({records.length})
                 </h4>
-                <div className="relative min-w-[180px] sm:min-w-[240px]">
+                <div className="relative w-full sm:max-w-[240px]">
                   <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     aria-label="Filter records"
                     placeholder="Filter records..."
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
-                    className="h-9 pl-8 text-xs rounded-xl"
+                    className="h-9 rounded-lg pl-8 text-xs"
                   />
                 </div>
               </div>
@@ -747,11 +797,11 @@ export function AdminStudio() {
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <p className="truncate font-semibold text-sm text-foreground dark:text-white">
+                        <p className="truncate text-sm font-semibold text-foreground dark:text-white">
                           {item.title || item.name}
                         </p>
                         {item.featured && (
-                          <Badge variant="secondary" className="text-[10px] py-0 px-1.5">
+                          <Badge variant="secondary" className="px-1.5 py-0 text-[10px]">
                             Featured
                           </Badge>
                         )}
@@ -759,19 +809,19 @@ export function AdminStudio() {
                       <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">
                         {item.description || item.excerpt}
                       </p>
-                      <div className="mt-2 flex items-center gap-2">
+                      <div className="mt-2 flex flex-wrap items-center gap-2">
                         <Badge
                           variant="outline"
                           className={`text-[10px] ${
                             item.published === false
-                              ? "text-amber-500 border-amber-500/30"
-                              : "text-emerald-500 border-emerald-500/30"
+                              ? "border-amber-500/30 text-amber-600 dark:text-amber-400"
+                              : "border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
                           }`}
                         >
                           {item.published === false ? "Draft" : "Published"}
                         </Badge>
                         {item.category && (
-                          <span className="text-[11px] font-mono text-muted-foreground">
+                          <span className="font-mono text-[11px] text-muted-foreground">
                             #{item.category}
                           </span>
                         )}
@@ -780,7 +830,7 @@ export function AdminStudio() {
                             href={item.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-[11px] text-muted-foreground hover:text-foreground dark:hover:text-white inline-flex items-center gap-0.5 ml-1"
+                            className="ml-1 inline-flex items-center gap-0.5 text-[11px] text-muted-foreground transition-colors hover:text-foreground dark:hover:text-white"
                           >
                             <ExternalLink className="h-3 w-3" />
                           </a>
@@ -793,7 +843,7 @@ export function AdminStudio() {
                         variant="outline"
                         size="sm"
                         onClick={() => startEdit(item)}
-                        className="h-8 rounded-xl text-xs gap-1.5"
+                        className="h-8 gap-1.5 rounded-lg text-xs"
                       >
                         <Edit3 className="h-3.5 w-3.5" />
                         <span>Edit</span>
@@ -804,7 +854,7 @@ export function AdminStudio() {
                         size="sm"
                         onClick={() => void handleDelete(item)}
                         disabled={busy}
-                        className="h-8 rounded-xl text-xs gap-1.5"
+                        className="h-8 gap-1.5 rounded-lg text-xs"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                         <span>Delete</span>

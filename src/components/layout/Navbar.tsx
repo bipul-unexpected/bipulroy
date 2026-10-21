@@ -162,7 +162,7 @@ export function Navbar({ activeSection, isScrolled, onToggleTerminal }: NavbarPr
               href="https://github.com/bipul-unexpected"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-10 h-10 rounded-full border border-primary/25 overflow-hidden ml-1 hidden md:block ring-2 ring-primary/15 shrink-0 hover:ring-primary/40 transition-all"
+              className="w-10 h-10 rounded-full border border-primary/25 overflow-hidden ml-1 hidden md:block ring-2 ring-primary/[0.15] shrink-0 hover:ring-primary/40 transition-all"
               aria-label="GitHub profile"
             >
               <img
