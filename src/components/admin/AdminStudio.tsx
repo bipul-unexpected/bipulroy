@@ -272,7 +272,7 @@ export function AdminStudio() {
 
   return (
     <SidebarProvider>
-    <section id="admin" className="min-h-screen w-full min-w-0 overflow-x-hidden bg-background py-4 text-foreground sm:py-10">
+    <section id="admin" className="shadcn-admin-theme min-h-screen w-full min-w-0 overflow-x-hidden bg-background py-4 text-foreground sm:py-10">
       <AppSidebar
         variant="inset"
         collections={contentKinds}
