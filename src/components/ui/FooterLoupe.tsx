@@ -1,13 +1,24 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Eye, Minus, Plus } from "lucide-react";
 
+/** Zoom bounds for the footer magnifier lens. */
+const ZOOM_MIN = 1.6;
+const ZOOM_MAX = 4.6;
+const ZOOM_STEP = 1;
+/** Default is the level that reads best in the footer: 3.6x. */
+const ZOOM_DEFAULT = 3.6;
+
+/** Step a zoom level while keeping it inside the allowed range. */
+const stepZoom = (value: number, direction: 1 | -1) =>
+  Number(Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, value + direction * ZOOM_STEP)).toFixed(1));
+
 export function FooterLoupe({ children }: { children: ReactNode }) {
   const areaRef = useRef<HTMLDivElement>(null);
   const sourceRef = useRef<HTMLDivElement>(null);
   const mirrorRef = useRef<HTMLDivElement>(null);
   const lensRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(true);
-  const [zoom, setZoom] = useState(1.6);
+  const [zoom, setZoom] = useState(ZOOM_DEFAULT);
   const pointer = useRef({ x: -999, y: -999, targetX: -999, targetY: -999 });
 
   useEffect(() => {
@@ -92,9 +103,9 @@ export function FooterLoupe({ children }: { children: ReactNode }) {
         <span className="absolute left-1/2 top-3 -translate-x-1/2 rounded-full bg-slate-950/85 px-2 py-0.5 font-mono text-[8px] text-white">ZOOM {zoom.toFixed(1)}x</span>
       </div>
       <div className="pointer-events-auto absolute right-4 top-4 z-20 flex items-center gap-1 rounded-xl border border-border bg-card/80 p-1 shadow-sm backdrop-blur-md">
-        <button type="button" onClick={() => setZoom((value) => Math.max(1.6, value - 0.6))} className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground" aria-label="Decrease footer magnifier zoom"><Minus className="h-3.5 w-3.5" /></button>
+        <button type="button" onClick={() => setZoom((value) => stepZoom(value, 1))} disabled={zoom >= ZOOM_MAX} className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:pointer-events-none disabled:opacity-40" aria-label="Increase footer magnifier zoom"><Plus className="h-3.5 w-3.5" /></button>
+        <button type="button" onClick={() => setZoom((value) => stepZoom(value, -1))} disabled={zoom <= ZOOM_MIN} className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:pointer-events-none disabled:opacity-40" aria-label="Decrease footer magnifier zoom"><Minus className="h-3.5 w-3.5" /></button>
         <button type="button" onClick={() => setActive((value) => !value)} className={`inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-semibold ${active ? "bg-slate-950 text-white dark:bg-white dark:text-slate-950" : "bg-secondary text-muted-foreground"}`}><Eye className="h-3 w-3" />{active ? "Loupe" : "Off"}</button>
-        <button type="button" onClick={() => setZoom((value) => Math.min(2.8, value + 0.6))} className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground" aria-label="Increase footer magnifier zoom"><Plus className="h-3.5 w-3.5" /></button>
       </div>
     </div>
   );

@@ -68,8 +68,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://avatars.githubusercontent.com" />
-    <link rel="dns-prefetch" href="https://cdn.voiceflow.com" />
-    <link rel="dns-prefetch" href="https://general-runtime.voiceflow.com" />
 
     <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
@@ -267,6 +265,28 @@
         animation: caustic-rotate 6s linear infinite;
       }
 
+      /* Logo mark centred inside the glass orb */
+      .glass-orb-logo {
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+        animation: logo-fade-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+      }
+
+      .glass-orb-logo img {
+        height: 66px;
+        width: auto;
+        object-fit: contain;
+        filter: drop-shadow(0 0 0.6px rgba(15, 23, 42, 0.7))
+          drop-shadow(0 8px 14px rgba(15, 23, 42, 0.22))
+          drop-shadow(0 0 18px rgba(168, 85, 247, 0.4));
+        animation: glass-logo-breathe 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+
       /* Orbiting particles */
       .glass-particle {
         position: absolute;
@@ -346,6 +366,16 @@
         to { transform: rotate(360deg); }
       }
 
+      @keyframes glass-logo-breathe {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.06); }
+      }
+
+      @keyframes logo-fade-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
       @keyframes orbit-1 {
         0%   { transform: translate(-3px, -3px) rotate(0deg) translateX(52px) rotate(0deg); opacity: 0.9; }
         50%  { opacity: 0.4; }
@@ -380,6 +410,7 @@
       @media (prefers-reduced-motion: reduce) {
         .glass-orb, .glass-orb::before, .glass-orb::after,
         .glass-particle, .glass-glow-ring, .glass-progress-ring,
+        .glass-orb-logo, .glass-orb-logo img,
         .preloader-text {
           animation: none !important;
         }
@@ -403,6 +434,9 @@
           <div class="glass-glow-ring"></div>
           <div class="glass-progress-ring"></div>
           <div class="glass-orb"></div>
+          <div class="glass-orb-logo">
+            <img src="/b.png" alt="Bipul Roy" />
+          </div>
           <div class="glass-particle"></div>
           <div class="glass-particle"></div>
           <div class="glass-particle"></div>
@@ -413,24 +447,6 @@
 
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <script type="text/javascript">
-      (function(d, t) {
-          var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
-          v.onload = function() {
-            window.voiceflow.chat.load({
-              verify: { projectID: '69c2837242b292115919df04' },
-              url: 'https://general-runtime.voiceflow.com',
-              versionID: 'production',
-              voice: {
-                url: "https://runtime-api.voiceflow.com"
-              },
-              assistant: {
-                stylesheet: '/voiceflow-widget.css'
-              }
-            });
-          }
-          v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
-      })(document, 'script');
-    </script>
+    
   </body>
 </html>
