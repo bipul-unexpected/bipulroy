@@ -154,10 +154,10 @@ export function ChartAreaInteractive({
     }
   }, [isMobile])
 
-  const sourceData = data?.length ? data : chartData
+  const sourceData = data ?? chartData
   const filteredData = sourceData.filter((item) => {
     const date = new Date(item.date)
-    const referenceDate = new Date(sourceData[sourceData.length - 1]?.date || "2024-06-30")
+    const referenceDate = new Date(sourceData[sourceData.length - 1]?.date || new Date().toISOString())
     let daysToSubtract = 90
     if (timeRange === "30d") {
       daysToSubtract = 30
@@ -172,12 +172,12 @@ export function ChartAreaInteractive({
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Total Visitors</CardTitle>
+        <CardTitle>Content activity</CardTitle>
         <CardDescription>
           <span className="hidden @[540px]/card:block">
-            Total for the last 3 months
+            Records created in the selected period
           </span>
-          <span className="@[540px]/card:hidden">Last 3 months</span>
+          <span className="@[540px]/card:hidden">Recent activity</span>
         </CardDescription>
         <CardAction>
           <ToggleGroup

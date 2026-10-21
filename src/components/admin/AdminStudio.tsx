@@ -310,9 +310,13 @@ export function AdminStudio() {
             const item = records.find((record) => record.$id === documentId);
             if (item) void handleDelete(item);
           }}
+          onCreate={() => {
+            resetForm();
+            document.getElementById("content-editor")?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }}
         />
         </div>
-        <div className="mx-3 mb-6 rounded-xl border bg-card p-4 sm:p-6 md:mx-6">
+        <div id="content-editor" className="mx-3 mb-6 rounded-xl border bg-card p-4 shadow-sm sm:p-6 md:mx-6">
         <div className="mb-7 border-b border-border/60 pb-6"><p className="text-xs font-mono uppercase tracking-[0.18em] text-primary">Content editor</p><h2 className="mt-2 text-2xl font-bold text-foreground">Manage {contentKinds.find((item) => item.value === kind)?.label.toLowerCase()} content</h2><p className="mt-1 text-sm text-muted-foreground">Create, publish, update, and organize the content shown on your portfolio.</p></div>
         <div className="mb-6 grid gap-3 sm:grid-cols-3">
           <div className="rounded-xl border border-border/70 bg-background/40 p-4"><p className="text-xs text-muted-foreground">Current collection</p><p className="mt-1 font-semibold text-foreground">{contentKinds.find((item) => item.value === kind)?.label}</p></div>
