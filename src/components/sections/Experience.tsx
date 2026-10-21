@@ -1,9 +1,9 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
-import { experiences } from "../../data/portfolio";
 import { useRemoteContent } from "../../hooks/useRemoteContent";
-import { mergeRemote, toExperience } from "../../lib/portfolioContent";
+import { toExperience } from "../../lib/portfolioContent";
+import { ContentEmptyState } from "../ui/ContentEmptyState";
 import { PremiumDraggable } from "../ui/PremiumDraggable";
 import { TextAnimate } from "../ui/TextAnimate";
 
@@ -20,11 +20,8 @@ export function Experience() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  // Studio content is listed first; the bundled timeline follows.
-  const { items: remoteExperiences, available } = useRemoteContent("experience", toExperience);
-  const items = available
-    ? mergeRemote(remoteExperiences, experiences, (exp) => `${exp.year} ${exp.title}`)
-    : experiences;
+  // Only published studio content is rendered.
+  const { items, loading } = useRemoteContent("experience", toExperience);
 
   return (
     <section id="experience" className="relative py-24 md:py-32" ref={ref}>
@@ -66,12 +63,13 @@ export function Experience() {
           </motion.div>
 
           {/* Timeline */}
-          <div className="relative">
-            {/* Vertical line */}
-            <div className="absolute left-[7px] top-0 bottom-0 w-px bg-border" />
+          {items.length > 0 ? (
+            <div className="relative">
+              {/* Vertical line */}
+              <div className="absolute left-[7px] top-0 bottom-0 w-px bg-border" />
 
-            <div className="space-y-11">
-              {items.map((exp) => (
+              <div className="space-y-11">
+                {items.map((exp) => (
                 <motion.div
                   key={exp.year}
                   variants={fadeLeft}
@@ -146,8 +144,18 @@ export function Experience() {
                   </PremiumDraggable>
                 </motion.div>
               ))}
+              </div>
             </div>
-          </div>
+          ) : (
+            <ContentEmptyState
+              title={loading ? "Loading experience…" : "No experience published yet"}
+              description={
+                loading
+                  ? "Fetching the career timeline from the studio."
+                  : "The career timeline is published here as it is updated. The services page describes what I can take on in the meantime."
+              }
+            />
+          )}
         </motion.div>
       </div>
     </section>

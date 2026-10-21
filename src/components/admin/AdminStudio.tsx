@@ -333,7 +333,8 @@ export function AdminStudio() {
   // the public site, and the two never fight over the document class list.
   useEffect(() => {
     applyAdminTheme(isDarkMode);
-    document.body.style.background = isDarkMode ? "#0a0a0b" : "#ffffff";
+    // Matches the shadcn dashboard-01 surfaces: #09090b dark, #ffffff light.
+    document.body.style.background = isDarkMode ? "#09090b" : "#ffffff";
     window.dispatchEvent(new CustomEvent(THEME_CHANGE_EVENT, { detail: isDarkMode }));
   }, [isDarkMode]);
 
@@ -572,7 +573,10 @@ export function AdminStudio() {
   const spec = fieldSpecs[kind];
 
   return (
-    <div id="admin" className="flex min-h-screen w-full flex-col bg-background text-foreground antialiased md:flex-row">
+    <div
+      id="admin"
+      className="shadcn-admin-theme flex min-h-screen w-full flex-col bg-background text-foreground antialiased md:flex-row"
+    >
       {/* Sidebar: sleek desktop rail + full mobile drawer */}
       <AppSidebar
         collections={contentKinds}
@@ -953,7 +957,16 @@ export function AdminStudio() {
                     key={item.$id}
                     className="flex flex-col gap-3 rounded-xl border border-border/70 bg-background/50 p-4 transition-colors hover:border-border sm:flex-row sm:items-center sm:justify-between"
                   >
-                    <div className="min-w-0 flex-1">
+                    <div className="flex min-w-0 flex-1 items-start gap-3">
+                      {item.imageUrl ? (
+                        <img
+                          src={item.imageUrl}
+                          alt=""
+                          loading="lazy"
+                          className="h-14 w-14 shrink-0 rounded-lg border border-border/70 object-cover"
+                        />
+                      ) : null}
+                      <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <p className="truncate text-sm font-semibold text-foreground dark:text-white">
                           {item.title || item.name}
@@ -993,6 +1006,7 @@ export function AdminStudio() {
                             <ExternalLink className="h-3 w-3" />
                           </a>
                         )}
+                        </div>
                       </div>
                     </div>
                     <div className="flex shrink-0 gap-2">

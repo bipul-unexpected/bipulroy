@@ -1,9 +1,9 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Star } from "lucide-react";
-import { testimonials } from "../../data/portfolio";
 import { useRemoteContent } from "../../hooks/useRemoteContent";
-import { mergeRemote, toTestimonial } from "../../lib/portfolioContent";
+import { toTestimonial } from "../../lib/portfolioContent";
+import { ContentEmptyState } from "../ui/ContentEmptyState";
 import { PremiumDraggable } from "../ui/PremiumDraggable";
 import { TextAnimate } from "../ui/TextAnimate";
 
@@ -20,9 +20,8 @@ export function Testimonials() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  // Studio content is listed first; the bundled testimonials follow.
-  const { items: remoteTestimonials, available } = useRemoteContent("testimonials", toTestimonial);
-  const items = available ? mergeRemote(remoteTestimonials, testimonials, (t) => t.name) : testimonials;
+  // Only published studio content is rendered.
+  const { items, loading } = useRemoteContent("testimonials", toTestimonial);
 
   return (
     <section id="testimonials" className="relative py-24 md:py-32" ref={ref}>
@@ -64,8 +63,9 @@ export function Testimonials() {
           </motion.div>
 
           {/* Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-7">
-            {items.map((t) => (
+          {items.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-7">
+              {items.map((t) => (
               <motion.div key={t.name} variants={fadeUp}>
                 <PremiumDraggable className="glass-panel rounded-xl p-6 md:p-7 transition-all duration-300 hover:-translate-y-1 hover:border-primary/20">
                   <div className="flex items-center justify-between mb-4">
@@ -124,7 +124,17 @@ export function Testimonials() {
                 </PremiumDraggable>
               </motion.div>
             ))}
-          </div>
+            </div>
+          ) : (
+            <ContentEmptyState
+              title={loading ? "Loading testimonials…" : "No testimonials published yet"}
+              description={
+                loading
+                  ? "Fetching client feedback from the studio."
+                  : "Client feedback is published here once it is approved. Reach out and I will walk you through the work in detail."
+              }
+            />
+          )}
         </motion.div>
       </div>
     </section>

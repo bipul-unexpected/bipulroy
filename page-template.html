@@ -23,10 +23,12 @@
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Bipul Roy Portfolio" />
     <meta property="og:url" content="__CANONICAL__" />
-    <meta property="og:image" content="https://bipul.tech/github-avatar.jpg" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="__TITLE__" />
+    <meta property="og:image" content="https://bipul.tech/profile.png" />
+    <meta property="og:image:secure_url" content="https://bipul.tech/profile.png" />
+    <meta property="og:image:width" content="859" />
+    <meta property="og:image:height" content="864" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:alt" content="Bipul Roy — Full-Stack Web Developer" />
     <meta property="og:locale" content="en_US" />
 
     <!-- Twitter Card -->
@@ -35,13 +37,12 @@
     <meta name="twitter:description" content="__DESCRIPTION__" />
     <meta name="twitter:site" content="@BipulUnexpected" />
     <meta name="twitter:creator" content="@BipulUnexpected" />
-    <meta name="twitter:image" content="https://bipul.tech/github-avatar.jpg" />
+    <meta name="twitter:image" content="https://bipul.tech/profile.png" />
     <meta name="twitter:image:alt" content="__TITLE__" />
 
     <!-- Performance hints -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
     <!-- JSON-LD: BreadcrumbList -->
     <script type="application/ld+json">
       {
@@ -59,6 +60,57 @@
             "position": 2,
             "name": "__BREADCRUMB__",
             "item": "__CANONICAL__"
+          }
+        ]
+      }
+    </script>
+
+    <!-- JSON-LD: Person + WebPage for every route -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Person",
+            "@id": "https://bipul.tech/#person",
+            "name": "Bipul Roy",
+            "alternateName": ["Bipul", "bipul-unexpected"],
+            "jobTitle": [
+              "Full-Stack Engineer",
+              "Full Stack Web Developer",
+              "UI/UX Designer",
+              "DevOps Architect"
+            ],
+            "description": "Full-Stack Web Developer Bipul Roy builds scalable, dependable products with React, TypeScript, Node.js, Django and Kubernetes.",
+            "url": "https://bipul.tech/",
+            "image": "https://bipul.tech/profile.png",
+            "email": "info@bipul.tech",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Dhaka",
+              "addressCountry": "BD"
+            },
+            "sameAs": [
+              "https://github.com/bipul-unexpected",
+              "https://x.com/BipulUnexpected",
+              "https://www.linkedin.com/in/bipul-roy"
+            ],
+            "knowsAbout": [
+              "React", "Next.js", "TypeScript", "Node.js", "Django",
+              "Docker", "Kubernetes", "UI/UX Design", "DevOps",
+              "GraphQL", "PostgreSQL", "CI/CD", "AWS", "Python",
+              "Figma", "Three.js", "WebGL"
+            ]
+          },
+          {
+            "@type": "WebPage",
+            "@id": "__CANONICAL__#webpage",
+            "url": "__CANONICAL__",
+            "name": "__TITLE__",
+            "description": "__DESCRIPTION__",
+            "isPartOf": { "@id": "https://bipul.tech/#website" },
+            "about": { "@id": "https://bipul.tech/#person" },
+            "inLanguage": "en"
           }
         ]
       }

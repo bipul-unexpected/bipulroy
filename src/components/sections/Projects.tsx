@@ -5,9 +5,10 @@ import { GitHubIcon } from "../ui/SocialIcons";
 import { PremiumDraggable } from "../ui/PremiumDraggable";
 import { TextAnimate } from "../ui/TextAnimate";
 import { GlowingText } from "../ui/GlowingText";
-import { projects, type Project } from "../../data/portfolio";
+import type { Project } from "../../data/portfolio";
 import { useRemoteContent } from "../../hooks/useRemoteContent";
-import { mergeRemote, toProject } from "../../lib/portfolioContent";
+import { toProject } from "../../lib/portfolioContent";
+import { ContentEmptyState } from "../ui/ContentEmptyState";
 
 /* ── Filter Tabs ─────────────────────────────────────────────────────────── */
 
@@ -257,16 +258,13 @@ export function Projects() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  // Content published from the studio is listed first; the curated showcase
-  // follows, so the section is never empty and never loses its highlights.
-  const { items: remoteProjects, available } = useRemoteContent("projects", toProject);
-  const source: Project[] = available
-    ? mergeRemote(remoteProjects, projects.filter((p) => p.featured), (p) => p.title)
-    : projects.filter((p) => p.featured);
+  // Only published studio content is rendered — there is no hard-coded
+  // showcase on the site.
+  const { items, loading } = useRemoteContent("projects", toProject);
   const filtered =
     activeFilter === "All"
-      ? source
-      : source.filter((p) => p.category === filterMap[activeFilter]);
+      ? items
+      : items.filter((p) => p.category === filterMap[activeFilter]);
 
   return (
     <section id="projects" className="relative py-24 md:py-32">
@@ -286,7 +284,7 @@ export function Projects() {
                   by="word"
                   duration={0.8}
                   staggerDelay={0.06}>
-                  Featured Work
+                  Selected Work
                 </TextAnimate>
               </span>
             </div>
@@ -360,11 +358,24 @@ export function Projects() {
         </motion.div>
 
         {/* Project grid */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-          {filtered.map((project, i) => (
-            <ProjectCard key={project.id} project={project} index={i} />
-          ))}
-        </div>
+        {filtered.length > 0 ? (
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+            {filtered.map((project, i) => (
+              <ProjectCard key={project.id} project={project} index={i} />
+            ))}
+          </div>
+        ) : (
+          <div className="mt-12">
+            <ContentEmptyState
+              title={loading ? "Loading work…" : "No projects published yet"}
+              description={
+                loading
+                  ? "Fetching the latest case studies from the studio."
+                  : "Selected work is published here as it is finished. In the meantime, the services and experience pages describe how I work and what I build."
+              }
+            />
+          </div>
+        )}
       </div>
     </section>
   );

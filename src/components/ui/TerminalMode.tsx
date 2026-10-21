@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight, CornerDownLeft, X } from "lucide-react";
-import { profile, projects, services, socialLinks, techStack } from "../../data/portfolio";
+import { profile, services, socialLinks, stats, techStack } from "../../data/portfolio";
 import { scrollToSection } from "../../lib/scrollToSection";
 
 interface TerminalModeProps {
@@ -143,7 +143,7 @@ export function TerminalMode({ open, onExit, onToggleTheme }: TerminalModeProps)
             { type: "output", text: "   ██████  bipul@portfolio" },
             { type: "output", text: `   OS      Bipul OS 1.0` },
             { type: "output", text: `   Stack   ${Object.values(techStack).flat().slice(0, 6).join(" · ")}` },
-            { type: "output", text: `   Work    ${projects.length} featured systems · ${services.length} services` },
+            { type: "output", text: `   Work    ${services.length} services · ${stats[0].value}${stats[0].suffix} projects delivered` },
           );
         } else {
           output.push({ type: "error", text: `${command}: command not found. Type "help".` });

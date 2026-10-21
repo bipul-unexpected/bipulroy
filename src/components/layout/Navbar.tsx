@@ -166,8 +166,8 @@ export function Navbar({ activeSection, isScrolled, onToggleTerminal }: NavbarPr
               aria-label="GitHub profile"
             >
               <img
-                src="/github-avatar.jpg"
-                alt="Bipul Roy — GitHub"
+                src="/profile-avatar.jpg"
+                alt="Bipul Roy — Full-Stack Web Developer"
                 className="w-full h-full object-cover"
                 width={40}
                 height={40}

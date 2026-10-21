@@ -11,6 +11,7 @@ import {
 import { services } from "../../data/portfolio";
 import { useRemoteContent } from "../../hooks/useRemoteContent";
 import { mergeRemote, toService } from "../../lib/portfolioContent";
+import { ContentEmptyState } from "../ui/ContentEmptyState";
 import { PremiumDraggable } from "../ui/PremiumDraggable";
 import { TextAnimate } from "../ui/TextAnimate";
 
@@ -36,9 +37,10 @@ export function Services() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  // Studio content is listed first; the bundled services follow.
-  const { items: remoteServices, available } = useRemoteContent("services", toService);
-  const items = available ? mergeRemote(remoteServices, services, (s) => s.title) : services;
+  // The service menu is the site's keyword surface, so the studio adds to it
+  // rather than replacing it.
+  const { items: remoteServices } = useRemoteContent("services", toService);
+  const items = mergeRemote(services, remoteServices, (s) => s.title);
 
   return (
     <section id="services" className="relative py-24 md:py-32" ref={ref}>
@@ -92,7 +94,8 @@ export function Services() {
           </motion.div>
 
           {/* Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-7">
+          {items.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-7">
             {items.map((service) => {
               const Icon = iconMap[service.icon] || Globe;
               return (
@@ -129,7 +132,13 @@ export function Services() {
                 </motion.div>
               );
             })}
-          </div>
+            </div>
+          ) : (
+            <ContentEmptyState
+              title="No services published yet"
+              description="The service list is published from the studio and appears here as soon as it is live. Send a message and I will reply with what I can take on."
+            />
+          )}
         </motion.div>
       </div>
     </section>

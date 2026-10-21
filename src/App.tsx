@@ -7,7 +7,6 @@ import { Hero } from "./components/sections/Hero";
 import { Stats } from "./components/sections/Stats";
 import { About } from "./components/sections/About";
 import { Projects } from "./components/sections/Projects";
-import { CaseStudies } from "./components/sections/CaseStudies";
 import { Services } from "./components/sections/Services";
 import { TechStack } from "./components/sections/TechStack";
 import { Experience } from "./components/sections/Experience";
@@ -264,9 +263,6 @@ function App() {
         </SectionCinematicReveal>
         <SectionCinematicReveal tone="float">
           <ContentHub />
-        </SectionCinematicReveal>
-        <SectionCinematicReveal tone="glide-right">
-          <CaseStudies />
         </SectionCinematicReveal>
         <SectionCinematicReveal tone="depth">
           <Services />

@@ -95,7 +95,7 @@
     --accent: oklch(0.269 0 0);
     --accent-foreground: oklch(0.985 0 0);
     --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
+    --border: oklch(44.226% 0.00005 271.152 / 0.1);
     --input: oklch(1 0 0 / 15%);
     --ring: oklch(0.556 0 0);
     --chart-1: oklch(0.87 0 0);
@@ -105,11 +105,11 @@
     --chart-5: oklch(0.269 0 0);
     --sidebar: oklch(0.205 0 0);
     --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
+    --sidebar-primary: oklch(37.201% 0.00697 274.785);
     --sidebar-primary-foreground: oklch(0.985 0 0);
     --sidebar-accent: oklch(0.269 0 0);
     --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
+    --sidebar-border: oklch(33.984% 0.00419 16.857 / 0.1);
     --sidebar-ring: oklch(0.556 0 0);
   }
   html {
@@ -390,7 +390,10 @@ html.dark,
   --glass-blur: 22px;
 }
 
-/* Keep the dashboard aligned with the neutral shadcn dashboard-01 palette. */
+/* The admin console uses the stock shadcn dashboard-01 palette, unmodified.
+   Applying it to #admin keeps the studio on a professional neutral theme
+   instead of the public site palette. */
+#admin,
 .shadcn-admin-theme {
   --radius: 0.75rem;
   --background: 0 0% 100%;
@@ -420,6 +423,8 @@ html.dark,
   --sidebar-ring: 240 5.9% 10%;
 }
 
+.dark #admin,
+[data-theme="dark"] #admin,
 .dark .shadcn-admin-theme {
   --background: 240 10% 3.9%;
   --foreground: 0 0% 98%;
@@ -473,95 +478,6 @@ html.dark,
   --radius-2xl: 1.25rem; /* 20px */
   --radius-3xl: 1.75rem; /* 28px */
   --radius-full: 9999px;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   Admin studio theme.
-
-   The console runs dark by default and uses a true neutral (not tinted)
-   palette so it reads as a professional tool rather than a themed page.
-   Highlights use white in dark mode and near-black in light mode, so active
-   states and primary actions are instantly legible in both themes.
-   ═══════════════════════════════════════════════════════════════════════════ */
-#admin {
-  --color-bg: #ffffff;
-  --color-text: #0a0a0b;
-
-  --background: 0 0% 100%;
-  --foreground: 0 0% 4%;
-  --card: 0 0% 100%;
-  --card-foreground: 0 0% 4%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 4%;
-  --primary: 0 0% 6%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 0 0% 96%;
-  --secondary-foreground: 0 0% 9%;
-  --muted: 0 0% 96%;
-  --muted-foreground: 0 0% 40%;
-  --accent: 0 0% 94%;
-  --accent-foreground: 0 0% 6%;
-  --destructive: 0 72% 51%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 0 0% 90%;
-  --input: 0 0% 90%;
-  --ring: 0 0% 6%;
-
-  --sidebar: 0 0% 98%;
-  --sidebar-foreground: 0 0% 9%;
-  --sidebar-primary: 0 0% 6%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 0 0% 94%;
-  --sidebar-accent-foreground: 0 0% 6%;
-  --sidebar-border: 0 0% 90%;
-  --sidebar-ring: 0 0% 6%;
-
-  --chart-1: 0 0% 45%;
-  --chart-2: 0 0% 60%;
-  --chart-3: 0 0% 35%;
-  --chart-4: 0 0% 70%;
-  --chart-5: 0 0% 25%;
-}
-
-.dark #admin,
-[data-theme="dark"] #admin {
-  --color-bg: #0a0a0b;
-  --color-text: #fafafa;
-
-  --background: 0 0% 4%;
-  --foreground: 0 0% 98%;
-  --card: 0 0% 7%;
-  --card-foreground: 0 0% 98%;
-  --popover: 0 0% 7%;
-  --popover-foreground: 0 0% 98%;
-  --primary: 0 0% 98%;
-  --primary-foreground: 0 0% 6%;
-  --secondary: 0 0% 12%;
-  --secondary-foreground: 0 0% 98%;
-  --muted: 0 0% 12%;
-  --muted-foreground: 0 0% 63%;
-  --accent: 0 0% 15%;
-  --accent-foreground: 0 0% 98%;
-  --destructive: 0 72% 51%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 0 0% 16%;
-  --input: 0 0% 18%;
-  --ring: 0 0% 98%;
-
-  --sidebar: 0 0% 6%;
-  --sidebar-foreground: 0 0% 95%;
-  --sidebar-primary: 0 0% 98%;
-  --sidebar-primary-foreground: 0 0% 6%;
-  --sidebar-accent: 0 0% 13%;
-  --sidebar-accent-foreground: 0 0% 98%;
-  --sidebar-border: 0 0% 15%;
-  --sidebar-ring: 0 0% 98%;
-
-  --chart-1: 0 0% 90%;
-  --chart-2: 0 0% 65%;
-  --chart-3: 0 0% 80%;
-  --chart-4: 0 0% 50%;
-  --chart-5: 0 0% 40%;
 }
 
 /* ── Custom Utilities ──────────────────────────────────────────────────────── */

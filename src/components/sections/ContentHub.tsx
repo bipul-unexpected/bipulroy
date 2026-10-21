@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { ArrowUpRight, BookOpen, Camera, Wrench } from "lucide-react";
-import { articles as fallbackArticles, projects as fallbackProjects, techStack } from "../../data/portfolio";
+import { techStack } from "../../data/portfolio";
 import { listPublishedContent, type RemoteContent } from "../../lib/content";
+import { ContentEmptyState } from "../ui/ContentEmptyState";
 
 function ContentCard({ children }: { children: ReactNode }) {
   return (
@@ -42,18 +43,16 @@ export function ContentHub() {
     };
   }, []);
 
-  const staticArticle = fallbackArticles[0];
-  const allProjects = [
-    ...fallbackProjects.slice(0, 3).map((project) => ({
-      title: project.title,
-      description: project.description,
-      imageUrl: project.image,
-      url: project.liveUrl,
-      tags: project.stack.slice(0, 3),
-    })),
-    ...projects,
-  ];
+  const featuredArticle = articles[0];
+  const allProjects = projects.map((project) => ({
+    title: project.title || project.name || "Untitled",
+    description: project.description || project.excerpt || "",
+    imageUrl: project.imageUrl,
+    url: project.url,
+    tags: project.tags ?? [],
+  }));
   const toolNames = [...new Set([...Object.values(techStack).flat(), ...tools.map((tool) => tool.name || tool.title)])];
+  const isEmpty = !featuredArticle && allProjects.length === 0 && gallery.length === 0;
 
   return (
     <section id="journal" className="relative py-24 md:py-32">
@@ -64,6 +63,13 @@ export function ContentHub() {
           <p className="section-lead">Notes on product engineering, a living project archive, and the tools that keep the studio moving.</p>
         </div>
 
+        {isEmpty ? (
+          <ContentEmptyState
+            title="The journal is being written"
+            description="Field notes, project write-ups and studio frames are published here from the admin studio. Subscribe by email and I will send the next one."
+          />
+        ) : (
+          <>
         <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
           <ContentCard>
             <div className="grid md:grid-cols-[0.9fr_1.1fr]">
@@ -71,10 +77,10 @@ export function ContentHub() {
                 <BookOpen className="h-10 w-10 text-primary" />
               </div>
               <div className="p-6 sm:p-7 md:p-9">
-                <p className="mb-3 text-xs font-mono uppercase tracking-[0.18em] text-primary">Featured article</p>
-                <h3 className="text-xl sm:text-2xl font-bold text-foreground">{articles[0]?.title || staticArticle.title}</h3>
-                <p className="mt-3 card-copy">{articles[0]?.excerpt || staticArticle.description}</p>
-                <a href={articles[0]?.url || "#contact"} className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:gap-3 transition-all">
+                <p className="mb-3 text-xs font-mono uppercase tracking-[0.18em] text-primary">Latest article</p>
+                <h3 className="text-xl sm:text-2xl font-bold text-foreground">{featuredArticle?.title || "No articles published yet"}</h3>
+                <p className="mt-3 card-copy">{featuredArticle?.excerpt || featuredArticle?.description}</p>
+                <a href={featuredArticle?.url || "#contact"} className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:gap-3 transition-all">
                   Read the field note <ArrowUpRight className="h-4 w-4" />
                 </a>
               </div>
@@ -113,6 +119,8 @@ export function ContentHub() {
             <div className="rounded-2xl border border-dashed border-border p-8 text-sm text-muted-foreground">Gallery images will appear here when added from the admin studio.</div>
           )}
         </div>
+          </>
+        )}
       </div>
     </section>
   );

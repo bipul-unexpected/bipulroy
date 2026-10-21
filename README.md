@@ -202,11 +202,17 @@ what the website renders: for a project the fields are *Name*, *Category*,
 *Summary*, *Impact / Outcome* and *Stack*; for a testimonial they are *Name*,
 *Role*, *Company* and *Quote*.
 
-The public site reads the published records of each collection and lists them
-**above** the bundled showcase in `src/data/portfolio.ts`, so new work appears
-first while the curated entries stay visible. When Appwrite is unreachable or
-a collection is empty the bundled content is used instead, so the site never
-renders blank.
+The public site reads the published records of each collection. There is **no
+hard-coded work on the website any more**: the demo projects, articles, case
+studies, experience entries and testimonials that used to live in
+`src/data/portfolio.ts` have been removed, and the site now shows only what is
+published from the studio. When a collection is empty its section renders a
+short, honest empty state instead of placeholder work.
+
+Two collections are the exception, because they describe the practice rather
+than the work: the **service menu** and the **tech stack**. The studio adds to
+those rather than replacing them, so the keyword surface of the site stays
+intact.
 
 Two collection settings are required for this to work:
 
