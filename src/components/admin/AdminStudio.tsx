@@ -9,6 +9,7 @@ import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "../ui/sidebar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
+import { THEME_CHANGE_EVENT } from "../../lib/theme";
 import {
   createContent,
   deleteContentImage,
@@ -133,10 +134,8 @@ export function AdminStudio() {
   function toggleAdminTheme() {
     const next = !isDarkMode;
     setIsDarkMode(next);
-    document.documentElement.classList.toggle("dark", next);
-    document.documentElement.classList.toggle("light", !next);
-    document.documentElement.setAttribute("data-theme", next ? "dark" : "light");
     localStorage.setItem("bipul-theme", next ? "dark" : "light");
+    window.dispatchEvent(new CustomEvent(THEME_CHANGE_EVENT, { detail: next }));
   }
 
   function updateForm<K extends keyof FormState>(key: K, value: FormState[K]) {
@@ -244,7 +243,7 @@ export function AdminStudio() {
 
   return (
     <SidebarProvider>
-    <section id="admin" className="min-h-screen bg-background py-6 text-foreground sm:py-10">
+    <section id="admin" className="min-h-screen w-full min-w-0 overflow-x-hidden bg-background py-4 text-foreground sm:py-10">
       <Sidebar>
         <SidebarHeader>
           <SidebarMenu>
@@ -274,10 +273,10 @@ export function AdminStudio() {
           </SidebarGroup>
         </SidebarContent>
       </Sidebar>
-      <SidebarInset>
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+      <SidebarInset className="min-w-0">
+      <div className="mx-auto w-full min-w-0 max-w-7xl px-3 sm:px-6">
         <div className="mb-4 flex items-center gap-3 lg:hidden"><SidebarTrigger /><Separator orientation="vertical" className="h-5" /><span className="text-sm font-semibold">Portfolio control center</span></div>
-        <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
+        <div className="grid min-w-0 gap-4 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-6">
         <aside className="glass-panel hidden h-fit rounded-2xl p-4 lg:sticky lg:top-6">
           <div className="flex items-center gap-3 border-b border-border/60 px-2 pb-5">
             <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary text-primary-foreground"><LayoutDashboard className="h-5 w-5" /></div>
@@ -301,7 +300,7 @@ export function AdminStudio() {
           <div className="relative min-w-[220px] flex-1"><Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" /><Input aria-label="Search records" placeholder="Search records..." value={search} onChange={(event) => setSearch(event.target.value)} className="h-10 pl-9" /></div>
           <button type="button" onClick={() => void loadRecords()} className="inline-flex items-center gap-1 rounded-xl bg-secondary px-3 py-2.5 text-xs text-muted-foreground" disabled={loading}><RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} /> Refresh</button>
         </div>
-        <form onSubmit={handleSubmit} className="grid gap-4 border-b border-border/60 pb-8 md:grid-cols-2">
+        <form onSubmit={handleSubmit} className="grid min-w-0 gap-4 border-b border-border/60 pb-8 md:grid-cols-2">
           <label className="text-sm text-muted-foreground">Title<input required value={form.title} onChange={(event) => updateForm("title", event.target.value)} className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>
           <label className="text-sm text-muted-foreground">Category / slug<input value={form.category} onChange={(event) => updateForm("category", event.target.value)} placeholder="saas, frontend, engineering" className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>
           <label className="text-sm text-muted-foreground md:col-span-2">Description<textarea required value={form.description} onChange={(event) => updateForm("description", event.target.value)} rows={3} className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>

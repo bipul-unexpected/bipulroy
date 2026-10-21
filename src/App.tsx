@@ -23,6 +23,7 @@ import { TerminalMode } from "./components/ui/TerminalMode";
 import { SmoothScroll } from "./components/ui/SmoothScroll";
 import { PublicRoutePage } from "./components/PublicRoutePage";
 import { navigateToPath } from "./lib/scrollToSection";
+import { THEME_CHANGE_EVENT } from "./lib/theme";
 
 const THEME_KEY = "bipul-theme";
 
@@ -111,6 +112,17 @@ function App() {
       window.clearTimeout(t);
     };
   }, [isDark]);
+
+  useEffect(() => {
+    const handleThemeChange = (event: Event) => {
+      const customEvent = event as CustomEvent<boolean>;
+      if (typeof customEvent.detail === "boolean") {
+        setIsDark(customEvent.detail);
+      }
+    };
+    window.addEventListener(THEME_CHANGE_EVENT, handleThemeChange);
+    return () => window.removeEventListener(THEME_CHANGE_EVENT, handleThemeChange);
+  }, []);
 
   const toggleTheme = useCallback(
     (e?: React.MouseEvent | MouseEvent) => {
