@@ -1,6 +1,29 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const root = import.meta.dirname;
+
+/**
+ * Published articles are prerendered to `journal/<id>/index.html` by
+ * `scripts/generate-pages.mjs`. They are added to the build inputs so every
+ * article ships as its own crawlable document.
+ */
+const articleInputs: Record<string, string> = (() => {
+  const inputs: Record<string, string> = {};
+  const journalDirectory = path.resolve(root, 'journal');
+  try {
+    for (const entry of fs.readdirSync(journalDirectory, { withFileTypes: true })) {
+      if (!entry.isDirectory()) continue;
+      const file = path.join(journalDirectory, entry.name, 'index.html');
+      if (fs.existsSync(file)) inputs[`article-${entry.name}`] = file;
+    }
+  } catch {
+    // No journal directory yet.
+  }
+  return inputs;
+})();
 
 export default defineConfig({
   plugins: [react()],
@@ -9,12 +32,12 @@ export default defineConfig({
     alias: [
       {
         find: '@',
-        replacement: path.resolve(import.meta.dirname, './src'),
+        replacement: path.resolve(root, './src'),
       },
       {
         find: /^react-resizable-panels$/,
         replacement: path.resolve(
-          import.meta.dirname,
+          root,
           './src/shims/react-resizable-panels.ts'
         ),
       },
@@ -24,15 +47,16 @@ export default defineConfig({
     outDir: 'dist',
     rollupOptions: {
       input: {
-        home: path.resolve(import.meta.dirname, 'index.html'),
-        projects: path.resolve(import.meta.dirname, 'projects/index.html'),
-        gallery: path.resolve(import.meta.dirname, 'gallery/index.html'),
-        services: path.resolve(import.meta.dirname, 'services/index.html'),
-        journal: path.resolve(import.meta.dirname, 'journal/index.html'),
-        experience: path.resolve(import.meta.dirname, 'experience/index.html'),
-        contact: path.resolve(import.meta.dirname, 'contact/index.html'),
-        techStack: path.resolve(import.meta.dirname, 'tech-stack/index.html'),
-        admin: path.resolve(import.meta.dirname, 'onionbipulking/index.html'),
+        home: path.resolve(root, 'index.html'),
+        projects: path.resolve(root, 'projects/index.html'),
+        gallery: path.resolve(root, 'gallery/index.html'),
+        services: path.resolve(root, 'services/index.html'),
+        journal: path.resolve(root, 'journal/index.html'),
+        experience: path.resolve(root, 'experience/index.html'),
+        contact: path.resolve(root, 'contact/index.html'),
+        techStack: path.resolve(root, 'tech-stack/index.html'),
+        admin: path.resolve(root, 'onionbipulking/index.html'),
+        ...articleInputs,
       },
     },
   },

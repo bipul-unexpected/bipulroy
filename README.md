@@ -202,6 +202,31 @@ what the website renders: for a project the fields are *Name*, *Category*,
 *Summary*, *Impact / Outcome* and *Stack*; for a testimonial they are *Name*,
 *Role*, *Company* and *Quote*.
 
+#### Articles and attachments
+
+An article is published to `/journal/<id>`. The article title and cover image
+link straight to it and open in a new tab, so the reading experience never
+interrupts the journal.
+
+The article body is written in Markdown and rendered by
+`src/components/ui/Markdown.tsx`. That renderer emits React elements rather
+than an HTML string, so published content can never inject markup.
+
+Every record can also carry **supporting files** — a `.md` spec, a PDF, a
+zip, any file up to 10 MB. The studio uploads them to Storage and stores the
+file ids on the record (the `attachments` attribute, a string array that the
+admin Function reads from the live collection schema). The article page lists
+them with a download button, and the public file URL is built from the file
+id, so a file is reachable without any extra permission work.
+
+Published articles are **prerendered at build time**. `scripts/generate-pages.mjs`
+reads the published articles and writes a static `journal/<id>/index.html`
+containing the full article text, so crawlers see the content without running
+JavaScript. The same script refreshes `public/sitemap.xml` with the article
+URLs. It reads the Appwrite environment variables from `.env` when it exists
+and from the build environment otherwise, and it skips the article step
+entirely when Appwrite is not configured.
+
 The public site reads the published records of each collection. There is **no
 hard-coded work on the website any more**: the demo projects, articles, case
 studies, experience entries and testimonials that used to live in

@@ -73,16 +73,48 @@ export function ContentHub() {
         <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
           <ContentCard>
             <div className="grid md:grid-cols-[0.9fr_1.1fr]">
-              <div className="min-h-44 sm:min-h-64 bg-primary/10 p-6 sm:p-8 flex items-end">
-                <BookOpen className="h-10 w-10 text-primary" />
-              </div>
+              <a
+                href={featuredArticle ? `/journal/${featuredArticle.$id}` : "#contact"}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={featuredArticle?.title}
+                className="min-h-44 sm:min-h-64 bg-primary/10 p-6 sm:p-8 flex items-end overflow-hidden">
+                {featuredArticle?.imageUrl ? (
+                  <img
+                    src={featuredArticle.imageUrl}
+                    alt={featuredArticle.title}
+                    className="absolute inset-0 h-full w-full object-cover"
+                    loading="lazy"
+                  />
+                ) : (
+                  <BookOpen className="h-10 w-10 text-primary" />
+                )}
+              </a>
               <div className="p-6 sm:p-7 md:p-9">
                 <p className="mb-3 text-xs font-mono uppercase tracking-[0.18em] text-primary">Latest article</p>
-                <h3 className="text-xl sm:text-2xl font-bold text-foreground">{featuredArticle?.title || "No articles published yet"}</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-foreground">
+                  {featuredArticle ? (
+                    <a
+                      href={`/journal/${featuredArticle.$id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="transition-colors hover:text-primary">
+                      {featuredArticle.title}
+                    </a>
+                  ) : (
+                    "No articles published yet"
+                  )}
+                </h3>
                 <p className="mt-3 card-copy">{featuredArticle?.excerpt || featuredArticle?.description}</p>
-                <a href={featuredArticle?.url || "#contact"} className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:gap-3 transition-all">
-                  Read the field note <ArrowUpRight className="h-4 w-4" />
-                </a>
+                {featuredArticle && (
+                  <a
+                    href={`/journal/${featuredArticle.$id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:gap-3 transition-all">
+                    Read the field note <ArrowUpRight className="h-4 w-4" />
+                  </a>
+                )}
               </div>
             </div>
           </ContentCard>
@@ -110,6 +142,45 @@ export function ContentHub() {
             </ContentCard>
           ))}
         </div>
+
+        {articles.length > 0 && (
+          <div className="mt-16">
+            <div className="mb-6 flex items-center gap-3">
+              <BookOpen className="h-5 w-5 text-primary" />
+              <h3 className="text-xl font-bold text-foreground">All articles ({articles.length})</h3>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {articles.map((article) => (
+                <a
+                  key={article.$id}
+                  href={`/journal/${article.$id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-start gap-3 rounded-xl border border-border/70 bg-card p-4 transition-colors hover:border-primary/50">
+                  {article.imageUrl ? (
+                    <img
+                      src={article.imageUrl}
+                      alt=""
+                      className="h-14 w-14 shrink-0 rounded-lg object-cover"
+                      loading="lazy"
+                    />
+                  ) : null}
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
+                      {article.title || article.name}
+                    </span>
+                    <span className="mt-1 line-clamp-2 block text-xs text-muted-foreground">
+                      {article.excerpt || article.description}
+                    </span>
+                    <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-medium text-primary">
+                      Read article <ArrowUpRight className="h-3 w-3" />
+                    </span>
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="mt-16">
           <div className="mb-6 flex items-center gap-3"><Camera className="h-5 w-5 text-primary" /><h3 className="text-xl font-bold text-foreground">Selected frames</h3></div>

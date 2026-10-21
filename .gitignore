@@ -20,6 +20,8 @@ experience/index.html
 contact/index.html
 tech-stack/index.html
 onionbipulking/index.html
+# Article pages are prerendered from the published content at build time
+journal/*/index.html
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

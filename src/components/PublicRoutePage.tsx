@@ -3,6 +3,7 @@ import { Navbar } from "./layout/Navbar";
 import { Footer } from "./sections/Footer";
 import { Contact } from "./sections/Contact";
 import { ContentHub } from "./sections/ContentHub";
+import { ArticlePage } from "./sections/ArticlePage";
 import { Experience } from "./sections/Experience";
 import { Projects } from "./sections/Projects";
 import { Services } from "./sections/Services";
@@ -50,6 +51,9 @@ const routes: Record<string, { title: string; description: string; content: Reac
 
 export function PublicRoutePage({ pathname }: { pathname: string }) {
   const { activeSection, isScrolled } = useScrollProgress();
+
+  // Article detail pages: /journal/:id and /article/:id
+  const articleMatch = pathname.match(/^\/(?:journal|article)\/([^/]+)$/);
   const route = routes[pathname] || routes["/projects"];
 
   // Dynamic SEO: update document.title and meta description on SPA navigation
@@ -75,10 +79,16 @@ export function PublicRoutePage({ pathname }: { pathname: string }) {
     <div className="min-h-screen bg-background text-foreground">
       <Navbar activeSection={pathname.slice(1)} isScrolled={isScrolled} />
       <main className="relative z-10 pt-16">
-        <div className="mx-auto max-w-6xl px-4 pt-8 sm:px-6">
-          <p className="text-xs font-mono uppercase tracking-[0.18em] text-primary">Bipul Roy / {route.title.split(" — ")[0]}</p>
-        </div>
-        {route.content}
+        {articleMatch ? (
+          <ArticlePage documentId={decodeURIComponent(articleMatch[1])} />
+        ) : (
+          <>
+            <div className="mx-auto max-w-6xl px-4 pt-8 sm:px-6">
+              <p className="text-xs font-mono uppercase tracking-[0.18em] text-primary">Bipul Roy / {route.title.split(" — ")[0]}</p>
+            </div>
+            {route.content}
+          </>
+        )}
       </main>
       <Footer />
     </div>

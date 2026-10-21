@@ -258,16 +258,26 @@ module.exports = async ({ req, res, log, error }) => {
     }
     if (body.operation === "upload") {
       const decoded = Buffer.from(body.fileBase64 || "", "base64");
-      if (!body.mimeType?.startsWith("image/") || decoded.length === 0 || decoded.length > 10 * 1024 * 1024) {
-        throw new Error("Only non-empty images up to 10 MB are accepted.");
+      const mimeType = body.mimeType || "application/octet-stream";
+      const fileName = String(body.fileName || "upload").slice(0, 120);
+      if (decoded.length === 0 || decoded.length > 10 * 1024 * 1024) {
+        throw new Error("Only non-empty files up to 10 MB are accepted.");
       }
       const file = await storage.createFile(
         process.env.APPWRITE_STORAGE_BUCKET_ID,
         ID.unique(),
-        InputFile.fromBuffer(decoded, body.fileName || "upload"),
+        InputFile.fromBuffer(decoded, fileName),
       );
       const url = `${process.env.APPWRITE_ENDPOINT}/storage/buckets/${process.env.APPWRITE_STORAGE_BUCKET_ID}/files/${file.$id}/view?project=${process.env.APPWRITE_PROJECT_ID}`;
-      return json(res, 200, { data: { fileId: file.$id, url } });
+      return json(res, 200, {
+        data: {
+          fileId: file.$id,
+          url,
+          name: fileName,
+          mimeType,
+          size: decoded.length,
+        },
+      });
     }
     if (body.operation === "deleteImage") {
       await storage.deleteFile(process.env.APPWRITE_STORAGE_BUCKET_ID, body.fileId);

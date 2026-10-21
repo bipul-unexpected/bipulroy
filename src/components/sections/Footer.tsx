@@ -25,39 +25,42 @@ export function Footer() {
   const prefersReduced = useReducedMotion();
 
   return (
-    <footer className="border-t border-border/60 min-h-[50vh] md:min-h-[70vh] flex flex-col justify-center relative z-10 overflow-hidden">
-      {/* Subtle ambient accents keep the closing surface connected to the page. */}
-      {!prefersReduced && (
-        <>
-          <motion.div
-            className="pointer-events-none absolute left-[6%] top-[22%] h-36 w-36 rounded-full bg-primary/10 blur-3xl"
-            animate={{ y: [0, -18, 0], rotate: [0, 6, 0] }}
-            transition={{ duration: 11, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.div
-            className="pointer-events-none absolute right-[8%] bottom-[20%] h-48 w-48 rounded-full bg-sky-400/10 blur-3xl"
-            animate={{ y: [0, 16, 0], rotate: [0, -5, 0] }}
-            transition={{
-              duration: 13,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 0.7,
-            }}
-          />
-          <motion.div
-            className="pointer-events-none absolute left-[55%] top-[12%] h-20 w-20 rounded-full bg-primary/10 blur-2xl"
-            animate={{ y: [0, -12, 0], x: [0, 10, 0] }}
-            transition={{
-              duration: 9,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 0.3,
-            }}
-          />
-        </>
-      )}
+    // The loupe wraps the whole footer, so the magnifier reacts to the pointer
+    // across the entire surface — the glass panel with the wordmark as well as
+    // the closing row.
+    <FooterLoupe>
+      <footer className="border-t border-border/60 min-h-[50vh] md:min-h-[70vh] flex flex-col justify-center relative z-10 overflow-hidden">
+        {/* Subtle ambient accents keep the closing surface connected to the page. */}
+        {!prefersReduced && (
+          <>
+            <motion.div
+              className="pointer-events-none absolute left-[6%] top-[22%] h-36 w-36 rounded-full bg-primary/10 blur-3xl"
+              animate={{ y: [0, -18, 0], rotate: [0, 6, 0] }}
+              transition={{ duration: 11, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <motion.div
+              className="pointer-events-none absolute right-[8%] bottom-[20%] h-48 w-48 rounded-full bg-sky-400/10 blur-3xl"
+              animate={{ y: [0, 16, 0], rotate: [0, -5, 0] }}
+              transition={{
+                duration: 13,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 0.7,
+              }}
+            />
+            <motion.div
+              className="pointer-events-none absolute left-[55%] top-[12%] h-20 w-20 rounded-full bg-primary/10 blur-2xl"
+              animate={{ y: [0, -12, 0], x: [0, 10, 0] }}
+              transition={{
+                duration: 9,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 0.3,
+              }}
+            />
+          </>
+        )}
 
-      <FooterLoupe>
         <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 py-10 sm:py-14 flex-1 flex flex-col justify-between">
         {/* Main liquid-glass panel */}
         <motion.div
@@ -155,7 +158,7 @@ export function Footer() {
           </p>
         </div>
         </div>
-      </FooterLoupe>
-    </footer>
+      </footer>
+    </FooterLoupe>
   );
 }

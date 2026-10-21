@@ -27,6 +27,7 @@ export interface RemoteContent {
   name?: string;
   icon?: string;
   website?: string;
+  attachments?: string[];
 }
 
 const env = import.meta.env;
@@ -219,19 +220,55 @@ export async function deleteContent(kind: ContentKind, documentId: string) {
 }
 
 export async function uploadContentImage(file: File) {
+  const uploaded = await uploadContentFile(file);
+  return { fileId: uploaded.fileId, url: uploaded.url };
+}
+
+/**
+ * Uploads any file (image, markdown, PDF, archive, …) to Storage and returns
+ * its metadata so it can be attached to a record.
+ */
+export async function uploadContentFile(file: File) {
   const bucketId = env.VITE_APPWRITE_STORAGE_BUCKET_ID as string | undefined;
   if (!bucketId || !appwriteIsConfigured) {
     throw new Error("Appwrite Storage is not configured for this deployment.");
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    throw new Error("Files must be 10 MB or smaller.");
   }
 
   const bytes = new Uint8Array(await file.arrayBuffer());
   let binary = "";
   bytes.forEach((byte) => { binary += String.fromCharCode(byte); });
-  return adminRequest<{ fileId: string; url: string }>("upload", {
-    fileName: file.name,
-    mimeType: file.type,
-    fileBase64: btoa(binary),
-  });
+  return adminRequest<{ fileId: string; url: string; name: string; mimeType: string; size: number }>(
+    "upload",
+    {
+      fileName: file.name,
+      mimeType: file.type || "application/octet-stream",
+      fileBase64: btoa(binary),
+    },
+  );
+}
+
+/** Reads a single published record by id (used by the article pages). */
+export async function getPublishedContent(
+  kind: ContentKind,
+  documentId: string,
+): Promise<RemoteContent | null> {
+  if (!appwriteIsConfigured) return null;
+
+  try {
+    const document = await databases.getDocument(
+      env.VITE_APPWRITE_DATABASE_ID as string,
+      getCollectionId(kind),
+      documentId,
+    );
+    const record = document as unknown as RemoteContent;
+    return record.published === false ? null : record;
+  } catch (error) {
+    console.warn(`[content] Could not read "${kind}/${documentId}":`, error);
+    return null;
+  }
 }
 
 export function getContentImageUrl(fileId: string) {
@@ -250,6 +287,11 @@ export async function deleteContentImage(fileId: string) {
     throw new Error("Appwrite Storage is not configured for this deployment.");
   }
   await adminRequest("deleteImage", { fileId });
+}
+
+/** Removes any stored file — an image or an attachment. */
+export async function deleteContentFile(fileId: string) {
+  await deleteContentImage(fileId);
 }
 
 export function isAdminUser(

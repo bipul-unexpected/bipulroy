@@ -124,7 +124,7 @@ export function FooterLoupe({ children }: { children: ReactNode }) {
       <div
         ref={lensRef}
         aria-hidden
-        className="pointer-events-none fixed z-[55] h-44 w-44 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full opacity-0 transition-opacity duration-200 sm:h-56 sm:w-56"
+        className="pointer-events-none fixed z-[55] h-52 w-52 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full opacity-0 transition-opacity duration-200 sm:h-64 sm:w-64"
       >
         {/* Magnified copy of the footer */}
         <div
