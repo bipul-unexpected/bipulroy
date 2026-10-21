@@ -100,6 +100,7 @@ export function AdminStudio() {
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(() =>
     typeof document !== "undefined" && document.documentElement.classList.contains("dark"),
   );
@@ -271,7 +272,14 @@ export function AdminStudio() {
   }
 
   return (
-    <SidebarProvider>
+    <SidebarProvider
+      open={sidebarOpen}
+      onOpenChange={setSidebarOpen}
+      style={{
+        "--sidebar-width": "calc(var(--spacing) * 72)",
+        "--header-height": "calc(var(--spacing) * 12)",
+      } as React.CSSProperties}
+    >
     <section id="admin" className="shadcn-admin-theme min-h-screen w-full min-w-0 overflow-x-hidden bg-background py-4 text-foreground sm:py-10">
       <AppSidebar
         variant="inset"
@@ -287,27 +295,13 @@ export function AdminStudio() {
       />
       <SidebarInset className="min-w-0">
       <SiteHeader title={contentKinds.find((item) => item.value === kind)?.label || "Dashboard"} actions={<><Button variant="outline" size="icon" onClick={toggleAdminTheme} aria-label={isDarkMode ? "Use light mode" : "Use dark mode"}>{isDarkMode ? <Sun /> : <Moon />}</Button><UserButton /></>} />
-      <div className="mx-auto w-full min-w-0 max-w-7xl px-3 sm:px-6">
-        <div className="@container/main flex min-w-0 flex-1 flex-col gap-2">
-        <div className="grid min-w-0 gap-4 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-6">
-        <aside className="glass-panel hidden h-fit rounded-2xl p-4 lg:sticky lg:top-6">
-          <div className="flex items-center gap-3 border-b border-border/60 px-2 pb-5">
-            <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary text-primary-foreground"><LayoutDashboard className="h-5 w-5" /></div>
-            <div><p className="font-semibold text-foreground">Studio</p><p className="text-xs text-muted-foreground">Bipul Roy / Admin</p></div>
-          </div>
-          <nav className="mt-5 space-y-1" aria-label="Admin sections">
-            <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Workspace</p>
-            <button type="button" className="flex w-full items-center gap-3 rounded-xl bg-primary/10 px-3 py-2.5 text-left text-sm font-semibold text-primary"><BarChart3 className="h-4 w-4" />Content overview</button>
-            {contentKinds.map((item) => <button key={item.value} type="button" onClick={() => { setKind(item.value); resetForm(); void loadRecords(item.value); }} className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm ${kind === item.value ? "bg-secondary font-semibold text-foreground" : "text-muted-foreground hover:bg-secondary/70"}`}>{item.label}</button>)}
-          </nav>
-        </aside>
-        <div className="min-w-0">
-        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+      <div className="@container/main flex min-w-0 flex-1 flex-col gap-2">
+        <div className="flex min-w-0 flex-col gap-4 px-3 py-4 md:gap-6 md:px-6 md:py-6">
         <SectionCards stats={dashboardStats} />
-        <div className="px-0 lg:px-2"><ChartAreaInteractive data={chartData} /></div>
+        <div className="px-0"><ChartAreaInteractive data={chartData} /></div>
         <DataTable data={dashboardRows} />
         </div>
-        <div className="glass-panel rounded-2xl p-5 sm:p-7 md:p-9">
+        <div className="mx-3 mb-6 rounded-xl border bg-card p-4 sm:p-6 md:mx-6">
         <div className="mb-7 flex flex-col justify-between gap-4 border-b border-border/60 pb-6 sm:flex-row sm:items-center"><div><p className="text-xs font-mono uppercase tracking-[0.18em] text-primary">Private workspace</p><h2 className="mt-2 text-2xl font-bold text-foreground">Portfolio control center</h2><p className="mt-1 text-sm text-muted-foreground">Manage projects, journal, media, services, and social proof.</p></div><div className="flex items-center gap-2"><button type="button" onClick={toggleAdminTheme} className="grid h-10 w-10 place-items-center rounded-xl bg-secondary text-muted-foreground" aria-label={isDarkMode ? "Use light mode" : "Use dark mode"}>{isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}</button><UserButton /></div></div>
         <div className="mb-6 grid gap-3 sm:grid-cols-3">
           <div className="rounded-xl border border-border/70 bg-background/40 p-4"><p className="text-xs text-muted-foreground">Current collection</p><p className="mt-1 font-semibold text-foreground">{contentKinds.find((item) => item.value === kind)?.label}</p></div>
@@ -336,9 +330,6 @@ export function AdminStudio() {
           {filteredRecords.length === 0 && <p className="rounded-xl border border-dashed border-border p-5 text-sm text-muted-foreground">{loading ? "Loading records..." : search ? "No matching records." : "No records yet."}</p>}
           {filteredRecords.map((item) => <div key={item.$id} className="flex flex-col gap-3 rounded-xl border border-border/70 bg-background/30 p-4 sm:flex-row sm:items-center sm:justify-between"><div className="min-w-0"><p className="truncate font-semibold text-foreground">{item.title || item.name}</p><p className="mt-1 line-clamp-1 text-xs text-muted-foreground">{item.description || item.excerpt}</p><Badge variant="outline" className="mt-2">{item.published === false ? "Draft" : "Published"}</Badge></div><div className="flex shrink-0 gap-2"><Button type="button" variant="outline" size="sm" onClick={() => startEdit(item)}><Edit3 className="h-3.5 w-3.5" /> Edit</Button><Button type="button" variant="destructive" size="sm" onClick={() => void handleDelete(item)} disabled={busy}><Trash2 className="h-3.5 w-3.5" /> Delete</Button></div></div>)}
         </div>
-      </div>
-      </div>
-      </div>
       </div>
       </div>
       </SidebarInset>
