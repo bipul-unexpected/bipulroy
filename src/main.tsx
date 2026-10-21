@@ -21,7 +21,7 @@ const PRELOADER_MIN_DISPLAY_MS = 1200; // minimum animation time
 
 const preloaderEl = document.getElementById("app-preloader");
 const stored = localStorage.getItem("bipul-theme");
-const startDark = stored !== "light";
+const startDark = stored === "dark";
 
 // Apply preloader theme class before React paints
 if (preloaderEl) {
@@ -30,7 +30,7 @@ if (preloaderEl) {
   }
 }
 
-/** Default to the admin-friendly dark theme while preserving an explicit choice. */
+/** Restore the original Creativity light theme unless the user chose dark mode. */
 document.documentElement.classList.add("theme-midnight");
 document.documentElement.classList.remove(startDark ? "light" : "dark");
 document.documentElement.classList.add(startDark ? "dark" : "light");
@@ -38,7 +38,7 @@ document.documentElement.setAttribute(
   "data-theme",
   startDark ? "dark" : "light",
 );
-if (!stored) localStorage.setItem("bipul-theme", "dark");
+if (!stored) localStorage.setItem("bipul-theme", "light");
 
 /** Dismiss the liquid glass preloader with a smooth fade-out. */
 function dismissPreloader() {
