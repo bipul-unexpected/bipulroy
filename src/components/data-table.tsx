@@ -115,6 +115,7 @@ const columnHelper = createColumnHelper<
 
 export const schema = z.object({
   id: z.number(),
+  documentId: z.string().optional(),
   header: z.string(),
   type: z.string(),
   status: z.string(),
@@ -141,7 +142,14 @@ function DragHandle({ id }: { id: number }) {
     </Button>
   )
 }
-const columns = columnHelper.columns([
+function createColumns({
+  onEdit,
+  onDelete,
+}: {
+  onEdit?: (documentId: string) => void
+  onDelete?: (documentId: string) => void
+}) {
+  return columnHelper.columns([
   columnHelper.display({
     id: "drag",
     header: () => null,
@@ -293,7 +301,7 @@ const columns = columnHelper.columns([
   }),
   columnHelper.display({
     id: "actions",
-    cell: () => (
+    cell: ({ row }) => (
       <DropdownMenu>
         <DropdownMenuTrigger
           render={
@@ -309,16 +317,28 @@ const columns = columnHelper.columns([
           <span className="sr-only">Open menu</span>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-32">
-          <DropdownMenuItem>Edit</DropdownMenuItem>
-          <DropdownMenuItem>Make a copy</DropdownMenuItem>
-          <DropdownMenuItem>Favorite</DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={!row.original.documentId}
+            onClick={() => row.original.documentId && onEdit?.(row.original.documentId)}
+          >
+            Edit
+          </DropdownMenuItem>
+          <DropdownMenuItem>Duplicate</DropdownMenuItem>
+          <DropdownMenuItem>Feature</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+          <DropdownMenuItem
+            variant="destructive"
+            disabled={!row.original.documentId}
+            onClick={() => row.original.documentId && onDelete?.(row.original.documentId)}
+          >
+            Delete
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     ),
   }),
-])
+  ])
+}
 function DraggableRow({
   row,
 }: {
@@ -348,8 +368,12 @@ function DraggableRow({
 }
 export function DataTable({
   data: initialData,
+  onEdit,
+  onDelete,
 }: {
   data: z.infer<typeof schema>[]
+  onEdit?: (documentId: string) => void
+  onDelete?: (documentId: string) => void
 }) {
   const [data, setData] = React.useState(() => initialData)
   const [rowSelection, setRowSelection] = React.useState({})
@@ -363,6 +387,14 @@ export function DataTable({
     pageIndex: 0,
     pageSize: 10,
   })
+  React.useEffect(() => {
+    setData(initialData)
+    setPagination((current) => ({ ...current, pageIndex: 0 }))
+  }, [initialData])
+  const columns = React.useMemo(
+    () => createColumns({ onEdit, onDelete }),
+    [onEdit, onDelete]
+  )
   const sortableId = React.useId()
   const sensors = useSensors(
     useSensor(MouseSensor, {}),

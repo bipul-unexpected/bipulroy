@@ -226,8 +226,23 @@ export function AppSidebar({
             </SidebarGroupContent>
           </SidebarGroup>
         ) : <NavMain items={data.navMain} />}
-        <NavDocuments items={data.documents} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <SidebarGroup className="mt-auto">
+          <SidebarGroupLabel>Workspace</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton render={<a href="#admin" />}>
+                  <LayoutDashboardIcon /><span>Dashboard overview</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton render={<a href="/" />}>
+                  <CircleHelpIcon /><span>View public site</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user || data.user} />

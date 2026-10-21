@@ -137,6 +137,7 @@ export function AdminStudio() {
   }, [records, search]);
   const dashboardRows = useMemo(() => filteredRecords.map((item, index) => ({
     id: index + 1,
+    documentId: item.$id,
     header: item.title || item.name || "Untitled",
     type: contentKinds.find((entry) => entry.value === kind)?.label || kind,
     status: item.published === false ? "Draft" : "Published",
@@ -299,10 +300,20 @@ export function AdminStudio() {
         <div className="flex min-w-0 flex-col gap-4 px-3 py-4 md:gap-6 md:px-6 md:py-6">
         <SectionCards stats={dashboardStats} />
         <div className="px-0"><ChartAreaInteractive data={chartData} /></div>
-        <DataTable data={dashboardRows} />
+        <DataTable
+          data={dashboardRows}
+          onEdit={(documentId) => {
+            const item = records.find((record) => record.$id === documentId);
+            if (item) startEdit(item);
+          }}
+          onDelete={(documentId) => {
+            const item = records.find((record) => record.$id === documentId);
+            if (item) void handleDelete(item);
+          }}
+        />
         </div>
         <div className="mx-3 mb-6 rounded-xl border bg-card p-4 sm:p-6 md:mx-6">
-        <div className="mb-7 flex flex-col justify-between gap-4 border-b border-border/60 pb-6 sm:flex-row sm:items-center"><div><p className="text-xs font-mono uppercase tracking-[0.18em] text-primary">Private workspace</p><h2 className="mt-2 text-2xl font-bold text-foreground">Portfolio control center</h2><p className="mt-1 text-sm text-muted-foreground">Manage projects, journal, media, services, and social proof.</p></div><div className="flex items-center gap-2"><button type="button" onClick={toggleAdminTheme} className="grid h-10 w-10 place-items-center rounded-xl bg-secondary text-muted-foreground" aria-label={isDarkMode ? "Use light mode" : "Use dark mode"}>{isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}</button><UserButton /></div></div>
+        <div className="mb-7 border-b border-border/60 pb-6"><p className="text-xs font-mono uppercase tracking-[0.18em] text-primary">Content editor</p><h2 className="mt-2 text-2xl font-bold text-foreground">Manage {contentKinds.find((item) => item.value === kind)?.label.toLowerCase()} content</h2><p className="mt-1 text-sm text-muted-foreground">Create, publish, update, and organize the content shown on your portfolio.</p></div>
         <div className="mb-6 grid gap-3 sm:grid-cols-3">
           <div className="rounded-xl border border-border/70 bg-background/40 p-4"><p className="text-xs text-muted-foreground">Current collection</p><p className="mt-1 font-semibold text-foreground">{contentKinds.find((item) => item.value === kind)?.label}</p></div>
           <div className="rounded-xl border border-border/70 bg-background/40 p-4"><p className="text-xs text-muted-foreground">Records loaded</p><p className="mt-1 font-semibold text-foreground">{records.length}</p></div>
