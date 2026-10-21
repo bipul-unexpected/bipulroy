@@ -1,7 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { useAuth, useUser, SignIn, UserButton } from "@clerk/react";
-import { BarChart3, CheckCircle2, Edit3, LayoutDashboard, Moon, Plus, RefreshCw, Search, Sun, Trash2, Upload, X } from "lucide-react";
+import { BarChart3, CheckCircle2, Edit3, LayoutDashboard, Moon, Plus, RefreshCw, Search, Sun, Trash2, Upload, X, FolderKanban, FileText, Images, Wrench, BriefcaseBusiness, Handshake, Quote } from "lucide-react";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import { Input } from "../ui/input";
+import { Separator } from "../ui/separator";
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "../ui/sidebar";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import {
   createContent,
   deleteContentImage,
@@ -87,6 +94,7 @@ export function AdminStudio() {
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
   const [isDarkMode, setIsDarkMode] = useState(() =>
     typeof document !== "undefined" && document.documentElement.classList.contains("dark"),
   );
@@ -116,6 +124,11 @@ export function AdminStudio() {
   }, [canManage]);
 
   const modeLabel = useMemo(() => editingId ? "Update content" : "Publish content", [editingId]);
+  const filteredRecords = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return records;
+    return records.filter((item) => `${item.title || item.name} ${item.description || item.excerpt} ${item.category || ""}`.toLowerCase().includes(query));
+  }, [records, search]);
 
   function toggleAdminTheme() {
     const next = !isDarkMode;
@@ -230,9 +243,42 @@ export function AdminStudio() {
   }
 
   return (
+    <SidebarProvider>
     <section id="admin" className="min-h-screen bg-background py-6 text-foreground sm:py-10">
-      <div className="mx-auto grid max-w-7xl gap-6 px-4 sm:px-6 lg:grid-cols-[240px_1fr]">
-        <aside className="glass-panel h-fit rounded-2xl p-4 lg:sticky lg:top-6">
+      <Sidebar>
+        <SidebarHeader>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton size="lg">
+                <LayoutDashboard className="size-5" />
+                <span className="font-semibold">Bipul Roy Studio</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>Content collections</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {contentKinds.map((item) => (
+                  <SidebarMenuItem key={item.value}>
+                    <SidebarMenuButton isActive={kind === item.value} onClick={() => { setKind(item.value); resetForm(); void loadRecords(item.value); }}>
+                      {item.value === "projects" ? <FolderKanban /> : item.value === "articles" ? <FileText /> : item.value === "gallery" ? <Images /> : item.value === "tools" ? <Wrench /> : item.value === "experience" ? <BriefcaseBusiness /> : item.value === "services" ? <Handshake /> : <Quote />}
+                      <span>{item.label}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+      <SidebarInset>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="mb-4 flex items-center gap-3 lg:hidden"><SidebarTrigger /><Separator orientation="vertical" className="h-5" /><span className="text-sm font-semibold">Portfolio control center</span></div>
+        <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
+        <aside className="glass-panel hidden h-fit rounded-2xl p-4 lg:sticky lg:top-6">
           <div className="flex items-center gap-3 border-b border-border/60 px-2 pb-5">
             <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary text-primary-foreground"><LayoutDashboard className="h-5 w-5" /></div>
             <div><p className="font-semibold text-foreground">Studio</p><p className="text-xs text-muted-foreground">Bipul Roy / Admin</p></div>
@@ -252,7 +298,7 @@ export function AdminStudio() {
           <div className="rounded-xl border border-border/70 bg-background/40 p-4"><p className="text-xs text-muted-foreground">Published</p><p className="mt-1 font-semibold text-emerald-600">{records.filter((item) => item.published !== false).length}</p></div>
         </div>
         <div className="mb-5 flex flex-wrap items-center gap-2">
-          <div className="relative min-w-[220px] flex-1"><Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" /><input aria-label="Search records" placeholder="Search records..." className="w-full rounded-xl border border-border bg-background/60 py-2.5 pl-9 pr-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/30" /></div>
+          <div className="relative min-w-[220px] flex-1"><Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" /><Input aria-label="Search records" placeholder="Search records..." value={search} onChange={(event) => setSearch(event.target.value)} className="h-10 pl-9" /></div>
           <button type="button" onClick={() => void loadRecords()} className="inline-flex items-center gap-1 rounded-xl bg-secondary px-3 py-2.5 text-xs text-muted-foreground" disabled={loading}><RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} /> Refresh</button>
         </div>
         <form onSubmit={handleSubmit} className="grid gap-4 border-b border-border/60 pb-8 md:grid-cols-2">
@@ -270,12 +316,15 @@ export function AdminStudio() {
         </form>
         <div className="mt-7 space-y-2">
           <h3 className="text-sm font-semibold text-foreground">{contentKinds.find((item) => item.value === kind)?.label} records ({records.length})</h3>
-          {records.length === 0 && <p className="rounded-xl border border-dashed border-border p-5 text-sm text-muted-foreground">{loading ? "Loading records..." : "No records yet."}</p>}
-          {records.map((item) => <div key={item.$id} className="flex flex-col gap-3 rounded-xl border border-border/70 bg-background/30 p-4 sm:flex-row sm:items-center sm:justify-between"><div className="min-w-0"><p className="truncate font-semibold text-foreground">{item.title || item.name}</p><p className="mt-1 line-clamp-1 text-xs text-muted-foreground">{item.description || item.excerpt}</p><span className={`mt-2 inline-flex rounded-full px-2 py-0.5 text-[10px] ${item.published === false ? "bg-amber-500/10 text-amber-600" : "bg-emerald-500/10 text-emerald-600"}`}>{item.published === false ? "Draft" : "Published"}</span></div><div className="flex shrink-0 gap-2"><button type="button" onClick={() => startEdit(item)} className="inline-flex items-center gap-1 rounded-full bg-secondary px-3 py-1.5 text-xs font-semibold text-muted-foreground"><Edit3 className="h-3.5 w-3.5" /> Edit</button><button type="button" onClick={() => void handleDelete(item)} disabled={busy} className="inline-flex items-center gap-1 rounded-full bg-destructive/10 px-3 py-1.5 text-xs font-semibold text-destructive"><Trash2 className="h-3.5 w-3.5" /> Delete</button></div></div>)}
+          {filteredRecords.length === 0 && <p className="rounded-xl border border-dashed border-border p-5 text-sm text-muted-foreground">{loading ? "Loading records..." : search ? "No matching records." : "No records yet."}</p>}
+          {filteredRecords.map((item) => <div key={item.$id} className="flex flex-col gap-3 rounded-xl border border-border/70 bg-background/30 p-4 sm:flex-row sm:items-center sm:justify-between"><div className="min-w-0"><p className="truncate font-semibold text-foreground">{item.title || item.name}</p><p className="mt-1 line-clamp-1 text-xs text-muted-foreground">{item.description || item.excerpt}</p><Badge variant="outline" className="mt-2">{item.published === false ? "Draft" : "Published"}</Badge></div><div className="flex shrink-0 gap-2"><Button type="button" variant="outline" size="sm" onClick={() => startEdit(item)}><Edit3 className="h-3.5 w-3.5" /> Edit</Button><Button type="button" variant="destructive" size="sm" onClick={() => void handleDelete(item)} disabled={busy}><Trash2 className="h-3.5 w-3.5" /> Delete</Button></div></div>)}
         </div>
       </div>
       </div>
       </div>
+      </div>
+      </SidebarInset>
     </section>
+    </SidebarProvider>
   );
 }

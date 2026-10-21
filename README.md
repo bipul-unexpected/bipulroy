@@ -144,6 +144,17 @@ environment variables only, and set `ALLOWED_ORIGIN` to the exact portfolio
 origin. The setup and exact scopes are documented in
 `functions/admin-content/README.md`.
 
+### Admin dashboard UI
+
+The private `/onionbipulking` workspace uses the official shadcn
+`dashboard-01` primitives generated from `components.json`. The generated
+sidebar is responsive (including the mobile off-canvas mode), while the
+collection navigation, search, CRUD controls, publication metrics, Clerk
+account controls, and persisted dark mode are connected to the live Appwrite
+content workflow. To regenerate or add shadcn components, run
+`npx shadcn@latest add <component>` from the repository root; do not edit
+generated UI primitives to add application-specific data access.
+
 #### Appwrite Function publish checklist
 
 1. In **Appwrite Console → Functions**, create a Function named
