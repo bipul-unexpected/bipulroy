@@ -6,6 +6,8 @@ import { PremiumDraggable } from "../ui/PremiumDraggable";
 import { TextAnimate } from "../ui/TextAnimate";
 import { GlowingText } from "../ui/GlowingText";
 import { projects, type Project } from "../../data/portfolio";
+import { useRemoteContent } from "../../hooks/useRemoteContent";
+import { mergeRemote, toProject } from "../../lib/portfolioContent";
 
 /* ── Filter Tabs ─────────────────────────────────────────────────────────── */
 
@@ -82,7 +84,14 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         <div className="h-48 bg-secondary relative overflow-hidden">
           <div
             className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
-            style={{ backgroundImage: `url(${project.image})` }}
+            style={
+              project.image
+                ? { backgroundImage: `url(${project.image})` }
+                : {
+                    background:
+                      "linear-gradient(135deg, hsl(var(--primary) / 0.35), hsl(var(--muted)))",
+                  }
+            }
           />
           <div className="absolute inset-0 bg-background/40" />
         </div>
@@ -151,48 +160,57 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
             transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
             className="overflow-hidden">
             <div className="pt-4 space-y-4 border-t border-border">
-              <div>
-                <span className="text-xs uppercase text-muted-foreground font-mono tracking-wider">
-                  <TextAnimate
-                    animation="blurInUp"
-                    by="word"
-                    duration={0.5}
-                    staggerDelay={0.05}>
-                    Problem:
-                  </TextAnimate>
-                </span>
-                <p className="card-copy mt-1.5 text-foreground">
-                  <TextAnimate
-                    animation="blurInUp"
-                    by="word"
-                    duration={0.8}
-                    delay={0.05}
-                    staggerDelay={0.04}>
-                    {project.problem}
-                  </TextAnimate>
+              {project.problem && (
+                <div>
+                  <span className="text-xs uppercase text-muted-foreground font-mono tracking-wider">
+                    <TextAnimate
+                      animation="blurInUp"
+                      by="word"
+                      duration={0.5}
+                      staggerDelay={0.05}>
+                      Problem:
+                    </TextAnimate>
+                  </span>
+                  <p className="card-copy mt-1.5 text-foreground">
+                    <TextAnimate
+                      animation="blurInUp"
+                      by="word"
+                      duration={0.8}
+                      delay={0.05}
+                      staggerDelay={0.04}>
+                      {project.problem}
+                    </TextAnimate>
+                  </p>
+                </div>
+              )}
+              {project.result && (
+                <div>
+                  <span className="text-xs uppercase text-primary font-mono tracking-wider">
+                    <TextAnimate
+                      animation="blurInUp"
+                      by="word"
+                      duration={0.5}
+                      staggerDelay={0.05}>
+                      Result:
+                    </TextAnimate>
+                  </span>
+                  <p className="card-copy mt-1.5 text-foreground">
+                    <TextAnimate
+                      animation="blurInUp"
+                      by="word"
+                      duration={0.8}
+                      delay={0.05}
+                      staggerDelay={0.04}>
+                      {project.result}
+                    </TextAnimate>
+                  </p>
+                </div>
+              )}
+              {!project.problem && !project.result && (
+                <p className="text-xs text-muted-foreground">
+                  Open for the full case study — reach out for the deep dive.
                 </p>
-              </div>
-              <div>
-                <span className="text-xs uppercase text-primary font-mono tracking-wider">
-                  <TextAnimate
-                    animation="blurInUp"
-                    by="word"
-                    duration={0.5}
-                    staggerDelay={0.05}>
-                    Result:
-                  </TextAnimate>
-                </span>
-                <p className="card-copy mt-1.5 text-foreground">
-                  <TextAnimate
-                    animation="blurInUp"
-                    by="word"
-                    duration={0.8}
-                    delay={0.05}
-                    staggerDelay={0.04}>
-                    {project.result}
-                  </TextAnimate>
-                </p>
-              </div>
+              )}
             </div>
           </motion.div>
 
@@ -239,11 +257,16 @@ export function Projects() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  const featured = projects.filter((p) => p.featured);
+  // Content published from the studio is listed first; the curated showcase
+  // follows, so the section is never empty and never loses its highlights.
+  const { items: remoteProjects, available } = useRemoteContent("projects", toProject);
+  const source: Project[] = available
+    ? mergeRemote(remoteProjects, projects.filter((p) => p.featured), (p) => p.title)
+    : projects.filter((p) => p.featured);
   const filtered =
     activeFilter === "All"
-      ? featured
-      : featured.filter((p) => p.category === filterMap[activeFilter]);
+      ? source
+      : source.filter((p) => p.category === filterMap[activeFilter]);
 
   return (
     <section id="projects" className="relative py-24 md:py-32">

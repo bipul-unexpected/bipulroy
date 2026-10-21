@@ -9,6 +9,8 @@ import {
   Container,
 } from "lucide-react";
 import { services } from "../../data/portfolio";
+import { useRemoteContent } from "../../hooks/useRemoteContent";
+import { mergeRemote, toService } from "../../lib/portfolioContent";
 import { PremiumDraggable } from "../ui/PremiumDraggable";
 import { TextAnimate } from "../ui/TextAnimate";
 
@@ -33,6 +35,10 @@ const fadeUp = {
 export function Services() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  // Studio content is listed first; the bundled services follow.
+  const { items: remoteServices, available } = useRemoteContent("services", toService);
+  const items = available ? mergeRemote(remoteServices, services, (s) => s.title) : services;
 
   return (
     <section id="services" className="relative py-24 md:py-32" ref={ref}>
@@ -87,7 +93,7 @@ export function Services() {
 
           {/* Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-7">
-            {services.map((service) => {
+            {items.map((service) => {
               const Icon = iconMap[service.icon] || Globe;
               return (
                 <motion.div

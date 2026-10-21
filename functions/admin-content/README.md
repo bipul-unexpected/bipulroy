@@ -133,3 +133,48 @@ and remove Storage create/delete permissions for public users. Keep public read
 permission only where content/images are intended to be public. The Function's
 server API key bypasses document permissions, while its Clerk verification
 prevents other visitors from using the write endpoint.
+
+## Collection read permission
+
+The public portfolio reads the content collections straight from the browser
+with the anonymous client, so every collection that the website renders must
+allow public reads. In the Appwrite console, open each collection and set:
+
+```text
+Permissions -> Read  ->  Any
+```
+
+Without it the browser receives `401 The current user is not authorized to
+perform the requested action`, the public sections fall back to the bundled
+content, and the studio shows zero records even though writes succeed.
+
+The same applies to the Storage bucket: the public site loads uploaded images
+directly from the Appwrite file URL, so the bucket needs public read permission
+for files.
+
+## Operations
+
+The studio calls the Function with a `operation` field:
+
+| Operation   | Purpose                                                        |
+| ----------- | -------------------------------------------------------------- |
+| `list`      | Returns every record of a collection, drafts included.          |
+| `create`    | Creates a record and applies its read permissions.               |
+| `update`    | Updates a record and re-applies its read permissions.            |
+| `publish`   | Flips `published` without touching the content.                  |
+| `delete`    | Removes a record.                                               |
+| `upload`    | Stores an image in Storage and returns its public URL.           |
+| `deleteImage` | Removes a file from Storage.                                 |
+
+`list` is what makes the dashboard counts correct: the browser's anonymous
+client cannot read drafts, so the studio reads through the Function instead.
+A frontend that talks to a Function version older than this one falls back to
+a direct read, so deploy a new Function version to get the full behaviour.
+
+Writes set the read permission from the `published` flag: a published record
+becomes readable by anyone, a draft stays private to the Function. That only
+takes effect once the collection is switched to document-level security
+(`documentSecurity`), which requires the Function to be redeployed first —
+otherwise a newly created record would be created without any read permission
+and would be invisible.
+

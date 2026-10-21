@@ -1,6 +1,8 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { techStack } from "../../data/portfolio";
+import { useRemoteContent } from "../../hooks/useRemoteContent";
+import { toTool } from "../../lib/portfolioContent";
 import { PremiumDraggable } from "../ui/PremiumDraggable";
 import { TextAnimate } from "../ui/TextAnimate";
 import { TechBrandIcon } from "../ui/TechBrandIcon";
@@ -14,17 +16,27 @@ const fadeUp = {
   },
 };
 
-const categories = [
-  { label: "Frontend", items: techStack.frontend },
-  { label: "Backend", items: techStack.backend },
-  { label: "Databases", items: techStack.databases },
-  { label: "DevOps", items: techStack.devops },
-  { label: "Tools & Services", items: techStack.tools },
+const baseCategories = [
+  { label: "Frontend", key: "frontend", items: techStack.frontend },
+  { label: "Backend", key: "backend", items: techStack.backend },
+  { label: "Databases", key: "databases", items: techStack.databases },
+  { label: "DevOps", key: "devops", items: techStack.devops },
+  { label: "Tools & Services", key: "tools", items: techStack.tools },
 ];
 
 export function TechStack() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  // Tools published from the studio are merged into their group.
+  const { items: remoteTools } = useRemoteContent("tools", toTool);
+  const categories = baseCategories.map((category) => {
+    const extra = remoteTools
+      .filter((tool) => tool.group === category.key)
+      .map((tool) => tool.name)
+      .filter((name) => !category.items.includes(name));
+    return { ...category, items: [...category.items, ...extra] };
+  });
 
   return (
     <section id="tech-stack" className="relative py-24 md:py-32" ref={ref}>

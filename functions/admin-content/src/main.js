@@ -1,4 +1,4 @@
-const { Client, Databases, ID, Storage } = require("node-appwrite");
+const { Client, Databases, ID, Permission, Query, Role, Storage } = require("node-appwrite");
 const { InputFile } = require("node-appwrite/file");
 
 const kinds = new Set([
@@ -51,6 +51,17 @@ function collectionId(kind) {
   const value = process.env[`APPWRITE_${kind.toUpperCase()}_COLLECTION_ID`];
   if (!value) throw new Error(`Missing collection configuration for ${kind}.`);
   return value;
+}
+
+/**
+ * Read permissions for a document.
+ *
+ * The collections run with document-level security, so a published record is
+ * readable by anyone (that is what powers the public portfolio) while a draft
+ * stays private to the Function that holds the API key.
+ */
+function documentPermissions(published) {
+  return published === false ? [] : [Permission.read(Role.any())];
 }
 
 /**
@@ -184,6 +195,7 @@ module.exports = async ({ req, res, log, error }) => {
             collectionId(kind),
             ID.unique(),
             data,
+            documentPermissions(data.published),
           ),
         payload,
       );
@@ -201,10 +213,39 @@ module.exports = async ({ req, res, log, error }) => {
             collectionId(kind),
             body.documentId,
             data,
+            documentPermissions(data.published),
           ),
         payload,
       );
       if (dropped.length > 0) log(`Dropped unsupported attributes for ${kind}: ${dropped.join(", ")}`);
+      return json(res, 200, { data: result });
+    }
+    if (body.operation === "list") {
+      // Read through the Function so the studio sees drafts and published
+      // records regardless of the collection's public read permissions.
+      const result = await databases.listDocuments(
+        process.env.APPWRITE_DATABASE_ID,
+        collectionId(body.kind),
+        [Query.orderDesc("$createdAt"), Query.limit(200)],
+      );
+      return json(res, 200, { data: result.documents });
+    }
+    if (body.operation === "publish") {
+      // Flip the visibility of a record without touching its content.
+      const kind = body.kind;
+      const current = await databases.getDocument(
+        process.env.APPWRITE_DATABASE_ID,
+        collectionId(kind),
+        body.documentId,
+      );
+      const published = current.published === false;
+      const result = await databases.updateDocument(
+        process.env.APPWRITE_DATABASE_ID,
+        collectionId(kind),
+        body.documentId,
+        { published },
+        documentPermissions(published),
+      );
       return json(res, 200, { data: result });
     }
     if (body.operation === "delete") {

@@ -47,6 +47,160 @@ const contentKinds: { value: ContentKind; label: string }[] = [
   { value: "testimonials", label: "Testimonial" },
 ];
 
+/**
+ * The editor labels follow the collection, because every collection reuses
+ * the same Appwrite attributes for a different purpose. Keeping the labels
+ * aligned with the public model means what an editor types is exactly what
+ * the website renders.
+ */
+type FieldSpec = {
+  title: string;
+  titlePlaceholder: string;
+  category: string;
+  categoryPlaceholder: string;
+  description: string;
+  descriptionPlaceholder: string;
+  body: string;
+  bodyPlaceholder: string;
+  url: string | null;
+  urlPlaceholder: string;
+  website: string | null;
+  websitePlaceholder: string;
+  tags: string | null;
+  tagsPlaceholder: string;
+  icon: string | null;
+  iconPlaceholder: string;
+};
+
+const fieldSpecs: Record<ContentKind, FieldSpec> = {
+  projects: {
+    title: "Project Name *",
+    titlePlaceholder: "e.g. NextGen SaaS Platform",
+    category: "Category",
+    categoryPlaceholder: "fullstack, frontend, backend or saas",
+    description: "Short Summary *",
+    descriptionPlaceholder: "One or two lines about what this project does...",
+    body: "Impact / Outcome",
+    bodyPlaceholder: "e.g. Cut infrastructure cost by 40% while doubling throughput",
+    url: "Live / Demo URL",
+    urlPlaceholder: "https://your-app.com",
+    website: "Repository URL",
+    websitePlaceholder: "https://github.com/you/project",
+    tags: "Stack (comma separated)",
+    tagsPlaceholder: "React, Next.js, PostgreSQL, Docker",
+    icon: null,
+    iconPlaceholder: "",
+  },
+  articles: {
+    title: "Article Title *",
+    titlePlaceholder: "e.g. Shipping calm systems",
+    category: "Category",
+    categoryPlaceholder: "engineering, design or product",
+    description: "Excerpt *",
+    descriptionPlaceholder: "The short summary shown on the journal page...",
+    body: "Article Body / Markdown",
+    bodyPlaceholder: "The full article...",
+    url: "Article URL",
+    urlPlaceholder: "https://",
+    website: null,
+    websitePlaceholder: "",
+    tags: "Tags (comma separated)",
+    tagsPlaceholder: "reliability, api, devops",
+    icon: null,
+    iconPlaceholder: "",
+  },
+  gallery: {
+    title: "Image Title *",
+    titlePlaceholder: "e.g. Aurora dashboard",
+    category: "Album / Group",
+    categoryPlaceholder: "ui, motion, branding",
+    description: "Caption *",
+    descriptionPlaceholder: "A short caption for this piece...",
+    body: "Notes",
+    bodyPlaceholder: "Any extra detail about this image...",
+    url: null,
+    urlPlaceholder: "",
+    website: null,
+    websitePlaceholder: "",
+    tags: null,
+    tagsPlaceholder: "",
+    icon: null,
+    iconPlaceholder: "",
+  },
+  tools: {
+    title: "Tool Name *",
+    titlePlaceholder: "e.g. Figma",
+    category: "Group",
+    categoryPlaceholder: "frontend, backend, databases, devops or tools",
+    description: "Description *",
+    descriptionPlaceholder: "What this tool is used for...",
+    body: "Notes",
+    bodyPlaceholder: "Any extra detail...",
+    url: null,
+    urlPlaceholder: "",
+    website: "Website URL",
+    websitePlaceholder: "https://figma.com",
+    tags: "Tags (comma separated)",
+    tagsPlaceholder: "design, prototyping",
+    icon: "Icon Name",
+    iconPlaceholder: "Code, Layout, Terminal",
+  },
+  experience: {
+    title: "Role / Title *",
+    titlePlaceholder: "e.g. Full-Stack Engineer & DevOps Architect",
+    category: "Year",
+    categoryPlaceholder: "2024 — Present",
+    description: "Company *",
+    descriptionPlaceholder: "e.g. Independent / Consulting",
+    body: "What you did *",
+    bodyPlaceholder: "The scope, the stack and the impact...",
+    url: null,
+    urlPlaceholder: "",
+    website: null,
+    websitePlaceholder: "",
+    tags: "Highlights (comma separated)",
+    tagsPlaceholder: "Delivered 12+ production systems, Architected APIs handling 50M+ calls/month",
+    icon: null,
+    iconPlaceholder: "",
+  },
+  services: {
+    title: "Service Title *",
+    titlePlaceholder: "e.g. Full-Stack Web Applications",
+    category: "Service Group",
+    categoryPlaceholder: "engineering, design, devops",
+    description: "Description *",
+    descriptionPlaceholder: "What the client gets from this service...",
+    body: "Details / What's included",
+    bodyPlaceholder: "The deliverables, the process, the timeline...",
+    url: null,
+    urlPlaceholder: "",
+    website: null,
+    websitePlaceholder: "",
+    tags: null,
+    tagsPlaceholder: "",
+    icon: "Icon Name",
+    iconPlaceholder: "Globe, Layers, Zap, Container",
+  },
+  testimonials: {
+    title: "Name *",
+    titlePlaceholder: "e.g. Sarah Chen",
+    category: "Role",
+    categoryPlaceholder: "CTO",
+    description: "Company *",
+    descriptionPlaceholder: "e.g. Nexus Technologies",
+    body: "Quote *",
+    bodyPlaceholder: "What the client said about working together...",
+    url: null,
+    urlPlaceholder: "",
+    website: null,
+    websitePlaceholder: "",
+    tags: null,
+    tagsPlaceholder: "",
+    icon: "Avatar Initials",
+    iconPlaceholder: "SC",
+  },
+};
+
 const ADMIN_THEME_KEY = "bipul-admin-theme";
 
 /** The admin console ships dark by default; the public site keeps its own theme. */
@@ -179,6 +333,7 @@ export function AdminStudio() {
   // the public site, and the two never fight over the document class list.
   useEffect(() => {
     applyAdminTheme(isDarkMode);
+    document.body.style.background = isDarkMode ? "#0a0a0b" : "#ffffff";
     window.dispatchEvent(new CustomEvent(THEME_CHANGE_EVENT, { detail: isDarkMode }));
   }, [isDarkMode]);
 
@@ -414,6 +569,7 @@ export function AdminStudio() {
   }
 
   const activeLabel = contentKinds.find((item) => item.value === kind)?.label || "Dashboard";
+  const spec = fieldSpecs[kind];
 
   return (
     <div id="admin" className="flex min-h-screen w-full flex-col bg-background text-foreground antialiased md:flex-row">
@@ -612,99 +768,101 @@ export function AdminStudio() {
             {/* Form */}
             <form onSubmit={handleSubmit} className="grid min-w-0 gap-4 border-b border-border/60 pb-8 md:grid-cols-2">
               <label className="text-xs font-medium text-muted-foreground">
-                Title / Name *
+                {spec.title}
                 <input
                   required
                   value={form.title}
                   onChange={(event) => updateForm("title", event.target.value)}
-                  placeholder="e.g. NextGen SaaS Platform"
+                  placeholder={spec.titlePlaceholder}
                   className={fieldClass}
                 />
               </label>
 
               <label className="text-xs font-medium text-muted-foreground">
-                Category / Role / Slug
+                {spec.category}
                 <input
                   value={form.category}
                   onChange={(event) => updateForm("category", event.target.value)}
-                  placeholder="e.g. saas, frontend, engineering"
+                  placeholder={spec.categoryPlaceholder}
                   className={fieldClass}
                 />
               </label>
 
               <label className="text-xs font-medium text-muted-foreground md:col-span-2">
-                Description / Summary *
+                {spec.description}
                 <textarea
                   required
                   value={form.description}
                   onChange={(event) => updateForm("description", event.target.value)}
                   rows={3}
-                  placeholder="Short overview or excerpt..."
+                  placeholder={spec.descriptionPlaceholder}
                   className={fieldClass}
                 />
               </label>
 
-              {(kind === "articles" || kind === "experience" || kind === "testimonials" || kind === "services") && (
-                <label className="text-xs font-medium text-muted-foreground md:col-span-2">
-                  {kind === "articles" ? "Article Body / Markdown" : "Extended Details / Notes"}
-                  <textarea
-                    value={form.body}
-                    onChange={(event) => updateForm("body", event.target.value)}
-                    rows={6}
-                    placeholder="Full content, notes, or highlights..."
-                    className={`${fieldClass} font-mono text-xs`}
-                  />
-                </label>
-              )}
-
-              <label className="text-xs font-medium text-muted-foreground">
-                Public / Live URL
-                <input
-                  type="url"
-                  value={form.url}
-                  onChange={(event) => updateForm("url", event.target.value)}
-                  placeholder="https://..."
-                  className={fieldClass}
+              <label className="text-xs font-medium text-muted-foreground md:col-span-2">
+                {spec.body}
+                <textarea
+                  value={form.body}
+                  onChange={(event) => updateForm("body", event.target.value)}
+                  rows={5}
+                  placeholder={spec.bodyPlaceholder}
+                  className={`${fieldClass} font-mono text-xs`}
                 />
               </label>
 
-              {kind === "tools" && (
+              {spec.url && (
                 <label className="text-xs font-medium text-muted-foreground">
-                  Tool Website URL
+                  {spec.url}
                   <input
                     type="url"
-                    value={form.website}
-                    onChange={(event) => updateForm("website", event.target.value)}
-                    placeholder="https://..."
+                    value={form.url}
+                    onChange={(event) => updateForm("url", event.target.value)}
+                    placeholder={spec.urlPlaceholder}
                     className={fieldClass}
                   />
                 </label>
               )}
 
-              <label className="text-xs font-medium text-muted-foreground">
-                Tags (comma separated)
-                <input
-                  value={form.tags}
-                  onChange={(event) => updateForm("tags", event.target.value)}
-                  placeholder="React, TypeScript, Next.js"
-                  className={fieldClass}
-                />
-              </label>
-
-              {kind === "tools" && (
+              {spec.website && (
                 <label className="text-xs font-medium text-muted-foreground">
-                  Icon Name / SVG URL
+                  {spec.website}
+                  <input
+                    type="url"
+                    value={form.website}
+                    onChange={(event) => updateForm("website", event.target.value)}
+                    placeholder={spec.websitePlaceholder}
+                    className={fieldClass}
+                  />
+                </label>
+              )}
+
+              {spec.tags && (
+                <label className="text-xs font-medium text-muted-foreground">
+                  {spec.tags}
+                  <input
+                    value={form.tags}
+                    onChange={(event) => updateForm("tags", event.target.value)}
+                    placeholder={spec.tagsPlaceholder}
+                    className={fieldClass}
+                  />
+                </label>
+              )}
+
+              {spec.icon && (
+                <label className="text-xs font-medium text-muted-foreground">
+                  {spec.icon}
                   <input
                     value={form.icon}
                     onChange={(event) => updateForm("icon", event.target.value)}
-                    placeholder="Code, Layout, Terminal"
+                    placeholder={spec.iconPlaceholder}
                     className={fieldClass}
                   />
                 </label>
               )}
 
               {/* Image upload */}
-              <label className="flex cursor-pointer flex-col items-start justify-between gap-3 rounded-xl border border-dashed border-border/80 p-4 text-xs text-muted-foreground transition-colors hover:border-primary sm:flex-row sm:items-center dark:hover:border-white/40">
+              <label className="flex cursor-pointer flex-col items-start justify-between gap-3 rounded-xl border border-dashed border-border/80 p-4 text-xs text-muted-foreground transition-colors hover:border-primary sm:flex-row sm:items-center md:col-span-2 dark:hover:border-white/40">
                 <span className="flex min-w-0 items-center gap-2.5">
                   <Upload className="h-4 w-4 shrink-0 text-primary dark:text-white" />
                   <span className="min-w-0 break-words font-medium text-foreground dark:text-white">

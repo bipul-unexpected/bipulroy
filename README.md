@@ -28,10 +28,10 @@ Create one database and these collections in the Appwrite console:
 | `services` | `title` string, `description` string, `category` string, `tags` string array, `published` boolean, `featured` boolean |
 | `testimonials` | `title` string, `description` string, `body` string, `category` string, `published` boolean, `featured` boolean |
 
-The admin Function reads each collection's attributes before a write and drops
-unknown fields, so older collections that use `name` instead of `title` remain
-compatible. For predictable labels and editing, use the attribute names above
-when creating or migrating collections.
+See the table in
+`functions/admin-content/README.md` for the attributes each collection needs.
+Give every collection **public read permission** so the public site can render
+it, and keep write/delete restricted to the Function's server API key.
 
 Create a Storage bucket for portfolio media and set its file read permission
 to `Any` if images are public. Keep file creation restricted to authenticated
@@ -196,6 +196,26 @@ generated UI primitives to add application-specific data access.
 The dashboard overview shows the live record count for every collection
 (projects, articles, gallery, tools, experience, services, testimonials) plus
 the published count and the combined total.
+
+The editor labels follow the collection, so what an editor types is exactly
+what the website renders: for a project the fields are *Name*, *Category*,
+*Summary*, *Impact / Outcome* and *Stack*; for a testimonial they are *Name*,
+*Role*, *Company* and *Quote*.
+
+The public site reads the published records of each collection and lists them
+**above** the bundled showcase in `src/data/portfolio.ts`, so new work appears
+first while the curated entries stay visible. When Appwrite is unreachable or
+a collection is empty the bundled content is used instead, so the site never
+renders blank.
+
+Two collection settings are required for this to work:
+
+1. **Public read permission** on every collection (and on the Storage bucket).
+   Without it the browser gets `401` and the dashboard shows zero records even
+   though writes succeed. See `functions/admin-content/README.md`.
+2. **A redeployed Function.** The `list` operation is what lets the studio read
+   drafts; until the Function is redeployed the studio falls back to a direct
+   read.
 
 The admin Function reads the live attribute keys of the target collection
 before every write and drops anything the collection does not declare. If the

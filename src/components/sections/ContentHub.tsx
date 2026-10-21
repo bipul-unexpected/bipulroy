@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { ArrowUpRight, BookOpen, Camera, Wrench } from "lucide-react";
 import { articles as fallbackArticles, projects as fallbackProjects, techStack } from "../../data/portfolio";
-import { listContent, type RemoteContent } from "../../lib/content";
+import { listPublishedContent, type RemoteContent } from "../../lib/content";
 
 function ContentCard({ children }: { children: ReactNode }) {
   return (
@@ -21,7 +21,12 @@ export function ContentHub() {
 
   useEffect(() => {
     let mounted = true;
-    Promise.all([listContent("articles"), listContent("gallery"), listContent("tools"), listContent("projects")])
+    Promise.all([
+      listPublishedContent("articles"),
+      listPublishedContent("gallery"),
+      listPublishedContent("tools"),
+      listPublishedContent("projects"),
+    ])
       .then(([remoteArticles, remoteGallery, remoteTools, remoteProjects]) => {
         if (!mounted) return;
         setArticles(remoteArticles);

@@ -70,18 +70,76 @@ function getCollectionId(kind: ContentKind) {
   return collectionId;
 }
 
-export async function listContent(kind: ContentKind, options: { includeUnpublished?: boolean } = {}) {
-  if (!appwriteIsConfigured) return [] as RemoteContent[];
+/**
+ * Direct read with the browser's anonymous client. Used as a fallback and
+ * for the public site, where the collections are readable by anyone.
+ */
+async function listDirect(
+  kind: ContentKind,
+  options: { includeUnpublished?: boolean } = {},
+): Promise<RemoteContent[]> {
+  if (!appwriteIsConfigured) return [];
 
   const queries = options.includeUnpublished
-    ? [Query.orderDesc("$createdAt")]
-    : [Query.equal("published", true), Query.orderDesc("$createdAt")];
+    ? [Query.orderDesc("$createdAt"), Query.limit(100)]
+    : [Query.equal("published", true), Query.orderDesc("$createdAt"), Query.limit(100)];
   const response = await databases.listDocuments(
     env.VITE_APPWRITE_DATABASE_ID as string,
     getCollectionId(kind),
     queries,
   );
   return response.documents as unknown as RemoteContent[];
+}
+
+/**
+ * Public read. Only published documents, read straight from the browser with
+ * the anonymous client. Collections run with document-level security, so a
+ * published record is readable by anyone and a draft is not.
+ */
+export async function listPublishedContent(kind: ContentKind): Promise<RemoteContent[]> {
+  if (!appwriteIsConfigured) return [];
+
+  try {
+    return await listDirect(kind);
+  } catch (error) {
+    // The public site must keep rendering when Appwrite is unreachable, so the
+    // caller falls back to the bundled content instead of showing an error.
+    console.warn(`[content] Public read for "${kind}" failed:`, error);
+    return [];
+  }
+}
+
+/**
+ * Admin read. Routed through the Appwrite Function because the studio needs
+ * to see drafts too, and the browser's anonymous client cannot read them.
+ * Falls back to a direct read while a deployed Function predates the `list`
+ * operation, so the studio is never silently empty.
+ */
+export async function listContent(
+  kind: ContentKind,
+  options: { includeUnpublished?: boolean } = {},
+): Promise<RemoteContent[]> {
+  if (!appwriteIsConfigured) return [];
+
+  try {
+    return await adminRequest<RemoteContent[]>("list", { kind });
+  } catch (error) {
+    console.warn(`[content] Admin list for "${kind}" fell back to a direct read:`, error);
+    return listDirect(kind, { includeUnpublished: true });
+  }
+}
+
+/** Publish or unpublish a record without editing its content. */
+export async function setContentPublished(
+  kind: ContentKind,
+  documentId: string,
+  published: boolean,
+) {
+  if (!appwriteIsConfigured) {
+    throw new Error("Appwrite is not configured for this deployment.");
+  }
+
+  return adminRequest<RemoteContent>("publish", { kind, documentId, published });
 }
 
 function cleanContentData(data: Omit<RemoteContent, "$id" | "$createdAt">) {
