@@ -41,11 +41,20 @@ function collectionId(kind) {
 }
 
 async function schemaSafeData(databases, kind, data) {
-  const collection = await databases.getCollection(
-    process.env.APPWRITE_DATABASE_ID,
-    collectionId(kind),
-  );
-  const attributes = new Set((collection.attributes || []).map((attribute) => attribute.key));
+  let attributes = new Set();
+  try {
+    const collection = await databases.getCollection(
+      process.env.APPWRITE_DATABASE_ID,
+      collectionId(kind),
+    );
+    attributes = new Set((collection.attributes || []).map((attribute) => attribute.key));
+  } catch {
+    attributes = new Set([
+      "title", "name", "description", "excerpt", "body", "url", "website",
+      "category", "icon", "imageUrl", "imageFileId", "tags", "published", "featured"
+    ]);
+  }
+
   const input = data && typeof data === "object" ? data : {};
   const output = {};
 
@@ -55,12 +64,23 @@ async function schemaSafeData(databases, kind, data) {
     }
   }
 
-  if (!attributes.has("title") && attributes.has("name") && input.title) {
-    output.name = input.title;
+  if (!output.title && !output.name && (input.title || input.name)) {
+    const val = input.title || input.name;
+    if (attributes.has("title")) output.title = val;
+    else if (attributes.has("name")) output.name = val;
   }
-  if (!attributes.has("description") && attributes.has("excerpt") && input.description) {
-    output.excerpt = input.description;
+  if (!output.description && !output.excerpt && (input.description || input.excerpt)) {
+    const val = input.description || input.excerpt;
+    if (attributes.has("description")) output.description = val;
+    else if (attributes.has("excerpt")) output.excerpt = val;
   }
+
+  if (Object.keys(output).length === 0) {
+    if (attributes.has("title")) output.title = input.title || input.name || "Untitled";
+    else if (attributes.has("name")) output.name = input.title || input.name || "Untitled";
+    else if (attributes.has("published")) output.published = true;
+  }
+
   return output;
 }
 

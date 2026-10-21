@@ -1,19 +1,29 @@
 import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { useAuth, useUser, SignIn, UserButton } from "@clerk/react";
-import { BarChart3, CheckCircle2, Edit3, LayoutDashboard, Moon, Plus, RefreshCw, Search, Sun, Trash2, Upload, X, FolderKanban, FileText, Images, Wrench, BriefcaseBusiness, Handshake, Quote } from "lucide-react";
+import {
+  CheckCircle2,
+  Edit3,
+  Moon,
+  Plus,
+  RefreshCw,
+  Search,
+  Sun,
+  Trash2,
+  Upload,
+  X,
+  AlertCircle,
+  ExternalLink,
+} from "lucide-react";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Input } from "../ui/input";
-import { Separator } from "../ui/separator";
 import { THEME_CHANGE_EVENT } from "../../lib/theme";
 import { AppSidebar } from "../app-sidebar";
 import { ChartAreaInteractive } from "../chart-area-interactive";
 import { DataTable } from "../data-table";
 import { SectionCards } from "../section-cards";
 import { SiteHeader } from "../site-header";
-import { SidebarInset, SidebarProvider } from "../ui/sidebar";
 import {
   createContent,
   deleteContentImage,
@@ -51,8 +61,16 @@ type FormState = {
 };
 
 const emptyForm: FormState = {
-  title: "", description: "", body: "", url: "", website: "", tags: "",
-  category: "", icon: "", published: true, featured: false,
+  title: "",
+  description: "",
+  body: "",
+  url: "",
+  website: "",
+  tags: "",
+  category: "",
+  icon: "",
+  published: true,
+  featured: false,
 };
 
 function toForm(item: RemoteContent): FormState {
@@ -71,10 +89,13 @@ function toForm(item: RemoteContent): FormState {
 }
 
 function toPayload(form: FormState, imageUrl?: string, imageFileId?: string) {
+  const titleVal = form.title.trim();
+  const descVal = form.description.trim();
   return {
-    title: form.title.trim(),
-    description: form.description.trim(),
-    excerpt: form.description.trim(),
+    title: titleVal,
+    name: titleVal,
+    description: descVal,
+    excerpt: descVal,
     body: form.body.trim() || undefined,
     url: form.url.trim() || undefined,
     website: form.website.trim() || undefined,
@@ -94,16 +115,23 @@ export function AdminStudio() {
   const [kind, setKind] = useState<ContentKind>("projects");
   const [records, setRecords] = useState<RemoteContent[]>([]);
   const [collectionCounts, setCollectionCounts] = useState<Record<ContentKind, number>>({
-    projects: 0, articles: 0, gallery: 0, tools: 0, experience: 0, services: 0, testimonials: 0,
+    projects: 0,
+    articles: 0,
+    gallery: 0,
+    tools: 0,
+    experience: 0,
+    services: 0,
+    testimonials: 0,
   });
   const [form, setForm] = useState<FormState>(emptyForm);
   const [image, setImage] = useState<File | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [status, setStatus] = useState("");
+  const [statusType, setStatusType] = useState<"success" | "error">("success");
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() =>
     typeof document !== "undefined" && document.documentElement.classList.contains("dark"),
   );
@@ -121,60 +149,93 @@ export function AdminStudio() {
       setRecords(await listContent(selectedKind, { includeUnpublished: true }));
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Unable to load Appwrite content.");
+      setStatusType("error");
     } finally {
       setLoading(false);
     }
-
   }
 
   async function loadCollectionCounts() {
-    const entries = await Promise.all(
-      contentKinds.map(async ({ value }) => [value, (await listContent(value, { includeUnpublished: true })).length] as const),
-    );
-    setCollectionCounts(Object.fromEntries(entries) as Record<ContentKind, number>);
+    try {
+      const entries = await Promise.all(
+        contentKinds.map(async ({ value }) => {
+          try {
+            const list = await listContent(value, { includeUnpublished: true });
+            return [value, list.length] as const;
+          } catch {
+            return [value, 0] as const;
+          }
+        }),
+      );
+      setCollectionCounts(Object.fromEntries(entries) as Record<ContentKind, number>);
+    } catch {
+      // Ignore count fetch errors
+    }
   }
 
   useEffect(() => {
     if (canManage) {
       void loadRecords();
-      void loadCollectionCounts().catch((error) => setStatus(error instanceof Error ? error.message : "Unable to load dashboard totals."));
+      void loadCollectionCounts();
     }
-  // The selected kind is intentionally handled by the explicit selector below.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canManage]);
 
-  const modeLabel = useMemo(() => editingId ? "Update content" : "Publish content", [editingId]);
+  const modeLabel = useMemo(() => (editingId ? "Update Record" : "Publish Record"), [editingId]);
+
   const filteredRecords = useMemo(() => {
     const query = search.trim().toLowerCase();
     if (!query) return records;
-    return records.filter((item) => `${item.title || item.name} ${item.description || item.excerpt} ${item.category || ""}`.toLowerCase().includes(query));
+    return records.filter((item) =>
+      `${item.title || item.name || ""} ${item.description || item.excerpt || ""} ${item.category || ""}`
+        .toLowerCase()
+        .includes(query),
+    );
   }, [records, search]);
-  const dashboardRows = useMemo(() => filteredRecords.map((item, index) => ({
-    id: index + 1,
-    documentId: item.$id,
-    header: item.title || item.name || "Untitled",
-    type: contentKinds.find((entry) => entry.value === kind)?.label || kind,
-    status: item.published === false ? "Draft" : "Published",
-    target: item.category || "Portfolio",
-    limit: item.featured ? "Featured" : "Standard",
-    reviewer: item.$createdAt ? new Date(item.$createdAt).toLocaleDateString() : "—",
-  })), [filteredRecords, kind]);
-  const dashboardStats = collectionCounts;
+
+  const dashboardRows = useMemo(
+    () =>
+      filteredRecords.map((item, index) => ({
+        id: index + 1,
+        documentId: item.$id,
+        header: item.title || item.name || "Untitled",
+        type: contentKinds.find((entry) => entry.value === kind)?.label || kind,
+        status: item.published === false ? "Draft" : "Published",
+        target: item.category || "Portfolio",
+        limit: item.featured ? "Featured" : "Standard",
+        reviewer: item.$createdAt ? new Date(item.$createdAt).toLocaleDateString() : "—",
+      })),
+    [filteredRecords, kind],
+  );
+
   const chartData = useMemo(() => {
     const counts = new Map<string, number>();
     records.forEach((item) => {
       const date = item.$createdAt?.slice(0, 10);
       if (date) counts.set(date, (counts.get(date) || 0) + 1);
     });
-    return Array.from(counts.entries()).sort(([a], [b]) => a.localeCompare(b)).map(([date, count]) => ({
-      date, desktop: count, mobile: 0,
-    }));
+    return Array.from(counts.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([date, count]) => ({
+        date,
+        desktop: count,
+        mobile: 0,
+      }));
   }, [records]);
 
   function toggleAdminTheme() {
     const next = !isDarkMode;
     setIsDarkMode(next);
     localStorage.setItem("bipul-theme", next ? "dark" : "light");
+    if (next) {
+      document.documentElement.classList.add("dark");
+      document.documentElement.classList.remove("light");
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else {
+      document.documentElement.classList.add("light");
+      document.documentElement.classList.remove("dark");
+      document.documentElement.setAttribute("data-theme", "light");
+    }
     window.dispatchEvent(new CustomEvent(THEME_CHANGE_EVENT, { detail: next }));
   }
 
@@ -186,7 +247,7 @@ export function AdminStudio() {
     setEditingId(item.$id);
     setForm(toForm(item));
     setImage(null);
-    window.scrollTo({ top: document.getElementById("admin")?.offsetTop || 0, behavior: "smooth" });
+    document.getElementById("content-editor")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function resetForm() {
@@ -203,21 +264,29 @@ export function AdminStudio() {
       const uploaded = image ? await uploadContentImage(image) : undefined;
       const payload = toPayload(form, uploaded?.url, uploaded?.fileId);
       const previous = editingId ? records.find((record) => record.$id === editingId) : undefined;
-      if (editingId) await updateContent(kind, editingId, payload);
-      else await createContent(kind, payload);
+
+      if (editingId) {
+        await updateContent(kind, editingId, payload);
+      } else {
+        await createContent(kind, payload);
+      }
+
       if (previous?.imageFileId && uploaded?.fileId && previous.imageFileId !== uploaded.fileId) {
         try {
           await deleteContentImage(previous.imageFileId);
         } catch (error) {
-          console.warn("Content updated, but its previous Appwrite image could not be removed:", error);
+          console.warn("Content updated, but previous image could not be removed:", error);
         }
       }
+
       resetForm();
       await loadRecords();
       await loadCollectionCounts();
       setStatus(editingId ? "Content updated successfully." : "Content published successfully.");
+      setStatusType("success");
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Appwrite operation failed. Check permissions and attributes.");
+      setStatus(error instanceof Error ? error.message : "Appwrite operation failed.");
+      setStatusType("error");
     } finally {
       setBusy(false);
     }
@@ -240,43 +309,59 @@ export function AdminStudio() {
       await loadRecords();
       await loadCollectionCounts();
       setStatus("Content deleted successfully.");
+      setStatusType("success");
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Delete failed. Check Appwrite permissions.");
+      setStatus(error instanceof Error ? error.message : "Delete failed.");
+      setStatusType("error");
     } finally {
       setBusy(false);
     }
   }
 
   if (!isLoaded) return null;
+
   if (!isSignedIn) {
     return (
-      <section id="admin" className="relative py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6"><div className="glass-panel flex flex-col items-start justify-between gap-5 rounded-2xl p-5 sm:flex-row sm:items-center sm:p-7">
-          <div><p className="text-xs font-mono uppercase tracking-[0.18em] text-primary">Private studio</p><h2 className="mt-2 text-xl font-bold text-foreground">Manage the portfolio securely.</h2><p className="mt-1 text-sm text-muted-foreground">Sign in with Clerk to access the publishing workspace.</p></div>
+      <section id="admin" className="relative min-h-screen flex items-center justify-center p-4 bg-background">
+        <div className="w-full max-w-md rounded-2xl border border-border/70 bg-card p-6 sm:p-8 shadow-xl">
+          <div className="mb-6 text-center">
+            <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-mono font-semibold uppercase tracking-wider text-primary dark:bg-white/10 dark:text-white">
+              Private Studio
+            </span>
+            <h2 className="mt-3 text-2xl font-bold tracking-tight text-foreground dark:text-white">
+              Portfolio Admin Studio
+            </h2>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Sign in with your administrator Clerk account to manage content.
+            </p>
+          </div>
           <SignIn routing="hash" signUpUrl="" />
-        </div></div>
+        </div>
       </section>
     );
   }
+
   if (!canManage) {
     return (
-      <section id="admin" className="relative py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="glass-panel rounded-2xl p-5 sm:p-7">
-            <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <p className="text-xs font-mono uppercase tracking-[0.18em] text-amber-600">Admin access required</p>
-                <h2 className="mt-2 text-2xl font-bold text-foreground">Your Clerk account is signed in, but it is not an administrator.</h2>
-                <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-                  Configure the owner Clerk user ID in the Site environment or add the exact public metadata below, then sign out and sign in again. This dashboard intentionally stays hidden from non-admin accounts.
-                </p>
-                <pre className="mt-4 w-fit rounded-xl border border-border bg-background/70 px-4 py-3 font-mono text-sm text-foreground">{`{ "role": "admin" }`}</pre>
-                <p className="mt-3 text-xs text-muted-foreground">
-                  Clerk Dashboard → Users → your account → Public metadata → Save.
-                </p>
-              </div>
-              <UserButton />
+      <section id="admin" className="relative min-h-screen flex items-center justify-center p-4 bg-background">
+        <div className="w-full max-w-lg rounded-2xl border border-border/70 bg-card p-6 sm:p-8 shadow-xl">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="text-xs font-mono uppercase tracking-[0.18em] text-amber-500 font-semibold">
+                Admin Access Required
+              </p>
+              <h2 className="mt-2 text-xl sm:text-2xl font-bold text-foreground dark:text-white">
+                Account is not an administrator
+              </h2>
+              <p className="mt-2 text-xs sm:text-sm leading-relaxed text-muted-foreground">
+                Your Clerk account is authenticated, but administrator privileges are required.
+                Add public metadata role=admin in your Clerk dashboard or set your Clerk user ID in VITE_CLERK_ADMIN_USER_ID.
+              </p>
+              <pre className="mt-4 w-fit rounded-xl border border-border bg-background/80 px-4 py-2 font-mono text-xs text-foreground dark:text-white">
+                {`{ "role": "admin" }`}
+              </pre>
             </div>
+            <UserButton />
           </div>
         </div>
       </section>
@@ -284,17 +369,9 @@ export function AdminStudio() {
   }
 
   return (
-    <SidebarProvider
-      open={sidebarOpen}
-      onOpenChange={setSidebarOpen}
-      style={{
-        "--sidebar-width": "calc(var(--spacing) * 72)",
-        "--header-height": "calc(var(--spacing) * 12)",
-      } as React.CSSProperties}
-    >
-    <section id="admin" className="shadcn-admin-theme min-h-screen w-full min-w-0 overflow-x-hidden bg-background text-foreground">
+    <div id="admin" className="min-h-screen w-full bg-background text-foreground flex flex-col md:flex-row antialiased">
+      {/* Sidebar: sleek desktop + full mobile drawer */}
       <AppSidebar
-        variant="inset"
         collections={contentKinds}
         activeCollection={kind}
         onCollectionChange={(value) => {
@@ -303,63 +380,443 @@ export function AdminStudio() {
           resetForm();
           void loadRecords(nextKind);
         }}
-        user={{ name: user.fullName || "Bipul Roy", email: user.primaryEmailAddress?.emailAddress || "", avatar: user.imageUrl }}
+        counts={collectionCounts}
+        user={{
+          name: user.fullName || "Bipul Roy",
+          email: user.primaryEmailAddress?.emailAddress || "",
+          avatar: user.imageUrl,
+        }}
+        openMobile={mobileMenuOpen}
+        onCloseMobile={() => setMobileMenuOpen(false)}
+        isDarkMode={isDarkMode}
+        onToggleTheme={toggleAdminTheme}
       />
-      <SidebarInset className="min-w-0">
-      <SiteHeader title={contentKinds.find((item) => item.value === kind)?.label || "Dashboard"} actions={<><Button variant="outline" size="icon" onClick={toggleAdminTheme} aria-label={isDarkMode ? "Use light mode" : "Use dark mode"}>{isDarkMode ? <Sun /> : <Moon />}</Button><UserButton /></>} />
-      <div className="@container/main flex min-w-0 flex-1 flex-col gap-2">
-        <div className="flex min-w-0 flex-col gap-4 p-3 sm:gap-5 sm:p-5 lg:gap-6 lg:p-6">
-        <SectionCards stats={dashboardStats} />
-        <div className="px-0"><ChartAreaInteractive data={chartData} /></div>
-        <DataTable
-          data={dashboardRows}
-          onEdit={(documentId) => {
-            const item = records.find((record) => record.$id === documentId);
-            if (item) startEdit(item);
-          }}
-          onDelete={(documentId) => {
-            const item = records.find((record) => record.$id === documentId);
-            if (item) void handleDelete(item);
-          }}
-          onCreate={() => {
-            resetForm();
-            document.getElementById("content-editor")?.scrollIntoView({ behavior: "smooth", block: "start" });
-          }}
+
+      {/* Main Content Area */}
+      <div className="flex flex-1 flex-col min-w-0 w-full min-h-screen bg-background">
+        <SiteHeader
+          title={contentKinds.find((item) => item.value === kind)?.label || "Dashboard"}
+          onToggleSidebar={() => setMobileMenuOpen((prev) => !prev)}
+          actions={
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={toggleAdminTheme}
+                aria-label={isDarkMode ? "Use light mode" : "Use dark mode"}
+                className="h-9 w-9 rounded-xl border-border/70 hover:bg-accent dark:hover:border-white/20"
+              >
+                {isDarkMode ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-indigo-500" />}
+              </Button>
+              <UserButton />
+            </div>
+          }
         />
-        </div>
-        <div id="content-editor" className="mx-3 mb-6 rounded-xl border border-border/70 bg-card p-4 shadow-sm sm:mx-5 sm:p-6 lg:mx-6">
-        <div className="mb-7 border-b border-border/60 pb-6"><p className="text-xs font-mono uppercase tracking-[0.18em] text-primary">Content editor</p><h2 className="mt-2 text-2xl font-bold text-foreground">Manage {contentKinds.find((item) => item.value === kind)?.label.toLowerCase()} content</h2><p className="mt-1 text-sm text-muted-foreground">Create, publish, update, and organize the content shown on your portfolio.</p></div>
-        <div className="mb-6 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-xl border border-border/70 bg-background/40 p-4"><p className="text-xs text-muted-foreground">Current collection</p><p className="mt-1 font-semibold text-foreground">{contentKinds.find((item) => item.value === kind)?.label}</p></div>
-          <div className="rounded-xl border border-border/70 bg-background/40 p-4"><p className="text-xs text-muted-foreground">Records loaded</p><p className="mt-1 font-semibold text-foreground">{records.length}</p></div>
-          <div className="rounded-xl border border-border/70 bg-background/40 p-4"><p className="text-xs text-muted-foreground">Published</p><p className="mt-1 font-semibold text-emerald-600">{records.filter((item) => item.published !== false).length}</p></div>
-        </div>
-        <div className="mb-5 flex flex-wrap items-center gap-2">
-          <div className="relative min-w-[220px] flex-1"><Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" /><Input aria-label="Search records" placeholder="Search records..." value={search} onChange={(event) => setSearch(event.target.value)} className="h-10 pl-9" /></div>
-          <button type="button" onClick={() => void loadRecords()} className="inline-flex items-center gap-1 rounded-xl bg-secondary px-3 py-2.5 text-xs text-muted-foreground" disabled={loading}><RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} /> Refresh</button>
-        </div>
-        <form onSubmit={handleSubmit} className="grid min-w-0 gap-4 border-b border-border/60 pb-8 md:grid-cols-2">
-          <label className="text-sm text-muted-foreground">Title<input required value={form.title} onChange={(event) => updateForm("title", event.target.value)} className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>
-          <label className="text-sm text-muted-foreground">Category / slug<input value={form.category} onChange={(event) => updateForm("category", event.target.value)} placeholder="saas, frontend, engineering" className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>
-          <label className="text-sm text-muted-foreground md:col-span-2">Description<textarea required value={form.description} onChange={(event) => updateForm("description", event.target.value)} rows={3} className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>
-          {(kind === "articles" || kind === "experience" || kind === "testimonials") && <label className="text-sm text-muted-foreground md:col-span-2">{kind === "articles" ? "Article body" : "Additional details"}<textarea value={form.body} onChange={(event) => updateForm("body", event.target.value)} rows={6} className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 font-mono text-sm text-foreground" /></label>}
-          <label className="text-sm text-muted-foreground">Public URL<input type="url" value={form.url} onChange={(event) => updateForm("url", event.target.value)} placeholder="https://" className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>
-          {kind === "tools" && <label className="text-sm text-muted-foreground">Tool website<input type="url" value={form.website} onChange={(event) => updateForm("website", event.target.value)} placeholder="https://" className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>}
-          <label className="text-sm text-muted-foreground">Tags, comma separated<input value={form.tags} onChange={(event) => updateForm("tags", event.target.value)} className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>
-          {kind === "tools" && <label className="text-sm text-muted-foreground">Icon name / URL<input value={form.icon} onChange={(event) => updateForm("icon", event.target.value)} className="mt-2 w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-foreground" /></label>}
-          <label className="md:col-span-2 flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground"><Upload className="h-4 w-4 text-primary" /><span>{image?.name || "Upload or replace image (optional)"}</span><input type="file" accept="image/*" onChange={(event) => setImage(event.target.files?.[0] || null)} className="sr-only" /></label>
-          <div className="flex flex-wrap gap-4 text-sm text-muted-foreground md:col-span-2"><label className="inline-flex items-center gap-2"><input type="checkbox" checked={form.published} onChange={(event) => updateForm("published", event.target.checked)} /> Published</label><label className="inline-flex items-center gap-2"><input type="checkbox" checked={form.featured} onChange={(event) => updateForm("featured", event.target.checked)} /> Featured</label></div>
-          <div className="flex flex-wrap items-center gap-3 md:col-span-2"><button disabled={busy} className="btn-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold disabled:opacity-60"><Plus className="h-4 w-4" />{busy ? "Saving..." : modeLabel}</button>{editingId && <button type="button" onClick={resetForm} className="inline-flex items-center gap-2 rounded-full bg-secondary px-5 py-3 text-sm font-semibold text-muted-foreground"><X className="h-4 w-4" />Cancel edit</button>}{status && <p role="status" className="inline-flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="h-4 w-4 text-primary" />{status}</p>}</div>
-        </form>
-        <div className="mt-7 space-y-2">
-          <h3 className="text-sm font-semibold text-foreground">{contentKinds.find((item) => item.value === kind)?.label} records ({records.length})</h3>
-          {filteredRecords.length === 0 && <p className="rounded-xl border border-dashed border-border p-5 text-sm text-muted-foreground">{loading ? "Loading records..." : search ? "No matching records." : "No records yet."}</p>}
-          {filteredRecords.map((item) => <div key={item.$id} className="flex flex-col gap-3 rounded-xl border border-border/70 bg-background/30 p-4 sm:flex-row sm:items-center sm:justify-between"><div className="min-w-0"><p className="truncate font-semibold text-foreground">{item.title || item.name}</p><p className="mt-1 line-clamp-1 text-xs text-muted-foreground">{item.description || item.excerpt}</p><Badge variant="outline" className="mt-2">{item.published === false ? "Draft" : "Published"}</Badge></div><div className="flex shrink-0 gap-2"><Button type="button" variant="outline" size="sm" onClick={() => startEdit(item)}><Edit3 className="h-3.5 w-3.5" /> Edit</Button><Button type="button" variant="destructive" size="sm" onClick={() => void handleDelete(item)} disabled={busy}><Trash2 className="h-3.5 w-3.5" /> Delete</Button></div></div>)}
-        </div>
+
+        <main className="flex-1 p-3.5 sm:p-5 lg:p-7 max-w-7xl w-full mx-auto space-y-6">
+          {/* Status banner */}
+          {status && (
+            <div
+              className={`flex items-center justify-between gap-3 p-4 rounded-2xl border text-sm transition-all ${
+                statusType === "success"
+                  ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
+                  : "bg-destructive/10 border-destructive/30 text-destructive dark:text-red-400"
+              }`}
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                {statusType === "success" ? (
+                  <CheckCircle2 className="h-4 w-4 shrink-0" />
+                ) : (
+                  <AlertCircle className="h-4 w-4 shrink-0" />
+                )}
+                <span className="truncate">{status}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setStatus("")}
+                className="text-xs hover:opacity-75 focus:outline-none p-1"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          )}
+
+          {/* 1. Overview Section Cards: projects, testimonials, articles, gallery, tools, experience, services */}
+          <section className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-base font-bold tracking-tight text-foreground dark:text-white">
+                  Dashboard Overview
+                </h2>
+                <p className="text-xs text-muted-foreground">
+                  Quick metrics across all portfolio content collections. Click any card to manage.
+                </p>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  void loadRecords();
+                  void loadCollectionCounts();
+                }}
+                disabled={loading}
+                className="h-8 rounded-xl text-xs gap-1.5 text-muted-foreground hover:text-foreground dark:hover:text-white"
+              >
+                <RefreshCw className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} />
+                <span>Sync</span>
+              </Button>
+            </div>
+            <SectionCards
+              stats={collectionCounts}
+              activeKind={kind}
+              onSelectKind={(selectedKey) => {
+                const nextKind = selectedKey as ContentKind;
+                setKind(nextKind);
+                resetForm();
+                void loadRecords(nextKind);
+              }}
+            />
+          </section>
+
+          {/* 2. Interactive Activity Chart */}
+          <section className="space-y-2">
+            <ChartAreaInteractive data={chartData} />
+          </section>
+
+          {/* 3. Data Table */}
+          <section className="space-y-2">
+            <DataTable
+              data={dashboardRows}
+              onEdit={(documentId) => {
+                const item = records.find((record) => record.$id === documentId);
+                if (item) startEdit(item);
+              }}
+              onDelete={(documentId) => {
+                const item = records.find((record) => record.$id === documentId);
+                if (item) void handleDelete(item);
+              }}
+              onCreate={() => {
+                resetForm();
+                document.getElementById("content-editor")?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+            />
+          </section>
+
+          {/* 4. Content Editor Form */}
+          <section
+            id="content-editor"
+            className="rounded-2xl border border-border/70 bg-card p-4 sm:p-6 lg:p-7 shadow-sm transition-all"
+          >
+            <div className="mb-6 flex flex-col gap-2 border-b border-border/60 pb-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-primary dark:text-white font-semibold">
+                  Content Editor
+                </span>
+                <h3 className="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-foreground dark:text-white">
+                  Manage {contentKinds.find((item) => item.value === kind)?.label.toLowerCase()} content
+                </h3>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Create, publish, update, and organize the content displayed on your portfolio website.
+                </p>
+              </div>
+              {editingId && (
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20 text-xs py-1">
+                    Editing Mode
+                  </Badge>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={resetForm}
+                    className="h-8 rounded-xl text-xs"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            {/* Quick stats pills */}
+            <div className="mb-6 grid gap-2.5 grid-cols-2 sm:grid-cols-3">
+              <div className="rounded-xl border border-border/70 bg-background/50 p-3 sm:p-4">
+                <p className="text-[11px] text-muted-foreground">Selected Collection</p>
+                <p className="mt-1 font-semibold text-sm sm:text-base text-foreground dark:text-white">
+                  {contentKinds.find((item) => item.value === kind)?.label}
+                </p>
+              </div>
+              <div className="rounded-xl border border-border/70 bg-background/50 p-3 sm:p-4">
+                <p className="text-[11px] text-muted-foreground">Total Records</p>
+                <p className="mt-1 font-semibold text-sm sm:text-base text-foreground dark:text-white">
+                  {records.length}
+                </p>
+              </div>
+              <div className="rounded-xl border border-border/70 bg-background/50 p-3 sm:p-4 col-span-2 sm:col-span-1">
+                <p className="text-[11px] text-muted-foreground">Published</p>
+                <p className="mt-1 font-semibold text-sm sm:text-base text-emerald-500">
+                  {records.filter((item) => item.published !== false).length}
+                </p>
+              </div>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="grid min-w-0 gap-4 border-b border-border/60 pb-8 md:grid-cols-2">
+              <label className="text-xs font-medium text-muted-foreground">
+                Title / Name *
+                <input
+                  required
+                  value={form.title}
+                  onChange={(event) => updateForm("title", event.target.value)}
+                  placeholder="e.g. NextGen SaaS Platform"
+                  className="mt-1.5 w-full rounded-xl border border-border/80 bg-background/70 px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 dark:focus:ring-white/40 dark:focus:border-white transition-all"
+                />
+              </label>
+
+              <label className="text-xs font-medium text-muted-foreground">
+                Category / Role / Slug
+                <input
+                  value={form.category}
+                  onChange={(event) => updateForm("category", event.target.value)}
+                  placeholder="e.g. saas, frontend, engineering"
+                  className="mt-1.5 w-full rounded-xl border border-border/80 bg-background/70 px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 dark:focus:ring-white/40 dark:focus:border-white transition-all"
+                />
+              </label>
+
+              <label className="text-xs font-medium text-muted-foreground md:col-span-2">
+                Description / Summary *
+                <textarea
+                  required
+                  value={form.description}
+                  onChange={(event) => updateForm("description", event.target.value)}
+                  rows={3}
+                  placeholder="Short overview or excerpt..."
+                  className="mt-1.5 w-full rounded-xl border border-border/80 bg-background/70 px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 dark:focus:ring-white/40 dark:focus:border-white transition-all"
+                />
+              </label>
+
+              {(kind === "articles" || kind === "experience" || kind === "testimonials" || kind === "services") && (
+                <label className="text-xs font-medium text-muted-foreground md:col-span-2">
+                  {kind === "articles" ? "Article Body / Markdown" : "Extended Details / Notes"}
+                  <textarea
+                    value={form.body}
+                    onChange={(event) => updateForm("body", event.target.value)}
+                    rows={6}
+                    placeholder="Full content, notes, or highlights..."
+                    className="mt-1.5 w-full rounded-xl border border-border/80 bg-background/70 px-4 py-2.5 font-mono text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 dark:focus:ring-white/40 dark:focus:border-white transition-all"
+                  />
+                </label>
+              )}
+
+              <label className="text-xs font-medium text-muted-foreground">
+                Public / Live URL
+                <input
+                  type="url"
+                  value={form.url}
+                  onChange={(event) => updateForm("url", event.target.value)}
+                  placeholder="https://..."
+                  className="mt-1.5 w-full rounded-xl border border-border/80 bg-background/70 px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 dark:focus:ring-white/40 dark:focus:border-white transition-all"
+                />
+              </label>
+
+              {kind === "tools" && (
+                <label className="text-xs font-medium text-muted-foreground">
+                  Tool Website URL
+                  <input
+                    type="url"
+                    value={form.website}
+                    onChange={(event) => updateForm("website", event.target.value)}
+                    placeholder="https://..."
+                    className="mt-1.5 w-full rounded-xl border border-border/80 bg-background/70 px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 dark:focus:ring-white/40 dark:focus:border-white transition-all"
+                  />
+                </label>
+              )}
+
+              <label className="text-xs font-medium text-muted-foreground">
+                Tags (comma separated)
+                <input
+                  value={form.tags}
+                  onChange={(event) => updateForm("tags", event.target.value)}
+                  placeholder="React, TypeScript, Next.js"
+                  className="mt-1.5 w-full rounded-xl border border-border/80 bg-background/70 px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 dark:focus:ring-white/40 dark:focus:border-white transition-all"
+                />
+              </label>
+
+              {kind === "tools" && (
+                <label className="text-xs font-medium text-muted-foreground">
+                  Icon Name / SVG URL
+                  <input
+                    value={form.icon}
+                    onChange={(event) => updateForm("icon", event.target.value)}
+                    placeholder="Code, Layout, Terminal"
+                    className="mt-1.5 w-full rounded-xl border border-border/80 bg-background/70 px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 dark:focus:ring-white/40 dark:focus:border-white transition-all"
+                  />
+                </label>
+              )}
+
+              {/* Image upload */}
+              <label className="md:col-span-2 flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-dashed border-border/80 p-4 text-xs text-muted-foreground hover:border-primary dark:hover:border-white/40 transition-colors">
+                <div className="flex items-center gap-2.5">
+                  <Upload className="h-4 w-4 text-primary dark:text-white" />
+                  <span className="font-medium text-foreground dark:text-white">
+                    {image?.name || "Upload or replace media file (optional)"}
+                  </span>
+                </div>
+                <span className="text-[11px] font-mono text-muted-foreground uppercase">Browse</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(event) => setImage(event.target.files?.[0] || null)}
+                  className="sr-only"
+                />
+              </label>
+
+              {/* Toggles */}
+              <div className="flex flex-wrap gap-5 text-xs text-muted-foreground md:col-span-2 pt-1">
+                <label className="inline-flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={form.published}
+                    onChange={(event) => updateForm("published", event.target.checked)}
+                    className="rounded border-border text-primary dark:text-white focus:ring-0"
+                  />
+                  <span className="font-medium text-foreground dark:text-white">Published</span>
+                </label>
+                <label className="inline-flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={form.featured}
+                    onChange={(event) => updateForm("featured", event.target.checked)}
+                    className="rounded border-border text-primary dark:text-white focus:ring-0"
+                  />
+                  <span className="font-medium text-foreground dark:text-white">Featured Item</span>
+                </label>
+              </div>
+
+              {/* Form Buttons */}
+              <div className="flex flex-wrap items-center gap-3 md:col-span-2 pt-2">
+                <button
+                  type="submit"
+                  disabled={busy}
+                  className="inline-flex items-center gap-2 rounded-xl px-6 py-2.5 text-xs sm:text-sm font-semibold transition-all disabled:opacity-60 bg-zinc-950 text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 shadow-sm"
+                >
+                  <Plus className="h-4 w-4" />
+                  <span>{busy ? "Saving..." : modeLabel}</span>
+                </button>
+                {editingId && (
+                  <button
+                    type="button"
+                    onClick={resetForm}
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-border/80 bg-secondary px-4 py-2.5 text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground dark:hover:text-white transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                    <span>Cancel Edit</span>
+                  </button>
+                )}
+              </div>
+            </form>
+
+            {/* Records List preview */}
+            <div className="mt-8 space-y-3">
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-semibold text-foreground dark:text-white">
+                  {contentKinds.find((item) => item.value === kind)?.label} Records ({records.length})
+                </h4>
+                <div className="relative min-w-[180px] sm:min-w-[240px]">
+                  <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    aria-label="Filter records"
+                    placeholder="Filter records..."
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                    className="h-9 pl-8 text-xs rounded-xl"
+                  />
+                </div>
+              </div>
+
+              {filteredRecords.length === 0 && (
+                <div className="rounded-xl border border-dashed border-border/80 p-8 text-center text-xs text-muted-foreground">
+                  {loading ? "Loading records..." : search ? "No matching records found." : "No records published yet."}
+                </div>
+              )}
+
+              <div className="grid gap-2.5">
+                {filteredRecords.map((item) => (
+                  <div
+                    key={item.$id}
+                    className="flex flex-col gap-3 rounded-xl border border-border/70 bg-background/50 p-4 transition-colors hover:border-border sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="truncate font-semibold text-sm text-foreground dark:text-white">
+                          {item.title || item.name}
+                        </p>
+                        {item.featured && (
+                          <Badge variant="secondary" className="text-[10px] py-0 px-1.5">
+                            Featured
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">
+                        {item.description || item.excerpt}
+                      </p>
+                      <div className="mt-2 flex items-center gap-2">
+                        <Badge
+                          variant="outline"
+                          className={`text-[10px] ${
+                            item.published === false
+                              ? "text-amber-500 border-amber-500/30"
+                              : "text-emerald-500 border-emerald-500/30"
+                          }`}
+                        >
+                          {item.published === false ? "Draft" : "Published"}
+                        </Badge>
+                        {item.category && (
+                          <span className="text-[11px] font-mono text-muted-foreground">
+                            #{item.category}
+                          </span>
+                        )}
+                        {item.url && (
+                          <a
+                            href={item.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[11px] text-muted-foreground hover:text-foreground dark:hover:text-white inline-flex items-center gap-0.5 ml-1"
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex shrink-0 gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => startEdit(item)}
+                        className="h-8 rounded-xl text-xs gap-1.5"
+                      >
+                        <Edit3 className="h-3.5 w-3.5" />
+                        <span>Edit</span>
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => void handleDelete(item)}
+                        disabled={busy}
+                        className="h-8 rounded-xl text-xs gap-1.5"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        <span>Delete</span>
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        </main>
       </div>
-      </div>
-      </SidebarInset>
-    </section>
-    </SidebarProvider>
+    </div>
   );
 }
