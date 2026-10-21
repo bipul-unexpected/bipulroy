@@ -1,4 +1,5 @@
-const { Client, Databases, ID, InputFile, Storage } = require("node-appwrite");
+const { Client, Databases, ID, Storage } = require("node-appwrite");
+const { InputFile } = require("node-appwrite/file");
 
 const kinds = new Set([
   "projects",
@@ -17,6 +18,13 @@ const corsHeaders = {
   "Access-Control-Max-Age": "600",
 };
 
+class AuthorizationError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "AuthorizationError";
+  }
+}
+
 function json(res, status, body) {
   return res.json(body, status, corsHeaders);
 }
@@ -33,23 +41,23 @@ function collectionId(kind) {
 }
 
 async function verifyAdmin(req) {
-  const authorization = req.headers.authorization || "";
+  const authorization = req.headers.authorization || req.headers.Authorization || "";
   const token = authorization.startsWith("Bearer ")
     ? authorization.slice(7)
     : "";
-  if (!token) throw new Error("Missing Clerk authorization token.");
+  if (!token) throw new AuthorizationError("Missing Clerk authorization token. Sign in again.");
 
   const { createRemoteJWKSet, jwtVerify } = await import("jose");
   const issuer = process.env.CLERK_JWT_ISSUER;
   const jwks = createRemoteJWKSet(new URL(process.env.CLERK_JWKS_URL));
   const { payload } = await jwtVerify(token, jwks, issuer ? { issuer } : undefined);
   if (process.env.CLERK_ADMIN_USER_ID && payload.sub !== process.env.CLERK_ADMIN_USER_ID) {
-    throw new Error("Administrator account required.");
+    throw new AuthorizationError("This Clerk account is not the configured administrator. Set the same Clerk user ID in VITE_CLERK_ADMIN_USER_ID and CLERK_ADMIN_USER_ID.");
   }
   if (!process.env.CLERK_ADMIN_USER_ID &&
       payload.metadata?.role !== "admin" &&
       payload.public_metadata?.role !== "admin") {
-    throw new Error("Administrator role required.");
+    throw new AuthorizationError("Administrator role required. Add public metadata role=admin to the Clerk account.");
   }
   return payload;
 }
@@ -114,6 +122,7 @@ module.exports = async ({ req, res, log, error }) => {
     return json(res, 400, { error: "Unsupported admin operation." });
   } catch (caught) {
     error(caught instanceof Error ? caught.message : String(caught));
-    return json(res, 403, { error: caught instanceof Error ? caught.message : "Forbidden." });
+    const status = caught instanceof AuthorizationError ? 403 : 500;
+    return json(res, status, { error: caught instanceof Error ? caught.message : "Admin operation failed." });
   }
 };

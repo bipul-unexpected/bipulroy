@@ -7,9 +7,13 @@ import { Button } from "../ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "../ui/sidebar";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { THEME_CHANGE_EVENT } from "../../lib/theme";
+import { AppSidebar } from "../app-sidebar";
+import { ChartAreaInteractive } from "../chart-area-interactive";
+import { DataTable } from "../data-table";
+import { SectionCards } from "../section-cards";
+import { SiteHeader } from "../site-header";
+import { SidebarInset, SidebarProvider } from "../ui/sidebar";
 import {
   createContent,
   deleteContentImage,
@@ -130,6 +134,31 @@ export function AdminStudio() {
     if (!query) return records;
     return records.filter((item) => `${item.title || item.name} ${item.description || item.excerpt} ${item.category || ""}`.toLowerCase().includes(query));
   }, [records, search]);
+  const dashboardRows = useMemo(() => filteredRecords.map((item, index) => ({
+    id: index + 1,
+    header: item.title || item.name || "Untitled",
+    type: contentKinds.find((entry) => entry.value === kind)?.label || kind,
+    status: item.published === false ? "Draft" : "Published",
+    target: item.category || "Portfolio",
+    limit: item.featured ? "Featured" : "Standard",
+    reviewer: item.$createdAt ? new Date(item.$createdAt).toLocaleDateString() : "—",
+  })), [filteredRecords, kind]);
+  const dashboardStats = useMemo(() => ({
+    total: records.length,
+    published: records.filter((item) => item.published !== false).length,
+    drafts: records.filter((item) => item.published === false).length,
+    featured: records.filter((item) => item.featured).length,
+  }), [records]);
+  const chartData = useMemo(() => {
+    const counts = new Map<string, number>();
+    records.forEach((item) => {
+      const date = item.$createdAt?.slice(0, 10);
+      if (date) counts.set(date, (counts.get(date) || 0) + 1);
+    });
+    return Array.from(counts.entries()).sort(([a], [b]) => a.localeCompare(b)).map(([date, count]) => ({
+      date, desktop: count, mobile: 0,
+    }));
+  }, [records]);
 
   function toggleAdminTheme() {
     const next = !isDarkMode;
@@ -244,38 +273,22 @@ export function AdminStudio() {
   return (
     <SidebarProvider>
     <section id="admin" className="min-h-screen w-full min-w-0 overflow-x-hidden bg-background py-4 text-foreground sm:py-10">
-      <Sidebar>
-        <SidebarHeader>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton size="lg">
-                <LayoutDashboard className="size-5" />
-                <span className="font-semibold">Bipul Roy Studio</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupLabel>Content collections</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {contentKinds.map((item) => (
-                  <SidebarMenuItem key={item.value}>
-                    <SidebarMenuButton isActive={kind === item.value} onClick={() => { setKind(item.value); resetForm(); void loadRecords(item.value); }}>
-                      {item.value === "projects" ? <FolderKanban /> : item.value === "articles" ? <FileText /> : item.value === "gallery" ? <Images /> : item.value === "tools" ? <Wrench /> : item.value === "experience" ? <BriefcaseBusiness /> : item.value === "services" ? <Handshake /> : <Quote />}
-                      <span>{item.label}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarContent>
-      </Sidebar>
+      <AppSidebar
+        variant="inset"
+        collections={contentKinds}
+        activeCollection={kind}
+        onCollectionChange={(value) => {
+          const nextKind = value as ContentKind;
+          setKind(nextKind);
+          resetForm();
+          void loadRecords(nextKind);
+        }}
+        user={{ name: user.fullName || "Bipul Roy", email: user.primaryEmailAddress?.emailAddress || "", avatar: user.imageUrl }}
+      />
       <SidebarInset className="min-w-0">
+      <SiteHeader title={contentKinds.find((item) => item.value === kind)?.label || "Dashboard"} actions={<><Button variant="outline" size="icon" onClick={toggleAdminTheme} aria-label={isDarkMode ? "Use light mode" : "Use dark mode"}>{isDarkMode ? <Sun /> : <Moon />}</Button><UserButton /></>} />
       <div className="mx-auto w-full min-w-0 max-w-7xl px-3 sm:px-6">
-        <div className="mb-4 flex items-center gap-3 lg:hidden"><SidebarTrigger /><Separator orientation="vertical" className="h-5" /><span className="text-sm font-semibold">Portfolio control center</span></div>
+        <div className="@container/main flex min-w-0 flex-1 flex-col gap-2">
         <div className="grid min-w-0 gap-4 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-6">
         <aside className="glass-panel hidden h-fit rounded-2xl p-4 lg:sticky lg:top-6">
           <div className="flex items-center gap-3 border-b border-border/60 px-2 pb-5">
@@ -289,6 +302,11 @@ export function AdminStudio() {
           </nav>
         </aside>
         <div className="min-w-0">
+        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+        <SectionCards stats={dashboardStats} />
+        <div className="px-0 lg:px-2"><ChartAreaInteractive data={chartData} /></div>
+        <DataTable data={dashboardRows} />
+        </div>
         <div className="glass-panel rounded-2xl p-5 sm:p-7 md:p-9">
         <div className="mb-7 flex flex-col justify-between gap-4 border-b border-border/60 pb-6 sm:flex-row sm:items-center"><div><p className="text-xs font-mono uppercase tracking-[0.18em] text-primary">Private workspace</p><h2 className="mt-2 text-2xl font-bold text-foreground">Portfolio control center</h2><p className="mt-1 text-sm text-muted-foreground">Manage projects, journal, media, services, and social proof.</p></div><div className="flex items-center gap-2"><button type="button" onClick={toggleAdminTheme} className="grid h-10 w-10 place-items-center rounded-xl bg-secondary text-muted-foreground" aria-label={isDarkMode ? "Use light mode" : "Use dark mode"}>{isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}</button><UserButton /></div></div>
         <div className="mb-6 grid gap-3 sm:grid-cols-3">
@@ -318,6 +336,7 @@ export function AdminStudio() {
           {filteredRecords.length === 0 && <p className="rounded-xl border border-dashed border-border p-5 text-sm text-muted-foreground">{loading ? "Loading records..." : search ? "No matching records." : "No records yet."}</p>}
           {filteredRecords.map((item) => <div key={item.$id} className="flex flex-col gap-3 rounded-xl border border-border/70 bg-background/30 p-4 sm:flex-row sm:items-center sm:justify-between"><div className="min-w-0"><p className="truncate font-semibold text-foreground">{item.title || item.name}</p><p className="mt-1 line-clamp-1 text-xs text-muted-foreground">{item.description || item.excerpt}</p><Badge variant="outline" className="mt-2">{item.published === false ? "Draft" : "Published"}</Badge></div><div className="flex shrink-0 gap-2"><Button type="button" variant="outline" size="sm" onClick={() => startEdit(item)}><Edit3 className="h-3.5 w-3.5" /> Edit</Button><Button type="button" variant="destructive" size="sm" onClick={() => void handleDelete(item)} disabled={busy}><Trash2 className="h-3.5 w-3.5" /> Delete</Button></div></div>)}
         </div>
+      </div>
       </div>
       </div>
       </div>
