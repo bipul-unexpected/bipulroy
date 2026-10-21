@@ -2,16 +2,114 @@
 <html lang="en" class="light">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <link rel="icon" type="image/png" href="/b.png" />
+    <link rel="apple-touch-icon" href="/b.png" />
     <meta name="description" content="__DESCRIPTION__" />
     <meta name="robots" content="__ROBOTS__" />
+    <meta name="author" content="Bipul Roy" />
+    <meta name="theme-color" content="#FAF5FF" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1A0B2E" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="generator" content="Vite + React" />
     <link rel="canonical" href="__CANONICAL__" />
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
+
+    <!-- Open Graph -->
     <meta property="og:title" content="__TITLE__" />
     <meta property="og:description" content="__DESCRIPTION__" />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Bipul Roy Portfolio" />
+    <meta property="og:url" content="__CANONICAL__" />
+    <meta property="og:image" content="https://bipul.tech/github-avatar.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="__TITLE__" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="__TITLE__" />
+    <meta name="twitter:description" content="__DESCRIPTION__" />
+    <meta name="twitter:site" content="@BipulUnexpected" />
+    <meta name="twitter:creator" content="@BipulUnexpected" />
+    <meta name="twitter:image" content="https://bipul.tech/github-avatar.jpg" />
+    <meta name="twitter:image:alt" content="__TITLE__" />
+
+    <!-- Performance hints -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- JSON-LD: BreadcrumbList -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://bipul.tech/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "__BREADCRUMB__",
+            "item": "__CANONICAL__"
+          }
+        ]
+      }
+    </script>
+
     <title>__TITLE__</title>
+
+    <!-- Liquid Glass Preloader -->
+    <style id="preloader-styles">
+      #app-preloader{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:#1e0549;transition:opacity .6s cubic-bezier(.4,0,.2,1);will-change:opacity}
+      #app-preloader.light-preloader{background:#faf5ff}
+      #app-preloader.fade-out{opacity:0;pointer-events:none}
+      .preloader-container{display:flex;flex-direction:column;align-items:center;gap:36px}
+      .glass-orb-wrapper{position:relative;width:120px;height:120px}
+      .glass-orb{position:absolute;inset:0;border-radius:50%;background:linear-gradient(135deg,rgba(124,58,237,.25),rgba(168,85,247,.15) 40%,rgba(79,13,193,.30));backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border:1px solid rgba(183,150,230,.25);box-shadow:0 8px 32px rgba(124,58,237,.3),inset 0 2px 8px rgba(255,255,255,.15),inset 0 -2px 8px rgba(79,13,193,.2);animation:glass-breathe 3s cubic-bezier(.4,0,.6,1) infinite}
+      .glass-orb::before{content:'';position:absolute;top:8%;left:18%;width:52%;height:38%;border-radius:50%;background:radial-gradient(ellipse at 50% 30%,rgba(255,255,255,.55),rgba(255,255,255,.08) 70%,transparent);filter:blur(1px);animation:specular-shift 3s cubic-bezier(.4,0,.6,1) infinite}
+      .glass-orb::after{content:'';position:absolute;inset:12%;border-radius:50%;border:1px solid rgba(255,255,255,.12);background:radial-gradient(circle at 40% 35%,rgba(168,85,247,.12),transparent 65%);animation:caustic-rotate 6s linear infinite}
+      .glass-particle{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(183,150,230,.9),rgba(124,58,237,.4));filter:blur(.5px)}
+      .glass-particle:nth-child(1){width:6px;height:6px;top:50%;left:50%;animation:orbit-1 2.4s cubic-bezier(.4,0,.6,1) infinite}
+      .glass-particle:nth-child(2){width:4px;height:4px;top:50%;left:50%;animation:orbit-2 3.2s cubic-bezier(.4,0,.6,1) infinite}
+      .glass-particle:nth-child(3){width:5px;height:5px;top:50%;left:50%;animation:orbit-3 2.8s cubic-bezier(.4,0,.6,1) infinite}
+      .glass-glow-ring{position:absolute;inset:-20px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,.08) 40%,rgba(168,85,247,.04) 60%,transparent 75%);animation:glow-pulse 3s ease-in-out infinite}
+      .glass-progress-ring{position:absolute;inset:-6px;border-radius:50%;border:2px solid transparent;border-top-color:rgba(168,85,247,.7);border-right-color:rgba(124,58,237,.35);animation:progress-spin 1.4s cubic-bezier(.4,0,.6,1) infinite;filter:drop-shadow(0 0 4px rgba(168,85,247,.5))}
+      .preloader-text{font-family:'Space Grotesk',system-ui,sans-serif;font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:rgba(183,150,230,.8);animation:text-fade 2.5s ease-in-out infinite}
+      @keyframes glass-breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+      @keyframes specular-shift{0%,100%{transform:translate(0,0) scale(1);opacity:.7}50%{transform:translate(3px,-2px) scale(1.05);opacity:1}}
+      @keyframes caustic-rotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+      @keyframes orbit-1{0%{transform:translate(-3px,-3px) rotate(0deg) translateX(52px) rotate(0deg);opacity:.9}50%{opacity:.4}100%{transform:translate(-3px,-3px) rotate(360deg) translateX(52px) rotate(-360deg);opacity:.9}}
+      @keyframes orbit-2{0%{transform:translate(-2px,-2px) rotate(120deg) translateX(58px) rotate(-120deg);opacity:.7}50%{opacity:.3}100%{transform:translate(-2px,-2px) rotate(480deg) translateX(58px) rotate(-480deg);opacity:.7}}
+      @keyframes orbit-3{0%{transform:translate(-2.5px,-2.5px) rotate(240deg) translateX(48px) rotate(-240deg);opacity:.8}50%{opacity:.35}100%{transform:translate(-2.5px,-2.5px) rotate(600deg) translateX(48px) rotate(-600deg);opacity:.8}}
+      @keyframes glow-pulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
+      @keyframes progress-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+      @keyframes text-fade{0%,100%{opacity:.5}50%{opacity:1}}
+      @media(prefers-reduced-motion:reduce){.glass-orb,.glass-orb::before,.glass-orb::after,.glass-particle,.glass-glow-ring,.glass-progress-ring,.preloader-text{animation:none!important}}
+    </style>
   </head>
   <body data-route="__ROUTE__">
+    <div id="app-preloader" aria-label="Loading" role="progressbar">
+      <div class="preloader-container">
+        <div class="glass-orb-wrapper">
+          <div class="glass-glow-ring"></div>
+          <div class="glass-progress-ring"></div>
+          <div class="glass-orb"></div>
+          <div class="glass-particle"></div>
+          <div class="glass-particle"></div>
+          <div class="glass-particle"></div>
+        </div>
+        <div class="preloader-text">Loading</div>
+      </div>
+    </div>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

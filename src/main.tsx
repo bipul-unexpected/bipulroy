@@ -15,9 +15,22 @@ const posthogHost = import.meta.env.VITE_PUBLIC_POSTHOG_HOST as
   | string
   | undefined;
 
-/** Default to the admin-friendly dark theme while preserving an explicit choice. */
+/* ── Preloader: set theme-aware background immediately ── */
+const preloaderStartTime = performance.now();
+const PRELOADER_MIN_DISPLAY_MS = 1200; // minimum animation time
+
+const preloaderEl = document.getElementById("app-preloader");
 const stored = localStorage.getItem("bipul-theme");
 const startDark = stored !== "light";
+
+// Apply preloader theme class before React paints
+if (preloaderEl) {
+  if (!startDark) {
+    preloaderEl.classList.add("light-preloader");
+  }
+}
+
+/** Default to the admin-friendly dark theme while preserving an explicit choice. */
 document.documentElement.classList.add("theme-midnight");
 document.documentElement.classList.remove(startDark ? "light" : "dark");
 document.documentElement.classList.add(startDark ? "dark" : "light");
@@ -26,6 +39,34 @@ document.documentElement.setAttribute(
   startDark ? "dark" : "light",
 );
 if (!stored) localStorage.setItem("bipul-theme", "dark");
+
+/** Dismiss the liquid glass preloader with a smooth fade-out. */
+function dismissPreloader() {
+  if (!preloaderEl) return;
+  const elapsed = performance.now() - preloaderStartTime;
+  const remaining = Math.max(0, PRELOADER_MIN_DISPLAY_MS - elapsed);
+
+  setTimeout(() => {
+    preloaderEl.classList.add("fade-out");
+    // Remove from DOM after transition completes
+    preloaderEl.addEventListener(
+      "transitionend",
+      () => {
+        preloaderEl.remove();
+        // Clean up the inline preloader styles too
+        document.getElementById("preloader-styles")?.remove();
+      },
+      { once: true },
+    );
+    // Fallback removal if transitionend doesn't fire
+    setTimeout(() => {
+      if (preloaderEl.parentNode) {
+        preloaderEl.remove();
+        document.getElementById("preloader-styles")?.remove();
+      }
+    }, 800);
+  }, remaining);
+}
 
 async function bootstrap() {
   const root = document.getElementById("root");
@@ -64,10 +105,20 @@ async function bootstrap() {
   ReactDOM.createRoot(root).render(
     <React.StrictMode>{tree}</React.StrictMode>,
   );
+
+  // Dismiss preloader after React has mounted
+  // Use requestIdleCallback for smooth handoff, fallback to rAF
+  if ("requestIdleCallback" in window) {
+    (window as any).requestIdleCallback(dismissPreloader);
+  } else {
+    requestAnimationFrame(() => setTimeout(dismissPreloader, 0));
+  }
 }
 
 bootstrap().catch((err) => {
   console.error("Failed to bootstrap app:", err);
+  // Dismiss preloader even on error so the error state is visible
+  dismissPreloader();
   const root = document.getElementById("root");
   if (root) {
     root.innerHTML =

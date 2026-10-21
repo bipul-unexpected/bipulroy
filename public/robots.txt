@@ -1,4 +1,18 @@
 User-agent: *
 Allow: /
+Disallow: /onionbipulking/
+Disallow: /dist/
 
+# Crawl-delay for polite bots
+Crawl-delay: 1
+
+# Sitemap
 Sitemap: https://bipul.tech/sitemap.xml
+
+# Google-specific
+User-agent: Googlebot
+Allow: /
+Disallow: /onionbipulking/
+
+User-agent: Googlebot-Image
+Allow: /
