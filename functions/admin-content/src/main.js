@@ -14,10 +14,15 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": process.env.ALLOWED_ORIGIN || "*",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Max-Age": "600",
 };
 
 function json(res, status, body) {
   return res.json(body, status, corsHeaders);
+}
+
+function preflightCors(res) {
+  return res.text("", 204, corsHeaders);
 }
 
 function collectionId(kind) {
@@ -51,7 +56,7 @@ async function verifyAdmin(req) {
 
 module.exports = async ({ req, res, log, error }) => {
   if (req.method === "OPTIONS") {
-    return res.empty(204, corsHeaders);
+    return preflightCors(res);
   }
   try {
     await verifyAdmin(req);

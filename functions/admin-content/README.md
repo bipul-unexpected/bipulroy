@@ -23,6 +23,12 @@ loads Function entrypoints with `require()`. Do not add `"type": "module"` to
 this package. The ESM-only `jose` dependency is loaded with an awaited
 dynamic import after the request handler starts.
 
+The preflight response uses `res.text("", 204, headers)` rather than
+`res.empty()` because the Appwrite Node runtime does not preserve custom CORS
+headers passed to `res.empty()`. Without those headers, browsers complete the
+OPTIONS execution but block the authenticated POST, which appears in the
+dashboard as “Failed to fetch”.
+
 Use the Appwrite region-specific endpoint for the project. For the current
 portfolio project, the region is `sgp`, so configure the CLI with
 `https://sgp.cloud.appwrite.io/v1`; the global endpoint can return

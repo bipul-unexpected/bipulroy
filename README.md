@@ -204,6 +204,13 @@ Function deployment ID, or the Appwrite project URL as this value. Save the
 Site variables and create a new Site deployment; Vite embeds `VITE_*` values
 at build time.
 
+If Appwrite execution logs show successful `OPTIONS` requests with `204` but
+the browser reports “Failed to fetch”, inspect the preflight response headers.
+It must include `Access-Control-Allow-Origin: https://bipul.tech`,
+`Access-Control-Allow-Methods: POST, OPTIONS`, and
+`Access-Control-Allow-Headers: Content-Type, Authorization`. A successful
+OPTIONS log alone does not mean that the browser sent the authenticated POST.
+
 ## Terminal mode
 
 The terminal icon in the navigation opens a full-screen interactive browser
