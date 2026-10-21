@@ -28,6 +28,11 @@ Create one database and these collections in the Appwrite console:
 | `services` | `title` string, `description` string, `category` string, `tags` string array, `published` boolean, `featured` boolean |
 | `testimonials` | `title` string, `description` string, `body` string, `category` string, `published` boolean, `featured` boolean |
 
+The admin Function reads each collection's attributes before a write and drops
+unknown fields, so older collections that use `name` instead of `title` remain
+compatible. For predictable labels and editing, use the attribute names above
+when creating or migrating collections.
+
 Create a Storage bucket for portfolio media and set its file read permission
 to `Any` if images are public. Keep file creation restricted to authenticated
 users. Set the web platform hostname to the Appwrite Sites domain and the

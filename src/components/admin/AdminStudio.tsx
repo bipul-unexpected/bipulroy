@@ -93,6 +93,9 @@ export function AdminStudio() {
   const { getToken } = useAuth();
   const [kind, setKind] = useState<ContentKind>("projects");
   const [records, setRecords] = useState<RemoteContent[]>([]);
+  const [collectionCounts, setCollectionCounts] = useState<Record<ContentKind, number>>({
+    projects: 0, articles: 0, gallery: 0, tools: 0, experience: 0, services: 0, testimonials: 0,
+  });
   const [form, setForm] = useState<FormState>(emptyForm);
   const [image, setImage] = useState<File | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -121,10 +124,21 @@ export function AdminStudio() {
     } finally {
       setLoading(false);
     }
+
+  }
+
+  async function loadCollectionCounts() {
+    const entries = await Promise.all(
+      contentKinds.map(async ({ value }) => [value, (await listContent(value, { includeUnpublished: true })).length] as const),
+    );
+    setCollectionCounts(Object.fromEntries(entries) as Record<ContentKind, number>);
   }
 
   useEffect(() => {
-    if (canManage) void loadRecords();
+    if (canManage) {
+      void loadRecords();
+      void loadCollectionCounts().catch((error) => setStatus(error instanceof Error ? error.message : "Unable to load dashboard totals."));
+    }
   // The selected kind is intentionally handled by the explicit selector below.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canManage]);
@@ -145,12 +159,7 @@ export function AdminStudio() {
     limit: item.featured ? "Featured" : "Standard",
     reviewer: item.$createdAt ? new Date(item.$createdAt).toLocaleDateString() : "—",
   })), [filteredRecords, kind]);
-  const dashboardStats = useMemo(() => ({
-    total: records.length,
-    published: records.filter((item) => item.published !== false).length,
-    drafts: records.filter((item) => item.published === false).length,
-    featured: records.filter((item) => item.featured).length,
-  }), [records]);
+  const dashboardStats = collectionCounts;
   const chartData = useMemo(() => {
     const counts = new Map<string, number>();
     records.forEach((item) => {
@@ -205,6 +214,7 @@ export function AdminStudio() {
       }
       resetForm();
       await loadRecords();
+      await loadCollectionCounts();
       setStatus(editingId ? "Content updated successfully." : "Content published successfully.");
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Appwrite operation failed. Check permissions and attributes.");
@@ -228,6 +238,7 @@ export function AdminStudio() {
       }
       if (editingId === item.$id) resetForm();
       await loadRecords();
+      await loadCollectionCounts();
       setStatus("Content deleted successfully.");
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Delete failed. Check Appwrite permissions.");
@@ -281,7 +292,7 @@ export function AdminStudio() {
         "--header-height": "calc(var(--spacing) * 12)",
       } as React.CSSProperties}
     >
-    <section id="admin" className="shadcn-admin-theme min-h-screen w-full min-w-0 overflow-x-hidden bg-background py-4 text-foreground sm:py-10">
+    <section id="admin" className="shadcn-admin-theme min-h-screen w-full min-w-0 overflow-x-hidden bg-background text-foreground">
       <AppSidebar
         variant="inset"
         collections={contentKinds}
@@ -297,7 +308,7 @@ export function AdminStudio() {
       <SidebarInset className="min-w-0">
       <SiteHeader title={contentKinds.find((item) => item.value === kind)?.label || "Dashboard"} actions={<><Button variant="outline" size="icon" onClick={toggleAdminTheme} aria-label={isDarkMode ? "Use light mode" : "Use dark mode"}>{isDarkMode ? <Sun /> : <Moon />}</Button><UserButton /></>} />
       <div className="@container/main flex min-w-0 flex-1 flex-col gap-2">
-        <div className="flex min-w-0 flex-col gap-4 px-3 py-4 md:gap-6 md:px-6 md:py-6">
+        <div className="flex min-w-0 flex-col gap-4 p-3 sm:gap-5 sm:p-5 lg:gap-6 lg:p-6">
         <SectionCards stats={dashboardStats} />
         <div className="px-0"><ChartAreaInteractive data={chartData} /></div>
         <DataTable
@@ -316,7 +327,7 @@ export function AdminStudio() {
           }}
         />
         </div>
-        <div id="content-editor" className="mx-3 mb-6 rounded-xl border bg-card p-4 shadow-sm sm:p-6 md:mx-6">
+        <div id="content-editor" className="mx-3 mb-6 rounded-xl border border-border/70 bg-card p-4 shadow-sm sm:mx-5 sm:p-6 lg:mx-6">
         <div className="mb-7 border-b border-border/60 pb-6"><p className="text-xs font-mono uppercase tracking-[0.18em] text-primary">Content editor</p><h2 className="mt-2 text-2xl font-bold text-foreground">Manage {contentKinds.find((item) => item.value === kind)?.label.toLowerCase()} content</h2><p className="mt-1 text-sm text-muted-foreground">Create, publish, update, and organize the content shown on your portfolio.</p></div>
         <div className="mb-6 grid gap-3 sm:grid-cols-3">
           <div className="rounded-xl border border-border/70 bg-background/40 p-4"><p className="text-xs text-muted-foreground">Current collection</p><p className="mt-1 font-semibold text-foreground">{contentKinds.find((item) => item.value === kind)?.label}</p></div>

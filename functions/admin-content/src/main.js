@@ -40,6 +40,30 @@ function collectionId(kind) {
   return value;
 }
 
+async function schemaSafeData(databases, kind, data) {
+  const collection = await databases.getCollection(
+    process.env.APPWRITE_DATABASE_ID,
+    collectionId(kind),
+  );
+  const attributes = new Set((collection.attributes || []).map((attribute) => attribute.key));
+  const input = data && typeof data === "object" ? data : {};
+  const output = {};
+
+  for (const [key, value] of Object.entries(input)) {
+    if (attributes.has(key) && value !== undefined && value !== "") {
+      output[key] = value;
+    }
+  }
+
+  if (!attributes.has("title") && attributes.has("name") && input.title) {
+    output.name = input.title;
+  }
+  if (!attributes.has("description") && attributes.has("excerpt") && input.description) {
+    output.excerpt = input.description;
+  }
+  return output;
+}
+
 async function verifyAdmin(req) {
   const authorization = req.headers.authorization || req.headers.Authorization || "";
   const token = authorization.startsWith("Bearer ")
@@ -81,7 +105,7 @@ module.exports = async ({ req, res, log, error }) => {
         process.env.APPWRITE_DATABASE_ID,
         collectionId(body.kind),
         ID.unique(),
-        body.data || {},
+        await schemaSafeData(databases, body.kind, body.data),
       );
       return json(res, 200, { data });
     }
@@ -90,7 +114,7 @@ module.exports = async ({ req, res, log, error }) => {
         process.env.APPWRITE_DATABASE_ID,
         collectionId(body.kind),
         body.documentId,
-        body.data || {},
+        await schemaSafeData(databases, body.kind, body.data),
       );
       return json(res, 200, { data });
     }

@@ -381,6 +381,7 @@ html.dark,
 
 /* Keep the dashboard aligned with the neutral shadcn dashboard-01 palette. */
 .shadcn-admin-theme {
+  --radius: 0.75rem;
   --background: 0 0% 100%;
   --foreground: 240 10% 3.9%;
   --card: 0 0% 100%;
@@ -428,8 +429,8 @@ html.dark,
   --ring: 240 4.9% 83.9%;
   --sidebar: 240 5.9% 10%;
   --sidebar-foreground: 240 4.8% 95.9%;
-  --sidebar-primary: 224.3 76.3% 48%;
-  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-primary: 0 0% 98%;
+  --sidebar-primary-foreground: 240 5.9% 10%;
   --sidebar-accent: 240 3.7% 15.9%;
   --sidebar-accent-foreground: 240 4.8% 95.9%;
   --sidebar-border: 240 3.7% 15.9%;

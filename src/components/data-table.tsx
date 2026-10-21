@@ -254,8 +254,6 @@ function createColumns({
           >
             Edit
           </DropdownMenuItem>
-          <DropdownMenuItem disabled>Duplicate (coming soon)</DropdownMenuItem>
-          <DropdownMenuItem disabled>Feature (use editor)</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             variant="destructive"
@@ -437,7 +435,7 @@ export function DataTable({
         value="outline"
         className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"
       >
-        <div className="overflow-hidden rounded-lg border">
+        <div className="overflow-x-auto rounded-xl border border-border/70">
           <DndContext
             collisionDetection={closestCenter}
             modifiers={[restrictToVerticalAxis]}
@@ -445,7 +443,7 @@ export function DataTable({
             sensors={sensors}
             id={sortableId}
           >
-            <Table>
+            <Table className="min-w-[760px]">
               <TableHeader className="sticky top-0 z-10 bg-muted">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>

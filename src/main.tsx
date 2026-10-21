@@ -15,9 +15,9 @@ const posthogHost = import.meta.env.VITE_PUBLIC_POSTHOG_HOST as
   | string
   | undefined;
 
-/** Default: Creativity light mode (SeeUI). Persist user choice if set. */
+/** Default to the admin-friendly dark theme while preserving an explicit choice. */
 const stored = localStorage.getItem("bipul-theme");
-const startDark = stored === "dark";
+const startDark = stored !== "light";
 document.documentElement.classList.add("theme-midnight");
 document.documentElement.classList.remove(startDark ? "light" : "dark");
 document.documentElement.classList.add(startDark ? "dark" : "light");
@@ -25,7 +25,7 @@ document.documentElement.setAttribute(
   "data-theme",
   startDark ? "dark" : "light",
 );
-if (!stored) localStorage.setItem("bipul-theme", "light");
+if (!stored) localStorage.setItem("bipul-theme", "dark");
 
 async function bootstrap() {
   const root = document.getElementById("root");
